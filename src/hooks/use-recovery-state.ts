@@ -19,6 +19,7 @@ const defaultState: RecoveryState = {
   currentSection: 'home',
   showSettings: false,
   calcMode: false,
+  checkinPreselect: null,
 };
 
 function loadState(): RecoveryState {
@@ -68,7 +69,20 @@ export function useRecoveryState() {
   }, [state.calcMode]);
 
   const setSection = useCallback((section: SectionName) => {
-    setState((prev) => ({ ...prev, currentSection: section, showSettings: false }));
+    setState((prev) => ({ ...prev, currentSection: section, showSettings: false, checkinPreselect: null }));
+  }, []);
+
+  const setPreselect = useCallback((preselect: 'sober' | 'use' | 'mood' | null) => {
+    setState((prev) => ({ ...prev, checkinPreselect: preselect }));
+  }, []);
+
+  const navigateWithPreselect = useCallback((section: string, preselect?: string) => {
+    setState((prev) => ({
+      ...prev,
+      currentSection: section as SectionName,
+      showSettings: false,
+      checkinPreselect: (preselect as 'sober' | 'use' | 'mood' | null) || null,
+    }));
   }, []);
 
   const toggleSettings = useCallback(() => {
@@ -321,6 +335,8 @@ export function useRecoveryState() {
     state,
     isLoaded,
     setSection,
+    navigateWithPreselect,
+    setPreselect,
     toggleSettings,
     toggleCalcMode,
     enterCalcMode,

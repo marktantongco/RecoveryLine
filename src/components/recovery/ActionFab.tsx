@@ -3,7 +3,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 
 interface ActionFabProps {
-  onNavigate: (section: string) => void;
+  onNavigate: (section: string, preselect?: string) => void;
   onLongPress: () => void;
 }
 

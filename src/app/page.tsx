@@ -21,6 +21,8 @@ function AppContent() {
     state,
     isLoaded,
     setSection,
+    navigateWithPreselect,
+    setPreselect,
     toggleSettings,
     toggleCalcMode,
     enterCalcMode,
@@ -38,13 +40,20 @@ function AppContent() {
     getInsights,
   } = useRecoveryState();
 
-  // All hooks must be called before any early returns
-  const handleNavigate = useCallback((section: string, preselect?: string) => {
+  // Standard navigate (no preselect) — used by bottom nav, header, etc.
+  const handleNavigate = useCallback((section: string) => {
     setSection(section as SectionName);
-    if (preselect) {
-      try { sessionStorage.setItem('rl_preselect', preselect); } catch {}
-    }
   }, [setSection]);
+
+  // FAB navigate — with preselect mode for check-in
+  const handleFabNavigate = useCallback((section: string, preselect?: string) => {
+    navigateWithPreselect(section, preselect);
+  }, [navigateWithPreselect]);
+
+  // Called by CheckIn after it consumes the preselect
+  const handlePreselectConsumed = useCallback(() => {
+    setPreselect(null);
+  }, [setPreselect]);
 
   if (!isLoaded) {
     return (
@@ -95,7 +104,14 @@ function AppContent() {
       case 'home':
         return <Dashboard stats={stats} insights={insights} onNavigate={handleNavigate} />;
       case 'checkin':
-        return <CheckIn onSubmit={handleCheckinSubmit} dailyAvgSpending={state.dailyAvgSpending} />;
+        return (
+          <CheckIn
+            onSubmit={handleCheckinSubmit}
+            dailyAvgSpending={state.dailyAvgSpending}
+            preselect={state.checkinPreselect}
+            onPreselectConsumed={handlePreselectConsumed}
+          />
+        );
       case 'history':
         return <History checkins={state.checkins} onDelete={deleteCheckin} onExport={exportData} />;
       case 'stats':
@@ -181,7 +197,7 @@ function AppContent() {
 
       {/* Action FAB */}
       <ActionFab
-        onNavigate={handleNavigate}
+        onNavigate={handleFabNavigate}
         onLongPress={handleFabLongPress}
       />
 

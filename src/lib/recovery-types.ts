@@ -10,6 +10,7 @@ export type MoodKey =
   | 'good'
   | 'relieved'
   | 'great'
+  | 'happy'
   | 'high';
 
 export interface Checkin {
@@ -50,6 +51,7 @@ export interface RecoveryState {
   currentSection: string;
   showSettings: boolean;
   calcMode: boolean;
+  checkinPreselect: 'sober' | 'use' | 'mood' | null;
 }
 
 export interface MoodInfo {

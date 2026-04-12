@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { MOODS, SOBER_MOODS, USE_MOODS, CURRENCY } from '@/lib/recovery-constants';
+import React, { useState, useEffect, useRef } from 'react';
+import { MOODS, UNIVERSAL_MOODS, CURRENCY } from '@/lib/recovery-constants';
 import { MoodKey, CheckinType } from '@/lib/recovery-types';
 import { useToast } from './Toast';
 
@@ -16,9 +16,11 @@ interface CheckInProps {
     date: string;
   }) => void;
   dailyAvgSpending: number;
+  preselect: 'sober' | 'use' | 'mood' | null;
+  onPreselectConsumed: () => void;
 }
 
-export default function CheckIn({ onSubmit, dailyAvgSpending }: CheckInProps) {
+export default function CheckIn({ onSubmit, dailyAvgSpending, preselect, onPreselectConsumed }: CheckInProps) {
   const { showToast } = useToast();
   const [mode, setMode] = useState<'sober' | 'use'>('sober');
   const [selectedMood, setSelectedMood] = useState<MoodKey | null>(null);
@@ -27,26 +29,42 @@ export default function CheckIn({ onSubmit, dailyAvgSpending }: CheckInProps) {
   const [quantity, setQuantity] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const moodRef = useRef<HTMLDivElement>(null);
+  const consumedRef = useRef(false);
 
-  // Support preselect from FAB
+  // React to preselect changes from parent (FAB navigation)
   useEffect(() => {
-    try {
-      const preselect = sessionStorage.getItem('rl_preselect');
-      if (preselect) {
-        sessionStorage.removeItem('rl_preselect');
-        if (preselect === 'sober') {
-          setMode('sober');
-        } else if (preselect === 'use') {
-          setMode('use');
-        } else if (preselect === 'mood') {
-          // Just focus on mood selection - keep current mode
-          // The mood selector will naturally get attention
-        }
-      }
-    } catch {}
+    if (!preselect || consumedRef.current) return;
+
+    consumedRef.current = true;
+
+    if (preselect === 'sober') {
+      setMode('sober');
+      setSelectedMood(null);
+      showToast('Sober day check-in ready', 'success');
+    } else if (preselect === 'use') {
+      setMode('use');
+      setSelectedMood(null);
+      showToast('Use log check-in ready', 'info');
+    } else if (preselect === 'mood') {
+      // Stay on current mode but scroll to mood selector
+      setSelectedMood(null);
+      setTimeout(() => {
+        moodRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 200);
+    }
+
+    // Tell parent we consumed it
+    onPreselectConsumed();
+  }, [preselect, onPreselectConsumed]);
+
+  // Reset consumed flag when section changes back to checkin
+  useEffect(() => {
+    consumedRef.current = false;
   }, []);
 
-  const moods = mode === 'sober' ? SOBER_MOODS : USE_MOODS;
+  // Universal moods — same for both sober and use
+  const moods = UNIVERSAL_MOODS;
 
   const handleSubmit = () => {
     if (!selectedMood) {
@@ -114,7 +132,7 @@ export default function CheckIn({ onSubmit, dailyAvgSpending }: CheckInProps) {
       {/* Header */}
       <div className="animate-fadeUp">
         <h2 className="text-lg font-bold text-white">Daily Check-In</h2>
-        <p className="text-xs text-slate-400 mt-0.5">Track your journey honestly</p>
+        <p className="text-xs text-slate-400 mt-0.5">How are you feeling today?</p>
       </div>
 
       {/* Mode Toggle */}
@@ -163,8 +181,8 @@ export default function CheckIn({ onSubmit, dailyAvgSpending }: CheckInProps) {
         </div>
       )}
 
-      {/* Mood Selector */}
-      <div className="glass-card p-4 animate-fadeUp stagger-2" style={{ opacity: 0 }}>
+      {/* Mood Selector — UNIVERSAL (same for both modes) */}
+      <div ref={moodRef} className="glass-card p-4 animate-fadeUp stagger-2" style={{ opacity: 0 }}>
         <label className="block text-xs font-semibold text-slate-400 mb-3">How are you feeling?</label>
         <div className="grid grid-cols-4 gap-2">
           {moods.map((key) => {

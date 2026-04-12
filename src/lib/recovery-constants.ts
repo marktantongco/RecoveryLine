@@ -10,11 +10,16 @@ export const MOODS: Record<string, MoodInfo> = {
   good: { emoji: '🙂', label: 'Good', color: '#22c55e' },
   relieved: { emoji: '😌', label: 'Relieved', color: '#22c55e' },
   great: { emoji: '😊', label: 'Great', color: '#10b981' },
+  happy: { emoji: '🙂', label: 'Happy', color: '#06b6d4' },
   high: { emoji: '🤪', label: 'High', color: '#a855f7' },
 };
 
-export const SOBER_MOODS = ['great', 'good', 'relieved', 'okay', 'neutral', 'anxious', 'bad', 'terrible'];
-export const USE_MOODS = ['high', 'guilty', 'anxious', 'neutral', 'okay', 'relieved', 'bad', 'terrible'];
+// Universal moods — same choices for both sober and use modes
+export const UNIVERSAL_MOODS = ['great', 'good', 'relieved', 'happy', 'okay', 'neutral', 'anxious', 'guilty', 'bad', 'terrible', 'high'] as const;
+
+// Legacy aliases kept for any remaining references
+export const SOBER_MOODS = [...UNIVERSAL_MOODS];
+export const USE_MOODS = [...UNIVERSAL_MOODS];
 
 export const MEDICATIONS = [
   'SSRI (e.g., Sertraline, Fluoxetine)',
