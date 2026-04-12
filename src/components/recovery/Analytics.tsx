@@ -53,18 +53,26 @@ export default function Analytics({ stats, insights, onNavigate }: AnalyticsProp
         <div className="glass-card p-4">
           <p className="text-xs text-slate-400 mb-1">Total Check-ins</p>
           <p className="text-2xl font-bold text-white">{stats.totalCheckins}</p>
+          <div className="mt-2 h-1 rounded-full bg-white/5 overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-sky-500 to-sky-400 rounded-full" style={{ width: `${Math.min(100, stats.totalCheckins * 2)}%`, transition: 'width 0.7s ease' }} />
+          </div>
         </div>
         <div className="glass-card p-4">
           <p className="text-xs text-slate-400 mb-1">Days Tracked</p>
           <p className="text-2xl font-bold text-white">{stats.daysSinceStart}</p>
+          <div className="mt-2 h-1 rounded-full bg-white/5 overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-purple-500 to-purple-400 rounded-full" style={{ width: `${Math.min(100, (stats.daysSinceStart / 30) * 100)}%`, transition: 'width 0.7s ease' }} />
+          </div>
         </div>
         <div className="glass-card p-4">
           <p className="text-xs text-slate-400 mb-1">Money Saved</p>
           <p className="text-lg font-bold text-emerald-400">{CURRENCY}{stats.totalMoneySaved.toLocaleString()}</p>
+          <p className="text-[10px] text-emerald-500/60 mt-1">{'\u2191'} Growing savings</p>
         </div>
         <div className="glass-card p-4">
           <p className="text-xs text-slate-400 mb-1">Money Spent</p>
           <p className="text-lg font-bold text-amber-400">{CURRENCY}{stats.totalMoneySpent.toLocaleString()}</p>
+          <p className="text-[10px] text-amber-500/60 mt-1">{stats.totalCheckins > 0 ? 'Track progress' : 'No entries yet'}</p>
         </div>
       </div>
 
@@ -72,17 +80,23 @@ export default function Analytics({ stats, insights, onNavigate }: AnalyticsProp
       <div className="glass-card p-4 animate-fadeUp stagger-2" style={{ opacity: 0 }}>
         <p className="text-xs font-semibold text-slate-400 mb-3">Sobriety Rate</p>
         <div className="flex items-center gap-3">
-          <div className="flex-1 h-4 rounded-full bg-white/5 overflow-hidden">
+          <div className="flex-1 h-5 rounded-full bg-white/5 overflow-hidden">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all duration-700"
+              className="h-full rounded-full bg-gradient-to-r from-emerald-600 via-emerald-500 to-emerald-400 transition-all duration-700"
               style={{ width: `${stats.sobrietyRate}%` }}
             />
           </div>
-          <span className="text-sm font-bold text-white w-10 text-right">{stats.sobrietyRate}%</span>
+          <span className="text-sm font-bold text-white w-12 text-right">{stats.sobrietyRate}%</span>
         </div>
         <div className="flex justify-between mt-2 text-xs text-slate-500">
-          <span>{'\u2705'} {stats.soberDays} sober</span>
-          <span>{'\ud83d\udccb'} {stats.useDays} use</span>
+          <span className="flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            {stats.soberDays} sober
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-amber-500" />
+            {stats.useDays} use
+          </span>
         </div>
       </div>
 
@@ -123,20 +137,28 @@ export default function Analytics({ stats, insights, onNavigate }: AnalyticsProp
       {/* Day of Week Pattern */}
       <div className="glass-card p-4 animate-fadeUp stagger-4" style={{ opacity: 0 }}>
         <p className="text-xs font-semibold text-slate-400 mb-3">Activity by Day of Week</p>
-        <div className="flex items-end gap-1.5 h-24">
+        <div className="flex items-end gap-1.5 h-28">
           {DAY_NAMES.map((day) => {
             const count = stats.dayPattern[day] || 0;
             const height = maxDayCount > 0 ? (count / maxDayCount) * 100 : 0;
+            const isMax = count === maxDayCount && count > 0;
             return (
               <div key={day} className="flex-1 flex flex-col items-center gap-1">
-                <span className="text-[10px] text-slate-400">{count}</span>
+                <span className="text-[10px] text-slate-400 font-medium">{count}</span>
                 <div className="w-full flex-1 flex items-end">
                   <div
-                    className="w-full rounded-t-md bg-gradient-to-t from-sky-500/60 to-sky-400/40 transition-all duration-500"
-                    style={{ height: `${Math.max(height, 4)}%` }}
+                    className={`w-full rounded-t-md transition-all duration-500 ${
+                      isMax
+                        ? 'bg-gradient-to-t from-sky-500 to-cyan-400'
+                        : 'bg-gradient-to-t from-sky-500/60 to-sky-400/40'
+                    }`}
+                    style={{
+                      height: `${Math.max(height, 4)}%`,
+                      boxShadow: isMax ? '0 0 8px rgba(14, 165, 233, 0.3)' : 'none',
+                    }}
                   />
                 </div>
-                <span className="text-[10px] text-slate-500">{day}</span>
+                <span className={`text-[10px] ${isMax ? 'text-sky-400 font-semibold' : 'text-slate-500'}`}>{day}</span>
               </div>
             );
           })}
@@ -195,7 +217,7 @@ export default function Analytics({ stats, insights, onNavigate }: AnalyticsProp
         </div>
       </div>
 
-      {/* CTAs - No more dead end */}
+      {/* CTAs */}
       <div className="space-y-2 animate-fadeUp stagger-6" style={{ opacity: 0 }}>
         <button
           onClick={() => onNavigate('checkin')}

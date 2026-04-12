@@ -129,13 +129,13 @@ export default function Settings({
                 <div className="w-5 h-5 rounded bg-sky-500/20 flex items-center justify-center flex-shrink-0">
                   <span className="text-[10px] font-bold text-sky-400">{'\ud83d\udd04'}</span>
                 </div>
-                <span>Tap once to open quick actions (Sober, Use, Notes)</span>
+                <span>Tap once to open quick actions (Sober, Mood, Use)</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-5 h-5 rounded bg-red-500/20 flex items-center justify-center flex-shrink-0">
                   <span className="text-[10px] font-bold text-red-400">{'\ud83d\udd12'}</span>
                 </div>
-                <span>Long-press (hold) to enter calculator camouflage</span>
+                <span>Press 5 times quickly to enter calculator camouflage</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-5 h-5 rounded bg-purple-500/20 flex items-center justify-center flex-shrink-0">
@@ -183,7 +183,7 @@ export default function Settings({
           {/* App Info */}
           <div className="pt-3 border-t border-white/5">
             <p className="text-[10px] text-slate-600 text-center">
-              RecoveryLine v2.0 {'\u00b7'} Your data stays on this device only
+              RecoveryLine v3.0 {'\u00b7'} Your data stays on this device only
             </p>
           </div>
         </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useRecoveryState } from '@/hooks/use-recovery-state';
 import Dashboard from '@/components/recovery/Dashboard';
 import CheckIn from '@/components/recovery/CheckIn';
@@ -38,16 +38,29 @@ function AppContent() {
     getInsights,
   } = useRecoveryState();
 
+  // All hooks must be called before any early returns
+  const handleNavigate = useCallback((section: string, preselect?: string) => {
+    setSection(section as SectionName);
+    if (preselect) {
+      try { sessionStorage.setItem('rl_preselect', preselect); } catch {}
+    }
+  }, [setSection]);
+
   if (!isLoaded) {
     return (
       <div className="min-h-screen bg-[#0a0f1a] flex items-center justify-center">
         <div className="text-center animate-fadeUp">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center shadow-2xl shadow-sky-500/20 mx-auto mb-4">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center shadow-2xl shadow-sky-500/20 mx-auto mb-4 animate-pulse-glow">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
             </svg>
           </div>
           <p className="text-sm text-slate-400 font-medium">Loading RecoveryLine...</p>
+          <div className="mt-3 flex items-center justify-center gap-1">
+            <div className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-bounce" style={{ animationDelay: '0ms' }} />
+            <div className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-bounce" style={{ animationDelay: '150ms' }} />
+            <div className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-bounce" style={{ animationDelay: '300ms' }} />
+          </div>
         </div>
       </div>
     );
@@ -80,13 +93,13 @@ function AppContent() {
   const renderSection = () => {
     switch (state.currentSection) {
       case 'home':
-        return <Dashboard stats={stats} insights={insights} onNavigate={setSection} />;
+        return <Dashboard stats={stats} insights={insights} onNavigate={handleNavigate} />;
       case 'checkin':
         return <CheckIn onSubmit={handleCheckinSubmit} dailyAvgSpending={state.dailyAvgSpending} />;
       case 'history':
         return <History checkins={state.checkins} onDelete={deleteCheckin} onExport={exportData} />;
       case 'stats':
-        return <Analytics stats={stats} insights={insights} onNavigate={setSection} />;
+        return <Analytics stats={stats} insights={insights} onNavigate={handleNavigate} />;
       case 'notes':
         return <Clipboard items={state.clipboard} onAdd={addClipboardItem} onDelete={deleteClipboardItem} />;
       case 'safety':
@@ -96,13 +109,13 @@ function AppContent() {
             selectedSupplements={state.selectedSupplements}
             onToggleMed={toggleMed}
             onToggleSupplement={toggleSupplement}
-            onNavigate={setSection}
+            onNavigate={handleNavigate}
           />
         );
       case 'resources':
-        return <Resources onNavigate={setSection} />;
+        return <Resources onNavigate={handleNavigate} />;
       default:
-        return <Dashboard stats={stats} insights={insights} onNavigate={setSection} />;
+        return <Dashboard stats={stats} insights={insights} onNavigate={handleNavigate} />;
     }
   };
 
@@ -118,13 +131,13 @@ function AppContent() {
               </svg>
             </div>
             <div>
-              <h1 className="text-sm font-bold text-white leading-none">RecoveryLine</h1>
+              <h1 className="text-sm font-bold text-white leading-none tracking-tight">RecoveryLine</h1>
               <p className="text-[10px] text-slate-500 mt-0.5">Biochemical Recovery</p>
             </div>
           </div>
           <div className="flex items-center gap-1">
             <button
-              onClick={() => setSection('safety')}
+              onClick={() => handleNavigate('safety')}
               className={`p-2 rounded-lg transition-all active:scale-90 ${
                 state.currentSection === 'safety'
                   ? 'text-purple-400 bg-purple-500/10'
@@ -137,7 +150,7 @@ function AppContent() {
               </svg>
             </button>
             <button
-              onClick={() => setSection('resources')}
+              onClick={() => handleNavigate('resources')}
               className={`p-2 rounded-lg transition-all active:scale-90 ${
                 state.currentSection === 'resources'
                   ? 'text-emerald-400 bg-emerald-500/10'
@@ -161,14 +174,14 @@ function AppContent() {
       {/* Bottom Navigation */}
       <BottomNav
         currentSection={state.currentSection as SectionName}
-        onNavigate={setSection as (s: SectionName) => void}
+        onNavigate={handleNavigate as (s: SectionName) => void}
         onSettings={toggleSettings}
         showSettings={state.showSettings}
       />
 
       {/* Action FAB */}
       <ActionFab
-        onNavigate={setSection}
+        onNavigate={handleNavigate}
         onLongPress={handleFabLongPress}
       />
 

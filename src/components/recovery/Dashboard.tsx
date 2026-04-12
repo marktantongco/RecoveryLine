@@ -32,11 +32,17 @@ export default function Dashboard({ stats, insights, onNavigate }: DashboardProp
     return 'Good evening';
   };
 
+  const getMotivationColor = () => {
+    if (stats.sobrietyRate >= 80) return 'from-emerald-500 to-teal-500';
+    if (stats.sobrietyRate >= 50) return 'from-sky-500 to-blue-500';
+    if (stats.sobrietyRate >= 20) return 'from-amber-500 to-orange-500';
+    return 'from-slate-500 to-slate-400';
+  };
+
   return (
     <div className="space-y-5 pb-6">
       {/* Hero: Greeting + Progress Ring */}
       <div className="glass-card-hero p-5 animate-fadeUp relative overflow-hidden">
-        {/* Subtle gradient orb */}
         <div className="absolute -top-20 -right-20 w-48 h-48 rounded-full bg-sky-500/5 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-16 -left-16 w-40 h-40 rounded-full bg-emerald-500/5 blur-3xl pointer-events-none" />
 
@@ -66,7 +72,7 @@ export default function Dashboard({ stats, insights, onNavigate }: DashboardProp
       <div className="grid grid-cols-2 gap-3 animate-fadeUp stagger-1" style={{ opacity: 0 }}>
         <button
           onClick={() => onNavigate('stats')}
-          className="glass-card p-4 text-left hover:border-sky-500/20 active:scale-[0.98] transition-all group"
+          className="glass-card p-4 text-left hover:border-emerald-500/20 active:scale-[0.98] transition-all group"
         >
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 rounded-lg bg-emerald-500/15 flex items-center justify-center text-sm group-hover:scale-110 transition-transform">{'\ud83d\udcb0'}</div>
@@ -88,7 +94,7 @@ export default function Dashboard({ stats, insights, onNavigate }: DashboardProp
         </button>
         <button
           onClick={() => onNavigate('stats')}
-          className="glass-card p-4 text-left hover:border-sky-500/20 active:scale-[0.98] transition-all group"
+          className="glass-card p-4 text-left hover:border-amber-500/20 active:scale-[0.98] transition-all group"
         >
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 rounded-lg bg-amber-500/15 flex items-center justify-center text-sm group-hover:scale-110 transition-transform">{'\ud83d\udd25'}</div>
@@ -99,7 +105,7 @@ export default function Dashboard({ stats, insights, onNavigate }: DashboardProp
         </button>
         <button
           onClick={() => onNavigate('notes')}
-          className="glass-card p-4 text-left hover:border-sky-500/20 active:scale-[0.98] transition-all group"
+          className="glass-card p-4 text-left hover:border-purple-500/20 active:scale-[0.98] transition-all group"
         >
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 rounded-lg bg-purple-500/15 flex items-center justify-center text-sm group-hover:scale-110 transition-transform">{'\ud83d\udcc8'}</div>
@@ -159,7 +165,7 @@ export default function Dashboard({ stats, insights, onNavigate }: DashboardProp
         <div className="grid grid-cols-4 gap-2">
           <button
             onClick={() => onNavigate('checkin')}
-            className="glass-card p-3 flex flex-col items-center gap-1.5 hover:border-sky-500/20 active:scale-95 transition-all group"
+            className="glass-card p-3 flex flex-col items-center gap-1.5 hover:border-emerald-500/20 active:scale-95 transition-all group"
           >
             <div className="w-10 h-10 rounded-xl bg-emerald-500/15 flex items-center justify-center group-hover:scale-110 transition-transform">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -207,18 +213,29 @@ export default function Dashboard({ stats, insights, onNavigate }: DashboardProp
       {/* AI Insight Card */}
       <div className="glass-card-insight p-4 animate-fadeUp stagger-4" style={{ opacity: 0 }}>
         <div className="flex items-center gap-2.5 mb-3">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-sky-500/20">
+          <div className={`w-7 h-7 rounded-lg bg-gradient-to-br ${getMotivationColor()} flex items-center justify-center shadow-lg shadow-sky-500/20`}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2a10 10 0 1 0 10 10H12V2z" /><path d="M20 12a8 8 0 1 1-8-8" />
             </svg>
           </div>
           <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">Recovery Insights</span>
         </div>
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {insights.map((insight, i) => (
-            <p key={i} className="text-sm text-slate-300 leading-relaxed">{insight}</p>
+            <div key={i} className="flex items-start gap-2">
+              <div className="w-1 h-1 rounded-full bg-sky-400/60 mt-2 flex-shrink-0" />
+              <p className="text-sm text-slate-300 leading-relaxed">{insight}</p>
+            </div>
           ))}
         </div>
+        {insights.length > 0 && (
+          <button
+            onClick={() => onNavigate('stats')}
+            className="mt-3 text-xs text-sky-400 hover:text-sky-300 transition-colors font-medium flex items-center gap-1"
+          >
+            View full analytics {'\u2192'}
+          </button>
+        )}
       </div>
 
       {/* Recent Activity */}

@@ -58,6 +58,13 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-inter), system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
@@ -76,13 +83,14 @@
   background: rgba(255, 255, 255, 0.2);
 }
 
-/* Glass card */
+/* Glass card system */
 .glass-card {
   background: rgba(17, 24, 39, 0.8);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
+  transition: border-color 0.2s ease, transform 0.15s ease;
 }
 
 .glass-card-elevated {
@@ -95,9 +103,9 @@
 
 .glass-card-hero {
   background: linear-gradient(135deg, rgba(14, 165, 233, 0.08) 0%, rgba(30, 41, 59, 0.9) 50%, rgba(16, 185, 129, 0.06) 100%);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
   position: relative;
   overflow: hidden;
@@ -154,6 +162,15 @@
   }
 }
 
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px 4px rgba(14, 165, 233, 0.15);
+  }
+}
+
 @keyframes shimmer {
   0% {
     background-position: -200% 0;
@@ -183,12 +200,23 @@
   }
 }
 
-@keyframes glow-pulse {
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes breathe {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.3);
+    opacity: 0.4;
+    transform: scale(1);
   }
   50% {
-    box-shadow: 0 0 20px 4px rgba(14, 165, 233, 0.15);
+    opacity: 0.8;
+    transform: scale(1.02);
   }
 }
 
@@ -206,6 +234,14 @@
 
 .animate-pulse-glow {
   animation: pulse-glow 2s infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-breathe {
+  animation: breathe 4s ease-in-out infinite;
 }
 
 .stagger-1 { animation-delay: 0.05s; }
@@ -279,13 +315,14 @@
   height: 12px;
   border-radius: 50%;
   flex-shrink: 0;
+  transition: transform 0.2s;
 }
 .timeline-dot-sober {
-  background: #10b981;
+  background: linear-gradient(135deg, #10b981, #059669);
   box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
 }
 .timeline-dot-use {
-  background: #f59e0b;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
   box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
 }
 
@@ -305,12 +342,13 @@
 }
 .toggle-chip:hover {
   border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(30, 41, 59, 0.8);
 }
 .toggle-chip-active {
   background: rgba(14, 165, 233, 0.15);
   border-color: #0ea5e9;
   color: #0ea5e9;
-  box-shadow: 0 0 8px rgba(14, 165, 233, 0.15);
+  box-shadow: 0 0 12px rgba(14, 165, 233, 0.15);
 }
 
 /* Smooth page transitions */
@@ -327,4 +365,73 @@ button:active {
 ::selection {
   background: rgba(14, 165, 233, 0.3);
   color: white;
+}
+
+/* Subtle noise overlay for glass effect */
+.glass-card::before,
+.glass-card-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Input focus enhancement */
+input:focus,
+textarea:focus {
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Progress bar animation */
+@keyframes progress-fill {
+  from {
+    width: 0%;
+  }
+}
+
+/* Gradient text utility */
+.text-gradient {
+  background: linear-gradient(135deg, #0ea5e9, #10b981);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Safe area for notch devices */
+@supports (padding-top: env(safe-area-inset-top)) {
+  body {
+    padding-top: env(safe-area-inset-top);
+  }
+}
+
+/* Toast animation */
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toast-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+}
+
+/* Haptic-like feedback on mobile */
+@media (hover: none) {
+  button:active {
+    opacity: 0.85;
+  }
 }

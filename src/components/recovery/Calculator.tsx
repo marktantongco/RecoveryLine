@@ -11,45 +11,42 @@ export default function Calculator({ onExit }: CalculatorProps) {
   const [prevValue, setPrevValue] = useState<number | null>(null);
   const [operator, setOperator] = useState<string | null>(null);
   const [waitingForOperand, setWaitingForOperand] = useState(false);
-  const [showUnlockHint, setShowUnlockHint] = useState(false);
   const secretBufferRef = useRef('');
   const secretTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Secret code: 666777 unlocks and exits
-  useEffect(() => {
-    const SECRET_CODE = '666777';
-    const handleKeyPress = (e: KeyboardEvent) => {
-      secretBufferRef.current += e.key;
-      // Reset timer
-      if (secretTimerRef.current) clearTimeout(secretTimerRef.current);
-      secretTimerRef.current = setTimeout(() => { secretBufferRef.current = ''; }, 2000);
+  // Secret code: 6777 unlocks and exits
+  const SECRET_CODE = '6777';
 
-      if (secretBufferRef.current.includes(SECRET_CODE)) {
-        secretBufferRef.current = '';
-        if (secretTimerRef.current) clearTimeout(secretTimerRef.current);
-        onExit();
-      }
-      // Keep buffer manageable
-      if (secretBufferRef.current.length > 20) {
-        secretBufferRef.current = secretBufferRef.current.slice(-10);
-      }
-    };
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [onExit]);
-
-  const handleCalcButton = (btn: string) => {
-    // Also feed into secret buffer for touch unlock
-    secretBufferRef.current += btn;
-    if (secretTimerRef.current) clearTimeout(secretTimerRef.current);
-    secretTimerRef.current = setTimeout(() => { secretBufferRef.current = ''; }, 2000);
-    const SECRET_CODE = '666777';
+  const checkSecretCode = useCallback(() => {
     if (secretBufferRef.current.includes(SECRET_CODE)) {
       secretBufferRef.current = '';
       if (secretTimerRef.current) clearTimeout(secretTimerRef.current);
       onExit();
-      return;
+      return true;
     }
+    return false;
+  }, [onExit]);
+
+  const feedBuffer = useCallback((key: string) => {
+    secretBufferRef.current += key;
+    if (secretTimerRef.current) clearTimeout(secretTimerRef.current);
+    secretTimerRef.current = setTimeout(() => { secretBufferRef.current = ''; }, 2000);
+    if (secretBufferRef.current.length > 20) {
+      secretBufferRef.current = secretBufferRef.current.slice(-10);
+    }
+    checkSecretCode();
+  }, [checkSecretCode]);
+
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      feedBuffer(e.key);
+    };
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [feedBuffer]);
+
+  const handleCalcButton = (btn: string) => {
+    feedBuffer(btn);
 
     if (btn >= '0' && btn <= '9') {
       if (waitingForOperand) { setDisplay(btn); setWaitingForOperand(false); }
@@ -117,13 +114,24 @@ export default function Calculator({ onExit }: CalculatorProps) {
 
   return (
     <div className="fixed inset-0 z-[60] bg-[#0a0f1a] flex flex-col">
+      {/* Status bar area */}
+      <div className="flex-shrink-0 pt-12 pb-2 px-6 max-w-md mx-auto w-full">
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-slate-600 font-medium tracking-wider uppercase">Calculator</span>
+          <div className="flex items-center gap-1.5">
+            <div className="w-2 h-2 rounded-full bg-emerald-500/60" />
+            <span className="text-[10px] text-slate-600">On</span>
+          </div>
+        </div>
+      </div>
+
       {/* Display */}
-      <div className="flex-shrink-0 px-6 pt-14 pb-6 max-w-md mx-auto w-full">
+      <div className="flex-shrink-0 px-6 pb-6 max-w-md mx-auto w-full">
         <div className="text-right">
           <p className="text-sm text-slate-500 mb-1 h-5">
             {prevValue !== null && operator ? `${prevValue} ${operator}` : '\u00a0'}
           </p>
-          <p className="text-5xl font-light text-white tracking-tight leading-none">
+          <p className="text-5xl font-extralight text-white tracking-tight leading-none transition-all duration-100">
             {display.length > 12 ? parseFloat(display).toExponential(6) : display}
           </p>
         </div>
@@ -137,7 +145,7 @@ export default function Calculator({ onExit }: CalculatorProps) {
               <button
                 key={btn.label}
                 onClick={() => handleCalcButton(btn.label)}
-                className={`flex-1 rounded-2xl text-2xl font-medium flex items-center justify-center cursor-pointer transition-all duration-100 active:scale-95 border border-white/5 min-h-[60px] ${getButtonStyle(btn.type)} ${btn.span === 2 ? '' : ''}`}
+                className={`flex-1 rounded-2xl text-2xl font-medium flex items-center justify-center cursor-pointer transition-all duration-100 active:scale-95 border border-white/5 min-h-[60px] ${getButtonStyle(btn.type)}`}
                 style={btn.span === 2 ? { gridColumn: 'span 1', maxWidth: 'calc(50% - 6px)' } : {}}
               >
                 {btn.label}
@@ -149,8 +157,8 @@ export default function Calculator({ onExit }: CalculatorProps) {
 
       {/* Subtle hint at bottom */}
       <div className="text-center pb-4">
-        <p className="text-[10px] text-slate-700">
-          Type a secret code to exit
+        <p className="text-[10px] text-slate-700 tracking-wide">
+          Standard Calculator
         </p>
       </div>
     </div>

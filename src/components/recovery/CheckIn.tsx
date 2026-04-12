@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MOODS, SOBER_MOODS, USE_MOODS, CURRENCY } from '@/lib/recovery-constants';
 import { MoodKey, CheckinType } from '@/lib/recovery-types';
 import { useToast } from './Toast';
@@ -28,6 +28,24 @@ export default function CheckIn({ onSubmit, dailyAvgSpending }: CheckInProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
+  // Support preselect from FAB
+  useEffect(() => {
+    try {
+      const preselect = sessionStorage.getItem('rl_preselect');
+      if (preselect) {
+        sessionStorage.removeItem('rl_preselect');
+        if (preselect === 'sober') {
+          setMode('sober');
+        } else if (preselect === 'use') {
+          setMode('use');
+        } else if (preselect === 'mood') {
+          // Just focus on mood selection - keep current mode
+          // The mood selector will naturally get attention
+        }
+      }
+    } catch {}
+  }, []);
+
   const moods = mode === 'sober' ? SOBER_MOODS : USE_MOODS;
 
   const handleSubmit = () => {
@@ -51,7 +69,6 @@ export default function CheckIn({ onSubmit, dailyAvgSpending }: CheckInProps) {
       if (quantity) (data as Record<string, unknown>).quantity = parseInt(quantity) || 0;
     }
 
-    // Show success before navigating
     setShowSuccess(true);
     const message = mode === 'sober'
       ? 'Sober day logged! Stay strong, warrior.'
@@ -60,7 +77,6 @@ export default function CheckIn({ onSubmit, dailyAvgSpending }: CheckInProps) {
 
     setTimeout(() => {
       onSubmit(data);
-      // Reset form
       setSelectedMood(null);
       setNotes('');
       setMoney('');
@@ -73,21 +89,21 @@ export default function CheckIn({ onSubmit, dailyAvgSpending }: CheckInProps) {
   if (showSuccess) {
     return (
       <div className="flex flex-col items-center justify-center py-20 animate-scaleIn">
-        <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-5 ${
+        <div className={`w-24 h-24 rounded-full flex items-center justify-center mb-6 ${
           mode === 'sober'
-            ? 'bg-emerald-500/20 shadow-lg shadow-emerald-500/20'
-            : 'bg-amber-500/20 shadow-lg shadow-amber-500/20'
+            ? 'bg-emerald-500/20 shadow-xl shadow-emerald-500/20'
+            : 'bg-amber-500/20 shadow-xl shadow-amber-500/20'
         }`}>
-          <span className="text-4xl">{MOODS[selectedMood!]?.emoji}</span>
+          <span className="text-5xl">{MOODS[selectedMood!]?.emoji}</span>
         </div>
-        <h3 className="text-lg font-bold text-white mb-1">
+        <h3 className="text-xl font-bold text-white mb-2">
           {mode === 'sober' ? 'Sober Day Logged!' : 'Entry Saved'}
         </h3>
-        <p className="text-sm text-slate-400">
-          {mode === 'sober' ? 'Your strength inspires.' : 'Every honest entry builds awareness.'}
+        <p className="text-sm text-slate-400 mb-4">
+          {mode === 'sober' ? 'Your strength inspires others.' : 'Every honest entry builds awareness.'}
         </p>
-        <div className="mt-3 w-32 h-1 rounded-full bg-slate-700 overflow-hidden">
-          <div className="h-full bg-sky-500 rounded-full animate-[shimmer_0.8s_ease-in-out]" style={{ width: '100%' }} />
+        <div className="mt-2 w-32 h-1 rounded-full bg-slate-700 overflow-hidden">
+          <div className="h-full bg-gradient-to-r from-sky-500 to-emerald-500 rounded-full animate-[shimmer_0.8s_ease-in-out]" style={{ width: '100%' }} />
         </div>
       </div>
     );
@@ -165,7 +181,7 @@ export default function CheckIn({ onSubmit, dailyAvgSpending }: CheckInProps) {
                     : 'border border-transparent hover:bg-white/5'
                 }`}
               >
-                <span className="text-2xl">{mood.emoji}</span>
+                <span className="text-2xl transition-transform duration-200" style={{ transform: isSelected ? 'scale(1.15)' : 'scale(1)' }}>{mood.emoji}</span>
                 <span className="text-[10px] text-slate-400">{mood.label}</span>
               </button>
             );
