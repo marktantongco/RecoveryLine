@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { CURRENCY } from '@/lib/recovery-constants';
+import { useToast } from './Toast';
 
 interface SettingsProps {
   dailyAvgSpending: number;
@@ -22,6 +23,7 @@ export default function Settings({
   onReset,
   onClose,
 }: SettingsProps) {
+  const { showToast } = useToast();
   const [spending, setSpending] = useState(String(dailyAvgSpending));
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showResetFinal, setShowResetFinal] = useState(false);
@@ -30,7 +32,20 @@ export default function Settings({
     const val = parseInt(spending);
     if (val && val > 0) {
       onSetDailySpending(val);
+      showToast(`Daily average set to ${CURRENCY}${val}`, 'success');
+    } else {
+      showToast('Please enter a valid amount', 'warning');
     }
+  };
+
+  const handleExport = () => {
+    onExport();
+    showToast('Data exported successfully', 'success');
+  };
+
+  const handleSpiritualToggle = () => {
+    onToggleSpiritual();
+    showToast(spiritualEnabled ? 'Spiritual track disabled' : 'Spiritual track enabled', 'info');
   };
 
   const handleReset = () => {
@@ -44,6 +59,7 @@ export default function Settings({
     }
     onReset();
     onClose();
+    showToast('All data has been reset', 'info');
   };
 
   return (
@@ -52,10 +68,10 @@ export default function Settings({
       <div className="relative w-full max-w-md bg-[#111827] border border-white/10 rounded-t-3xl sm:rounded-3xl p-6 max-h-[85vh] overflow-y-auto custom-scrollbar animate-fadeUp">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-bold text-white">⚙️ Settings</h2>
+          <h2 className="text-lg font-bold text-white">Settings</h2>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg hover:bg-white/5 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+            className="w-8 h-8 rounded-lg hover:bg-white/5 flex items-center justify-center text-slate-400 hover:text-white transition-colors active:scale-90"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -66,7 +82,7 @@ export default function Settings({
         <div className="space-y-5">
           {/* Daily Average Spending */}
           <div>
-            <p className="text-xs font-semibold text-slate-400 mb-2">💰 Daily Average Spending</p>
+            <p className="text-xs font-semibold text-slate-400 mb-2">Daily Average Spending</p>
             <div className="flex gap-2">
               <div className="relative flex-1">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">{CURRENCY}</span>
@@ -79,67 +95,95 @@ export default function Settings({
               </div>
               <button
                 onClick={handleSaveSpending}
-                className="px-4 py-2.5 rounded-xl bg-sky-500 text-white text-sm font-medium hover:bg-sky-600 transition-colors"
+                className="px-4 py-2.5 rounded-xl bg-sky-500 text-white text-sm font-medium hover:bg-sky-600 active:scale-95 transition-all shadow-lg shadow-sky-500/20"
               >
                 Save
               </button>
             </div>
-            <p className="text-[10px] text-slate-500 mt-1">Used to auto-calculate savings on sober days</p>
+            <p className="text-[10px] text-slate-500 mt-1.5">Used to auto-calculate savings on sober days</p>
           </div>
 
           {/* Spiritual Track */}
           <div>
-            <p className="text-xs font-semibold text-slate-400 mb-2">🙏 Spiritual Recovery Track</p>
-            <div
-              onClick={onToggleSpiritual}
-              className="flex items-center justify-between p-3 rounded-xl bg-white/5 cursor-pointer hover:bg-white/8 transition-colors"
+            <p className="text-xs font-semibold text-slate-400 mb-2">Spiritual Recovery Track</p>
+            <button
+              type="button"
+              onClick={handleSpiritualToggle}
+              className="flex items-center justify-between p-3.5 rounded-xl bg-white/5 hover:bg-white/8 transition-colors w-full active:scale-[0.99]"
             >
-              <div>
-                <p className="text-sm text-white">Show spiritual insights</p>
-                <p className="text-xs text-slate-500">Display faith-based recovery messages</p>
+              <div className="text-left">
+                <p className="text-sm text-white font-medium">Show spiritual insights</p>
+                <p className="text-xs text-slate-500">Faith-based recovery messages on dashboard</p>
               </div>
-              <div className={`w-11 h-6 rounded-full transition-all flex items-center ${spiritualEnabled ? 'bg-sky-500' : 'bg-slate-600'}`}>
-                <div className={`w-5 h-5 rounded-full bg-white shadow transition-transform ${spiritualEnabled ? 'translate-x-5.5 ml-0.5' : 'translate-x-0.5'}`} />
+              <div className={`w-11 h-6 rounded-full transition-all flex items-center flex-shrink-0 ml-3 ${spiritualEnabled ? 'bg-sky-500' : 'bg-slate-600'}`}>
+                <div className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform ${spiritualEnabled ? 'translate-x-[22px]' : 'translate-x-[2px]'}`} />
+              </div>
+            </button>
+          </div>
+
+          {/* FAB Behavior Info */}
+          <div className="glass-card p-4">
+            <p className="text-xs font-semibold text-slate-400 mb-2">FAB Button (Bottom Right)</p>
+            <div className="space-y-2 text-xs text-slate-400">
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 rounded bg-sky-500/20 flex items-center justify-center flex-shrink-0">
+                  <span className="text-[10px] font-bold text-sky-400">{'\ud83d\udd04'}</span>
+                </div>
+                <span>Tap once to open quick actions (Sober, Use, Notes)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 rounded bg-red-500/20 flex items-center justify-center flex-shrink-0">
+                  <span className="text-[10px] font-bold text-red-400">{'\ud83d\udd12'}</span>
+                </div>
+                <span>Long-press (hold) to enter calculator camouflage</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 rounded bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                  <span className="text-[10px] font-bold text-purple-400">{'\ud83d\udd10'}</span>
+                </div>
+                <span>Type the secret code to exit calculator mode</span>
               </div>
             </div>
           </div>
 
           {/* Export */}
           <div>
-            <p className="text-xs font-semibold text-slate-400 mb-2">📤 Export Data</p>
+            <p className="text-xs font-semibold text-slate-400 mb-2">Data Management</p>
             <button
-              onClick={onExport}
-              className="w-full p-3 rounded-xl bg-white/5 text-sm text-slate-300 hover:bg-white/8 transition-colors text-left"
+              onClick={handleExport}
+              className="w-full p-3.5 rounded-xl bg-white/5 text-sm text-slate-300 hover:bg-white/8 active:scale-[0.99] transition-colors text-left flex items-center gap-3"
             >
-              Download all data as JSON file
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              Export all data as JSON file
             </button>
           </div>
 
           {/* Reset */}
           <div>
-            <p className="text-xs font-semibold text-slate-400 mb-2">🗑️ Reset All Data</p>
             <button
               onClick={handleReset}
-              className={`w-full p-3 rounded-xl text-sm font-medium transition-colors text-left ${
+              className={`w-full p-3.5 rounded-xl text-sm font-medium transition-all text-left ${
                 showResetFinal
                   ? 'bg-red-500/20 text-red-400 border border-red-500/30'
                   : showResetConfirm
                   ? 'bg-red-500/10 text-red-400 border border-red-500/20'
-                  : 'bg-white/5 text-slate-400 hover:bg-red-500/10 hover:text-red-400'
+                  : 'bg-white/5 text-slate-400 hover:bg-red-500/10 hover:text-red-400 border border-transparent'
               }`}
             >
               {!showResetConfirm
-                ? 'Reset all data'
+                ? '\ud83d\uddd1\ufe0f Reset all data'
                 : !showResetFinal
-                ? '⚠️ Are you sure? This cannot be undone.'
-                : '🔴 FINAL: Tap again to permanently delete all data'}
+                ? '\u26a0\ufe0f Are you sure? This cannot be undone.'
+                : '\ud83d\udd34 FINAL: Tap again to permanently delete all data'}
             </button>
           </div>
 
           {/* App Info */}
-          <div className="pt-2 border-t border-white/5">
+          <div className="pt-3 border-t border-white/5">
             <p className="text-[10px] text-slate-600 text-center">
-              RecoveryLine v2.0 · Your data stays on this device only
+              RecoveryLine v2.0 {'\u00b7'} Your data stays on this device only
             </p>
           </div>
         </div>

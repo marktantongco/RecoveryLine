@@ -79,6 +79,10 @@ export function useRecoveryState() {
     setState((prev) => ({ ...prev, calcMode: !prev.calcMode }));
   }, []);
 
+  const enterCalcMode = useCallback(() => {
+    setState((prev) => ({ ...prev, calcMode: true }));
+  }, []);
+
   const addCheckin = useCallback(
     (data: Omit<Checkin, 'id' | 'timestamp'>) => {
       const newCheckin: Checkin = {
@@ -319,6 +323,7 @@ export function useRecoveryState() {
     setSection,
     toggleSettings,
     toggleCalcMode,
+    enterCalcMode,
     addCheckin,
     deleteCheckin,
     addClipboardItem,

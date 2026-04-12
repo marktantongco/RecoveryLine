@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 
 interface CalculatorProps {
   onExit: () => void;
@@ -11,143 +11,147 @@ export default function Calculator({ onExit }: CalculatorProps) {
   const [prevValue, setPrevValue] = useState<number | null>(null);
   const [operator, setOperator] = useState<string | null>(null);
   const [waitingForOperand, setWaitingForOperand] = useState(false);
-  const lastTapRef = useRef<number>(0);
-  const tapCountRef = useRef<number>(0);
-  const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [showUnlockHint, setShowUnlockHint] = useState(false);
+  const secretBufferRef = useRef('');
+  const secretTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleTripleTap = useCallback(() => {
-    const now = Date.now();
-    if (now - lastTapRef.current < 500) {
-      tapCountRef.current++;
-      if (tapCountRef.current >= 3) {
+  // Secret code: 666777 unlocks and exits
+  useEffect(() => {
+    const SECRET_CODE = '666777';
+    const handleKeyPress = (e: KeyboardEvent) => {
+      secretBufferRef.current += e.key;
+      // Reset timer
+      if (secretTimerRef.current) clearTimeout(secretTimerRef.current);
+      secretTimerRef.current = setTimeout(() => { secretBufferRef.current = ''; }, 2000);
+
+      if (secretBufferRef.current.includes(SECRET_CODE)) {
+        secretBufferRef.current = '';
+        if (secretTimerRef.current) clearTimeout(secretTimerRef.current);
         onExit();
-        tapCountRef.current = 0;
-        lastTapRef.current = 0;
-        if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
-        return;
       }
-    } else {
-      tapCountRef.current = 1;
-    }
-    lastTapRef.current = now;
-
-    if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
-    tapTimerRef.current = setTimeout(() => {
-      tapCountRef.current = 0;
-    }, 600);
+      // Keep buffer manageable
+      if (secretBufferRef.current.length > 20) {
+        secretBufferRef.current = secretBufferRef.current.slice(-10);
+      }
+    };
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
   }, [onExit]);
 
-  const inputDigit = (digit: string) => {
-    if (waitingForOperand) {
-      setDisplay(digit);
-      setWaitingForOperand(false);
-    } else {
-      setDisplay(display === '0' ? digit : display + digit);
+  const handleCalcButton = (btn: string) => {
+    // Also feed into secret buffer for touch unlock
+    secretBufferRef.current += btn;
+    if (secretTimerRef.current) clearTimeout(secretTimerRef.current);
+    secretTimerRef.current = setTimeout(() => { secretBufferRef.current = ''; }, 2000);
+    const SECRET_CODE = '666777';
+    if (secretBufferRef.current.includes(SECRET_CODE)) {
+      secretBufferRef.current = '';
+      if (secretTimerRef.current) clearTimeout(secretTimerRef.current);
+      onExit();
+      return;
     }
-  };
 
-  const inputDot = () => {
-    if (waitingForOperand) {
-      setDisplay('0.');
-      setWaitingForOperand(false);
-    } else if (!display.includes('.')) {
-      setDisplay(display + '.');
-    }
-  };
-
-  const clearAll = () => {
-    setDisplay('0');
-    setPrevValue(null);
-    setOperator(null);
-    setWaitingForOperand(false);
-  };
-
-  const toggleSign = () => {
-    const val = parseFloat(display);
-    setDisplay(String(val * -1));
-  };
-
-  const inputPercent = () => {
-    const val = parseFloat(display);
-    setDisplay(String(val / 100));
-  };
-
-  const performOperation = (nextOp: string) => {
-    const inputValue = parseFloat(display);
-
-    if (prevValue === null) {
-      setPrevValue(inputValue);
-    } else if (operator) {
-      let result = 0;
-      switch (operator) {
-        case '+': result = prevValue + inputValue; break;
-        case '-': result = prevValue - inputValue; break;
-        case '×': result = prevValue * inputValue; break;
-        case '÷': result = inputValue !== 0 ? prevValue / inputValue : 0; break;
+    if (btn >= '0' && btn <= '9') {
+      if (waitingForOperand) { setDisplay(btn); setWaitingForOperand(false); }
+      else setDisplay(display === '0' ? btn : display + btn);
+    } else if (btn === '.') {
+      if (waitingForOperand) { setDisplay('0.'); setWaitingForOperand(false); }
+      else if (!display.includes('.')) setDisplay(display + '.');
+    } else if (btn === 'C') {
+      setDisplay('0'); setPrevValue(null); setOperator(null); setWaitingForOperand(false);
+    } else if (btn === '+-') {
+      setDisplay(String(parseFloat(display) * -1));
+    } else if (btn === '%') {
+      setDisplay(String(parseFloat(display) / 100));
+    } else if (['+', '-', '\u00d7', '\u00f7'].includes(btn)) {
+      const inputValue = parseFloat(display);
+      if (prevValue === null) setPrevValue(inputValue);
+      else if (operator) {
+        let result = 0;
+        switch (operator) {
+          case '+': result = prevValue + inputValue; break;
+          case '-': result = prevValue - inputValue; break;
+          case '\u00d7': result = prevValue * inputValue; break;
+          case '\u00f7': result = inputValue !== 0 ? prevValue / inputValue : 0; break;
+        }
+        setPrevValue(result);
+        setDisplay(String(result));
       }
-      setPrevValue(result);
-      setDisplay(String(result));
+      setWaitingForOperand(true);
+      setOperator(btn);
+    } else if (btn === '=') {
+      const inputValue = parseFloat(display);
+      if (prevValue !== null && operator) {
+        let result = 0;
+        switch (operator) {
+          case '+': result = prevValue + inputValue; break;
+          case '-': result = prevValue - inputValue; break;
+          case '\u00d7': result = prevValue * inputValue; break;
+          case '\u00f7': result = inputValue !== 0 ? prevValue / inputValue : 0; break;
+        }
+        setPrevValue(result);
+        setDisplay(String(result));
+      }
+      setWaitingForOperand(true);
+      setOperator(null);
     }
-
-    setWaitingForOperand(true);
-    setOperator(nextOp === '=' ? null : nextOp);
   };
 
   const buttons = [
-    ['C', '±', '%', '÷'],
-    ['7', '8', '9', '×'],
-    ['4', '5', '6', '-'],
-    ['1', '2', '3', '+'],
-    ['0', '.', '='],
+    [{ label: 'C', type: 'clear' }, { label: '+-', type: 'fn' }, { label: '%', type: 'fn' }, { label: '\u00f7', type: 'op' }],
+    [{ label: '7', type: 'num' }, { label: '8', type: 'num' }, { label: '9', type: 'num' }, { label: '\u00d7', type: 'op' }],
+    [{ label: '4', type: 'num' }, { label: '5', type: 'num' }, { label: '6', type: 'num' }, { label: '-', type: 'op' }],
+    [{ label: '1', type: 'num' }, { label: '2', type: 'num' }, { label: '3', type: 'num' }, { label: '+', type: 'op' }],
+    [{ label: '0', type: 'num', span: 2 }, { label: '.', type: 'num' }, { label: '=', type: 'eq' }],
   ];
 
-  const getButtonClass = (btn: string) => {
-    if (btn === 'C') return 'calc-btn calc-btn-clear';
-    if (['+', '-', '×', '÷'].includes(btn)) return 'calc-btn calc-btn-op';
-    if (btn === '=') return 'calc-btn calc-btn-eq';
-    if (btn === '0') return 'calc-btn col-span-2';
-    return 'calc-btn';
-  };
-
-  const handleButton = (btn: string) => {
-    if (btn >= '0' && btn <= '9') inputDigit(btn);
-    else if (btn === '.') inputDot();
-    else if (btn === 'C') clearAll();
-    else if (btn === '±') toggleSign();
-    else if (btn === '%') inputPercent();
-    else if (['+', '-', '×', '÷', '='].includes(btn)) performOperation(btn);
+  const getButtonStyle = (type: string) => {
+    switch (type) {
+      case 'clear': return 'bg-red-500 text-white font-bold hover:bg-red-600 active:bg-red-700';
+      case 'op': return 'bg-sky-500 text-white font-bold hover:bg-sky-600 active:bg-sky-700';
+      case 'eq': return 'bg-emerald-500 text-white font-bold hover:bg-emerald-600 active:bg-emerald-700';
+      case 'fn': return 'bg-slate-600 text-white font-semibold hover:bg-slate-500 active:bg-slate-400';
+      default: return 'bg-slate-800 text-white hover:bg-slate-700 active:bg-slate-600';
+    }
   };
 
   return (
-    <div
-      className="fixed inset-0 z-[60] bg-[#0a0f1a] flex flex-col"
-      onClick={handleTripleTap}
-    >
+    <div className="fixed inset-0 z-[60] bg-[#0a0f1a] flex flex-col">
       {/* Display */}
-      <div className="flex-shrink-0 px-6 pt-16 pb-4">
-        <p className="text-xs text-slate-500 text-right mb-1">
-          {prevValue !== null && operator ? `${prevValue} ${operator}` : ''}
-        </p>
-        <p className="text-4xl font-light text-white text-right tracking-tight">
-          {display.length > 12 ? parseFloat(display).toExponential(6) : display}
-        </p>
+      <div className="flex-shrink-0 px-6 pt-14 pb-6 max-w-md mx-auto w-full">
+        <div className="text-right">
+          <p className="text-sm text-slate-500 mb-1 h-5">
+            {prevValue !== null && operator ? `${prevValue} ${operator}` : '\u00a0'}
+          </p>
+          <p className="text-5xl font-light text-white tracking-tight leading-none">
+            {display.length > 12 ? parseFloat(display).toExponential(6) : display}
+          </p>
+        </div>
       </div>
 
       {/* Buttons */}
-      <div className="flex-1 px-4 pb-8 flex flex-col gap-3 max-w-md mx-auto w-full">
+      <div className="flex-1 px-4 pb-10 flex flex-col gap-3 max-w-md mx-auto w-full">
         {buttons.map((row, i) => (
           <div key={i} className="flex gap-3 flex-1">
             {row.map((btn) => (
               <button
-                key={btn}
-                onClick={(e) => { e.stopPropagation(); handleButton(btn); }}
-                className={getButtonClass(btn)}
+                key={btn.label}
+                onClick={() => handleCalcButton(btn.label)}
+                className={`flex-1 rounded-2xl text-2xl font-medium flex items-center justify-center cursor-pointer transition-all duration-100 active:scale-95 border border-white/5 min-h-[60px] ${getButtonStyle(btn.type)} ${btn.span === 2 ? '' : ''}`}
+                style={btn.span === 2 ? { gridColumn: 'span 1', maxWidth: 'calc(50% - 6px)' } : {}}
               >
-                {btn}
+                {btn.label}
               </button>
             ))}
           </div>
         ))}
+      </div>
+
+      {/* Subtle hint at bottom */}
+      <div className="text-center pb-4">
+        <p className="text-[10px] text-slate-700">
+          Type a secret code to exit
+        </p>
       </div>
     </div>
   );

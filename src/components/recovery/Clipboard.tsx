@@ -2,39 +2,48 @@
 
 import React, { useState } from 'react';
 import { ClipboardItem } from '@/lib/recovery-types';
+import { useToast } from './Toast';
 
 interface ClipboardProps {
   items: ClipboardItem[];
   onAdd: (text: string) => void;
   onDelete: (id: string) => void;
+  onClearAll?: () => void;
 }
 
 export default function Clipboard({ items, onAdd, onDelete }: ClipboardProps) {
+  const { showToast } = useToast();
   const [text, setText] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const handleAdd = () => {
     if (!text.trim()) return;
     onAdd(text.trim());
     setText('');
+    showToast('Note saved', 'success');
   };
 
   const handleCopy = async (item: ClipboardItem) => {
     try {
       await navigator.clipboard.writeText(item.text);
-      setCopiedId(item.id);
-      setTimeout(() => setCopiedId(null), 2000);
     } catch {
-      // fallback
       const ta = document.createElement('textarea');
       ta.value = item.text;
       document.body.appendChild(ta);
       ta.select();
       document.execCommand('copy');
       document.body.removeChild(ta);
-      setCopiedId(item.id);
-      setTimeout(() => setCopiedId(null), 2000);
     }
+    setCopiedId(item.id);
+    showToast('Copied to clipboard', 'info');
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleDelete = (id: string) => {
+    onDelete(id);
+    setConfirmDeleteId(null);
+    showToast('Note deleted', 'info');
   };
 
   const formatTime = (timestamp: number) => {
@@ -49,12 +58,14 @@ export default function Clipboard({ items, onAdd, onDelete }: ClipboardProps) {
   };
 
   return (
-    <div className="space-y-4 pb-4">
-      <h2 className="text-lg font-bold text-white animate-fadeUp">📋 Quick Notes</h2>
+    <div className="space-y-4 pb-6">
+      <div className="animate-fadeUp">
+        <h2 className="text-lg font-bold text-white">Quick Notes</h2>
+        <p className="text-xs text-slate-400 mt-0.5">Save thoughts, reminders, and insights</p>
+      </div>
 
       {/* Input */}
       <div className="glass-card p-4 animate-fadeUp stagger-1" style={{ opacity: 0 }}>
-        <p className="text-xs text-slate-400 mb-2">Save a quick thought, reminder, or insight</p>
         <div className="flex gap-2">
           <input
             type="text"
@@ -69,7 +80,7 @@ export default function Clipboard({ items, onAdd, onDelete }: ClipboardProps) {
             disabled={!text.trim()}
             className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
               text.trim()
-                ? 'bg-sky-500 text-white hover:bg-sky-600'
+                ? 'bg-sky-500 text-white hover:bg-sky-600 active:scale-95 shadow-lg shadow-sky-500/20'
                 : 'bg-white/5 text-slate-600 cursor-not-allowed'
             }`}
           >
@@ -90,11 +101,11 @@ export default function Clipboard({ items, onAdd, onDelete }: ClipboardProps) {
               <div className="flex items-start gap-3">
                 <button
                   onClick={() => handleCopy(item)}
-                  className="mt-0.5 p-1.5 rounded-lg hover:bg-white/5 text-slate-500 hover:text-sky-400 transition-colors flex-shrink-0"
+                  className="mt-0.5 p-1.5 rounded-lg hover:bg-white/5 text-slate-500 hover:text-sky-400 transition-colors flex-shrink-0 active:scale-90"
                   title="Click to copy"
                 >
                   {copiedId === item.id ? (
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-400">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M20 6 9 17l-5-5" />
                     </svg>
                   ) : (
@@ -103,25 +114,43 @@ export default function Clipboard({ items, onAdd, onDelete }: ClipboardProps) {
                     </svg>
                   )}
                 </button>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-slate-200 leading-relaxed break-words">{item.text}</p>
+                <div className="flex-1 min-w-0" onClick={() => handleCopy(item)}>
+                  <p className="text-sm text-slate-200 leading-relaxed break-words cursor-pointer hover:text-white transition-colors">{item.text}</p>
                   <p className="text-xs text-slate-600 mt-1.5">{formatTime(item.timestamp)}</p>
                 </div>
-                <button
-                  onClick={() => onDelete(item.id)}
-                  className="p-1.5 rounded-lg hover:bg-white/5 text-slate-600 hover:text-red-400 transition-colors flex-shrink-0"
-                >
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                </button>
+                {confirmDeleteId === item.id ? (
+                  <div className="flex gap-1 flex-shrink-0">
+                    <button
+                      onClick={() => handleDelete(item.id)}
+                      className="px-2 py-1 rounded-lg bg-red-500/15 text-red-400 text-[10px] font-medium border border-red-500/20 active:scale-95 transition-all"
+                    >
+                      Delete
+                    </button>
+                    <button
+                      onClick={() => setConfirmDeleteId(null)}
+                      className="px-2 py-1 rounded-lg bg-white/5 text-slate-400 text-[10px] active:scale-95 transition-all"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setConfirmDeleteId(item.id)}
+                    className="p-1.5 rounded-lg hover:bg-white/5 text-slate-600 hover:text-red-400 transition-colors flex-shrink-0"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </button>
+                )}
               </div>
             </div>
           ))
         ) : (
           <div className="glass-card p-8 text-center animate-fadeUp">
-            <p className="text-3xl mb-2">💭</p>
-            <p className="text-sm text-slate-500">No notes yet. Save your thoughts here!</p>
+            <div className="text-4xl mb-3">{'\ud83d\udcad'}</div>
+            <p className="text-sm text-slate-500 font-medium">No notes yet</p>
+            <p className="text-xs text-slate-600 mt-1">Save your thoughts, reminders, or insights here</p>
           </div>
         )}
       </div>

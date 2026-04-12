@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { MOODS, DAY_NAMES, CURRENCY } from '@/lib/recovery-constants';
-import { Checkin } from '@/lib/recovery-types';
+import { useToast } from './Toast';
 
 interface AnalyticsProps {
   stats: {
@@ -18,12 +18,12 @@ interface AnalyticsProps {
     dayPattern: Record<string, number>;
   };
   insights: string[];
+  onNavigate: (section: string) => void;
 }
 
-export default function Analytics({ stats, insights }: AnalyticsProps) {
+export default function Analytics({ stats, insights, onNavigate }: AnalyticsProps) {
   const netBalance = stats.totalMoneySaved - stats.totalMoneySpent;
 
-  // Get top moods
   const sortedMoods = Object.entries(stats.moodDistribution)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5);
@@ -31,8 +31,22 @@ export default function Analytics({ stats, insights }: AnalyticsProps) {
   const maxDayCount = Math.max(...Object.values(stats.dayPattern), 1);
 
   return (
-    <div className="space-y-4 pb-4">
-      <h2 className="text-lg font-bold text-white animate-fadeUp">Analytics</h2>
+    <div className="space-y-4 pb-6">
+      {/* Header */}
+      <div className="flex items-center justify-between animate-fadeUp">
+        <div>
+          <h2 className="text-lg font-bold text-white">Analytics</h2>
+          <p className="text-xs text-slate-400 mt-0.5">Patterns and insights from your data</p>
+        </div>
+        {stats.totalCheckins > 0 && (
+          <button
+            onClick={() => onNavigate('history')}
+            className="px-3 py-1.5 rounded-lg bg-white/5 text-xs text-slate-400 border border-white/8 hover:bg-white/10 active:scale-95 transition-all"
+          >
+            View History
+          </button>
+        )}
+      </div>
 
       {/* Overview Cards */}
       <div className="grid grid-cols-2 gap-3 animate-fadeUp stagger-1" style={{ opacity: 0 }}>
@@ -64,11 +78,11 @@ export default function Analytics({ stats, insights }: AnalyticsProps) {
               style={{ width: `${stats.sobrietyRate}%` }}
             />
           </div>
-          <span className="text-sm font-bold text-white">{stats.sobrietyRate}%</span>
+          <span className="text-sm font-bold text-white w-10 text-right">{stats.sobrietyRate}%</span>
         </div>
         <div className="flex justify-between mt-2 text-xs text-slate-500">
-          <span>✅ {stats.soberDays} sober</span>
-          <span>📋 {stats.useDays} use</span>
+          <span>{'\u2705'} {stats.soberDays} sober</span>
+          <span>{'\ud83d\udccb'} {stats.useDays} use</span>
         </div>
       </div>
 
@@ -93,10 +107,7 @@ export default function Analytics({ stats, insights }: AnalyticsProps) {
                     <div className="h-2 rounded-full bg-white/5 overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all duration-500"
-                        style={{
-                          width: `${width}%`,
-                          backgroundColor: info.color,
-                        }}
+                        style={{ width: `${width}%`, backgroundColor: info.color }}
                       />
                     </div>
                   </div>
@@ -121,7 +132,7 @@ export default function Analytics({ stats, insights }: AnalyticsProps) {
                 <span className="text-[10px] text-slate-400">{count}</span>
                 <div className="w-full flex-1 flex items-end">
                   <div
-                    className="w-full rounded-t-md bg-sky-500/60 transition-all duration-500"
+                    className="w-full rounded-t-md bg-gradient-to-t from-sky-500/60 to-sky-400/40 transition-all duration-500"
                     style={{ height: `${Math.max(height, 4)}%` }}
                   />
                 </div>
@@ -133,45 +144,47 @@ export default function Analytics({ stats, insights }: AnalyticsProps) {
       </div>
 
       {/* Connected Insights */}
-      <div className="glass-card-elevated p-4 animate-fadeUp stagger-5" style={{ opacity: 0 }}>
+      <div className="glass-card-insight p-4 animate-fadeUp stagger-5" style={{ opacity: 0 }}>
         <p className="text-xs font-semibold text-slate-400 mb-3">Connected Insights</p>
         <div className="space-y-3">
           {/* Financial */}
           <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5">
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${netBalance >= 0 ? 'bg-emerald-500/15' : 'bg-red-500/15'}`}>
-              <span className="text-lg">{netBalance >= 0 ? '📈' : '📉'}</span>
+              <span className="text-lg">{netBalance >= 0 ? '\ud83d\udcc8' : '\ud83d\udcc9'}</span>
             </div>
-            <div>
+            <div className="flex-1 min-w-0">
               <p className="text-xs text-slate-400">Financial Balance</p>
               <p className={`text-sm font-semibold ${netBalance >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                 {netBalance >= 0 ? '+' : ''}{CURRENCY}{netBalance.toLocaleString()} net
               </p>
             </div>
           </div>
+
           {/* Streak */}
           <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5">
             <div className="w-10 h-10 rounded-xl bg-amber-500/15 flex items-center justify-center">
-              <span className="text-lg">🔥</span>
+              <span className="text-lg">{'\ud83d\udd25'}</span>
             </div>
-            <div>
+            <div className="flex-1 min-w-0">
               <p className="text-xs text-slate-400">Streak Milestone</p>
               <p className="text-sm font-semibold text-amber-400">
-                {stats.streak >= 30 ? '🏆 30+ day champion!' :
-                 stats.streak >= 14 ? '💪 Two weeks strong!' :
-                 stats.streak >= 7 ? '⭐ One week down!' :
-                 stats.streak >= 3 ? '🌱 Building momentum' :
-                 stats.streak > 0 ? '🌱 Just getting started' :
-                 '❓ No streak yet'}
+                {stats.streak >= 30 ? '\ud83c\udfc6 30+ day champion!' :
+                 stats.streak >= 14 ? '\ud83d\udcaa Two weeks strong!' :
+                 stats.streak >= 7 ? '\u2b50 One week down!' :
+                 stats.streak >= 3 ? '\ud83c\udf31 Building momentum' :
+                 stats.streak > 0 ? '\ud83c\udf31 Just getting started' :
+                 '\u2753 No streak yet'}
               </p>
             </div>
           </div>
+
           {/* Top Mood */}
           {sortedMoods.length > 0 && (
             <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5">
               <div className="w-10 h-10 rounded-xl bg-purple-500/15 flex items-center justify-center">
                 <span className="text-lg">{MOODS[sortedMoods[0][0]]?.emoji}</span>
               </div>
-              <div>
+              <div className="flex-1 min-w-0">
                 <p className="text-xs text-slate-400">Most Common Mood</p>
                 <p className="text-sm font-semibold text-purple-400">
                   {MOODS[sortedMoods[0][0]]?.label} ({sortedMoods[0][1]}x)
@@ -179,6 +192,33 @@ export default function Analytics({ stats, insights }: AnalyticsProps) {
               </div>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* CTAs - No more dead end */}
+      <div className="space-y-2 animate-fadeUp stagger-6" style={{ opacity: 0 }}>
+        <button
+          onClick={() => onNavigate('checkin')}
+          className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-sky-500 to-blue-500 text-white text-sm font-semibold shadow-lg shadow-sky-500/20 hover:shadow-sky-500/30 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          Log a Check-In
+        </button>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={() => onNavigate('history')}
+            className="py-3 rounded-xl bg-white/5 border border-white/8 text-slate-300 text-xs font-medium hover:bg-white/10 active:scale-[0.98] transition-all"
+          >
+            {'\ud83d\udcc5'} View History
+          </button>
+          <button
+            onClick={() => onNavigate('safety')}
+            className="py-3 rounded-xl bg-white/5 border border-white/8 text-slate-300 text-xs font-medium hover:bg-white/10 active:scale-[0.98] transition-all"
+          >
+            {'\ud83d\udc8a'} Safety Check
+          </button>
         </div>
       </div>
     </div>
