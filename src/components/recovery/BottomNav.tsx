@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { SectionName } from '@/lib/recovery-types';
 
 interface BottomNavProps {
@@ -9,6 +9,40 @@ interface BottomNavProps {
   onSettings: () => void;
   showSettings: boolean;
 }
+
+const MORE_ITEMS: { id: SectionName; label: string; icon: React.ReactNode }[] = [
+  {
+    id: 'nutrition',
+    label: 'Nutrition & Juices',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
+        <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
+        <path d="M2 12h16" />
+        <path d="M6 1v3" /><path d="M18 1v3" /><path d="M10 1v3" /><path d="M14 1v3" />
+      </svg>
+    ),
+  },
+  {
+    id: 'protocol',
+    label: 'Symbiotic Protocol',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="m9 11 3 3L22 4" />
+      </svg>
+    ),
+  },
+  {
+    id: 'phguide',
+    label: 'PH Guide',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+        <circle cx="12" cy="10" r="3" />
+      </svg>
+    ),
+  },
+];
 
 const NAV_ITEMS: { id: SectionName; label: string; icon: React.ReactNode; activeIcon: React.ReactNode }[] = [
   {
@@ -78,18 +112,39 @@ const NAV_ITEMS: { id: SectionName; label: string; icon: React.ReactNode; active
     ),
   },
   {
-    id: 'phguide',
-    label: 'PH Guide',
+    id: 'mindpsych',
+    label: 'Mind',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-        <circle cx="12" cy="10" r="3" />
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
+        <path d="m8 14 1.5-4.5L11 14" />
+        <path d="m14 14 1.5 4.5L11 14" />
+        <path d="M9 18h6" />
+        <path d="M9 6h6" />
       </svg>
     ),
     activeIcon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-        <circle cx="12" cy="10" r="3" />
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
+        <path d="m8 14 1.5-4.5L11 14" />
+        <path d="m14 14 1.5 4.5L11 14" />
+        <path d="M9 18h6" />
+        <path d="M9 6h6" />
+      </svg>
+    ),
+  },
+  {
+    id: 'phguide',
+    label: 'More',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="1" /><circle cx="12" cy="5" r="1" /><circle cx="12" cy="19" r="1" />
+        <circle cx="5" cy="12" r="1" /><circle cx="19" cy="12" r="1" />
+      </svg>
+    ),
+    activeIcon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="1" /><circle cx="12" cy="5" r="1" /><circle cx="12" cy="19" r="1" /><circle cx="5" cy="12" r="1" /><circle cx="19" cy="12" r="1" />
       </svg>
     ),
   },
