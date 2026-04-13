@@ -60,4 +60,4 @@ export interface MoodInfo {
   color: string;
 }
 
-export type SectionName = 'home' | 'checkin' | 'history' | 'stats' | 'notes' | 'safety' | 'resources';
+export type SectionName = 'home' | 'substances' | 'biotools' | 'recovery' | 'phguide';

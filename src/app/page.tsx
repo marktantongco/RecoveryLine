@@ -3,12 +3,10 @@
 import React, { useCallback } from 'react';
 import { useRecoveryState } from '@/hooks/use-recovery-state';
 import Dashboard from '@/components/recovery/Dashboard';
-import CheckIn from '@/components/recovery/CheckIn';
-import History from '@/components/recovery/History';
-import Analytics from '@/components/recovery/Analytics';
-import Clipboard from '@/components/recovery/Clipboard';
-import SafetyTools from '@/components/recovery/SafetyTools';
-import Resources from '@/components/recovery/Resources';
+import Substances from '@/components/recovery/Substances';
+import BioTools from '@/components/recovery/BioTools';
+import RecoveryHub from '@/components/recovery/RecoveryHub';
+import PHGuide from '@/components/recovery/PHGuide';
 import Settings from '@/components/recovery/Settings';
 import Calculator from '@/components/recovery/Calculator';
 import BottomNav from '@/components/recovery/BottomNav';
@@ -103,33 +101,34 @@ function AppContent() {
     switch (state.currentSection) {
       case 'home':
         return <Dashboard stats={stats} insights={insights} onNavigate={handleNavigate} />;
-      case 'checkin':
+      case 'substances':
+        return <Substances />;
+      case 'biotools':
         return (
-          <CheckIn
-            onSubmit={handleCheckinSubmit}
-            dailyAvgSpending={state.dailyAvgSpending}
-            preselect={state.checkinPreselect}
-            onPreselectConsumed={handlePreselectConsumed}
-          />
-        );
-      case 'history':
-        return <History checkins={state.checkins} onDelete={deleteCheckin} onExport={exportData} />;
-      case 'stats':
-        return <Analytics stats={stats} insights={insights} onNavigate={handleNavigate} />;
-      case 'notes':
-        return <Clipboard items={state.clipboard} onAdd={addClipboardItem} onDelete={deleteClipboardItem} />;
-      case 'safety':
-        return (
-          <SafetyTools
+          <BioTools
             selectedMeds={state.selectedMeds}
             selectedSupplements={state.selectedSupplements}
             onToggleMed={toggleMed}
             onToggleSupplement={toggleSupplement}
+          />
+        );
+      case 'recovery':
+        return (
+          <RecoveryHub
+            stats={stats}
+            insights={insights}
+            onSubmit={handleCheckinSubmit}
+            dailyAvgSpending={state.dailyAvgSpending}
+            preselect={state.checkinPreselect}
+            onPreselectConsumed={handlePreselectConsumed}
+            checkins={state.checkins}
+            onDelete={deleteCheckin}
+            onExport={exportData}
             onNavigate={handleNavigate}
           />
         );
-      case 'resources':
-        return <Resources onNavigate={handleNavigate} />;
+      case 'phguide':
+        return <PHGuide />;
       default:
         return <Dashboard stats={stats} insights={insights} onNavigate={handleNavigate} />;
     }
@@ -153,29 +152,47 @@ function AppContent() {
           </div>
           <div className="flex items-center gap-1">
             <button
-              onClick={() => handleNavigate('safety')}
+              onClick={() => handleNavigate('substances')}
               className={`p-2 rounded-lg transition-all active:scale-90 ${
-                state.currentSection === 'safety'
+                state.currentSection === 'substances'
+                  ? 'text-amber-400 bg-amber-500/10'
+                  : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+              }`}
+              title="Substances"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M8 2v4" />
+                <path d="M16 2v4" />
+                <rect x="2" y="6" width="20" height="16" rx="2" />
+                <path d="M2 10h20" />
+                <path d="M12 6v16" />
+              </svg>
+            </button>
+            <button
+              onClick={() => handleNavigate('biotools')}
+              className={`p-2 rounded-lg transition-all active:scale-90 ${
+                state.currentSection === 'biotools'
                   ? 'text-purple-400 bg-purple-500/10'
                   : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
               }`}
-              title="Safety Tools"
+              title="Bio Tools"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
               </svg>
             </button>
             <button
-              onClick={() => handleNavigate('resources')}
+              onClick={() => handleNavigate('phguide')}
               className={`p-2 rounded-lg transition-all active:scale-90 ${
-                state.currentSection === 'resources'
+                state.currentSection === 'phguide'
                   ? 'text-emerald-400 bg-emerald-500/10'
                   : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
               }`}
-              title="Resources"
+              title="PH Guide"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72" />
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
               </svg>
             </button>
           </div>
