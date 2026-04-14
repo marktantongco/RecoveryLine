@@ -24,7 +24,7 @@ interface DashboardProps {
   onNavigate: (section: string) => void;
 }
 
-export default function Dashboard({ stats, insights, onNavigate }: DashboardProps) {
+export default React.memo(function Dashboard({ stats, insights, onNavigate }: DashboardProps) {
   const getGreeting = () => {
     const h = new Date().getHours();
     if (h < 12) return 'Good morning';
@@ -289,4 +289,4 @@ export default function Dashboard({ stats, insights, onNavigate }: DashboardProp
       </div>
     </div>
   );
-}
+});

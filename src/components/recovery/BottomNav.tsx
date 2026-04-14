@@ -150,9 +150,9 @@ const NAV_ITEMS: { id: SectionName; label: string; icon: React.ReactNode; active
   },
 ];
 
-export default function BottomNav({ currentSection, onNavigate, onSettings, showSettings }: BottomNavProps) {
+export default React.memo(function BottomNav({ currentSection, onNavigate, onSettings, showSettings }: BottomNavProps) {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#0a0f1a]/95 backdrop-blur-xl border-t border-white/5">
+    <nav className="fixed bottom-0 left-0 right-0 z-[9999] bg-[#0a0f1a]/95 backdrop-blur-xl border-t border-white/5 will-change-transform translate-z-0" style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}>
       <div className="flex items-center justify-around max-w-md mx-auto px-1 py-1" style={{ paddingBottom: 'max(6px, env(safe-area-inset-bottom))' }}>
         {NAV_ITEMS.map((item) => {
           const isActive = currentSection === item.id;
@@ -207,4 +207,4 @@ export default function BottomNav({ currentSection, onNavigate, onSettings, show
       </div>
     </nav>
   );
-}
+});

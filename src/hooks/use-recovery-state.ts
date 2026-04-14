@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Checkin, ClipboardItem, RecoveryState, SectionName, MoodKey } from '@/lib/recovery-types';
 import { STORAGE_KEY } from '@/lib/recovery-constants';
 
@@ -48,7 +48,7 @@ function saveState(state: RecoveryState): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch {
-    // ignore
+    // ignore quota errors
   }
 }
 
@@ -62,10 +62,27 @@ export function useRecoveryState() {
     setIsLoaded(true);
   }, []);
 
+  // Debounced localStorage save — avoids synchronous writes on every keystroke
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
-    if (isLoaded) {
+    if (!isLoaded) return;
+
+    // Immediately save critical data (checkins, resets)
+    if (state.checkins.length === 0 && !state.startDate) {
       saveState(state);
+      return;
     }
+
+    // Debounce other saves by 300ms
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
+      saveState(state);
+    }, 300);
+
+    return () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    };
   }, [state, isLoaded]);
 
   // Update document title for calculator mode

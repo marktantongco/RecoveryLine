@@ -30,13 +30,13 @@ export default function CheckIn({ onSubmit, dailyAvgSpending, preselect, onPrese
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const moodRef = useRef<HTMLDivElement>(null);
-  const consumedRef = useRef(false);
+  const prevPreselectRef = useRef(preselect);
 
   // React to preselect changes from parent (FAB navigation)
   useEffect(() => {
-    if (!preselect || consumedRef.current) return;
+    if (!preselect || preselect === prevPreselectRef.current) return;
 
-    consumedRef.current = true;
+    prevPreselectRef.current = preselect;
 
     if (preselect === 'sober') {
       setMode('sober');
@@ -58,10 +58,10 @@ export default function CheckIn({ onSubmit, dailyAvgSpending, preselect, onPrese
     onPreselectConsumed();
   }, [preselect, onPreselectConsumed]);
 
-  // Reset consumed flag when section changes back to checkin
+  // Sync prevPreselectRef when preselect is externally cleared
   useEffect(() => {
-    consumedRef.current = false;
-  }, []);
+    prevPreselectRef.current = preselect;
+  }, [preselect]);
 
   // Universal moods — same for both sober and use
   const moods = UNIVERSAL_MOODS;

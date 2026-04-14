@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useId } from 'react';
 
 interface ProgressRingProps {
   percentage: number;
@@ -10,13 +10,14 @@ interface ProgressRingProps {
   strokeWidth?: number;
 }
 
-export default function ProgressRing({
+const ProgressRing = React.memo(function ProgressRing({
   percentage,
   label,
   sublabel,
   size = 100,
   strokeWidth = 7,
 }: ProgressRingProps) {
+  const gradientId = useId();
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (percentage / 100) * circumference;
@@ -40,7 +41,7 @@ export default function ProgressRing({
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="url(#progressGradient)"
+          stroke={`url(#${gradientId})`}
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -50,7 +51,7 @@ export default function ProgressRing({
         />
         {/* Gradient definition */}
         <defs>
-          <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#0ea5e9" />
             <stop offset="50%" stopColor="#06b6d4" />
             <stop offset="100%" stopColor="#10b981" />
@@ -64,4 +65,6 @@ export default function ProgressRing({
       </div>
     </div>
   );
-}
+});
+
+export default ProgressRing;

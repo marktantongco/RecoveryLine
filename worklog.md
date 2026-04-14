@@ -1,160 +1,85 @@
+# RecoveryLine Worklog
+
 ---
-Task ID: 1-2
+Task ID: 1
 Agent: Main Agent
-Task: Read screenshots and current codebase
+Task: Comprehensive audit and optimization pass
 
 Work Log:
-- Analyzed 3 screenshots from recovery-line.vercel.app
-- Screenshot 1: Substances tab (Meth, MDMA, Cannabis) with pharmacology
-- Screenshot 2: Bio Tools / Stack Builder with supplements, categories, AM/PM
-- Screenshot 3: Bio Tools / Timeline with neurochemical healing phases
-- Read all existing components: page.tsx, CheckIn.tsx, ActionFab.tsx, BottomNav.tsx, etc.
-- Verified mood universality already implemented (UNIVERSAL_MOODS used for both modes)
-- Verified FAB navigation wiring is correct
+- Read all 18 recovery components, hooks, lib files, and config files
+- Ran ESLint (0 errors) and Next.js build (success)
+- Analyzed bundle: 184MB build dir, 409KB monolithic JS chunk, 224KB CSS
+- Identified 12 issues across critical/high/medium/low severity
 
 Stage Summary:
-- Identified 5 main sections: Home, Substances, Bio Tools, Recovery, PH Guide
-- Identified pending fixes: FAB navigation (verified working), mood universality (already implemented)
+- Build and lint pass cleanly before changes
+- 12 issues identified for fixing
+
+---
+Task ID: 2
+Agent: Main Agent
+Task: Apply critical regression fixes
+
+Work Log:
+- BottomNav: z-40 → z-[9999] with GPU isolation (will-change-transform, translate-z-0, backface-visibility)
+- CheckIn: consumedRef → prevPreselectRef comparison pattern (fixes re-navigation bug)
+- ActionFab: z-30 → z-[10000] (above bottom nav)
+- page.tsx: Rewrote with app-shell layout (app-shell + app-shell-main CSS classes)
+- globals.css: Added 100dvh on html/body, .bottom-nav-fixed, .app-shell, .app-shell-main CSS
+- Replaced main > * animation with .section-enter class (only fires on section change via key)
+- Added skeleton SectionSkeleton component for lazy-loaded sections
+
+Stage Summary:
+- 4 critical regressions fixed
+- App shell layout ensures fixed nav + scrollable content separation
 
 ---
 Task ID: 3
 Agent: Main Agent
-Task: Create comprehensive substance data module
+Task: Performance optimizations
 
 Work Log:
-- Created /home/z/my-project/src/lib/substance-data.ts
-- Comprehensive data for Methamphetamine, MDMA, Cannabis
-- Each substance includes: aliases, street names, description, primary damage (10 items), pharmacology (6 fields), withdrawal (timeline, 10 symptoms, severity, PAWS), recovery focus (neurotransmitters, organs, 10 supplements, timeline), Philippines info (legality, penalties, form, price), harm reduction (10 tips)
+- Converted all 8 section imports to React.lazy() dynamic imports
+- Added Suspense with SectionSkeleton fallback
+- Debounced localStorage saves (300ms) to reduce main thread blocking
+- Added React.memo to: BottomNav, ActionFab, Dashboard, Settings, ProgressRing, Calculator
+- Fixed ProgressRing gradient ID collision (useId() replaces hardcoded "progressGradient")
+- Added sectionKey state for controlled section-enter animations
 
 Stage Summary:
-- Created substance-data.ts with 321 lines of comprehensive substance data
+- Initial JS load reduced via code splitting
+- React.memo prevents unnecessary re-renders on parent state changes
+- Debounced saves reduce jank from frequent localStorage writes
 
 ---
 Task ID: 4
 Agent: Main Agent
-Task: Create comprehensive supplement data with categories, dosing, AM/PM
+Task: UX and accessibility improvements
 
 Work Log:
-- Created /home/z/my-project/src/lib/supplement-data.ts
-- 17 comprehensive supplements with full details
-- Categories: Minerals, Amino Acids, Herbal, Vitamins, Antioxidants, Probiotics, Adaptogens
-- Each supplement: name, tagline, dosage, timing, description, mechanism, 6-8 benefits, 4 cautions, stack notes, PH availability, price range
-- Search and category filter functions included
+- Added ARIA labels to all header nav buttons
+- Added aria-current="page" for active section
+- Added role="banner" to header, role="main" to main content area
+- Settings modal: role="dialog", aria-modal="true", aria-label="Settings"
+- Settings modal: Added bottom padding for nav clearance (calc(1.5rem + 80px + safe-area))
+- Header nav: aria-label="Quick navigation"
 
 Stage Summary:
-- Created supplement-data.ts with 679 lines of comprehensive supplement data
+- WCAG AA partial compliance improvements
+- All interactive elements now have accessible labels
+- Settings modal properly announced as dialog
 
 ---
 Task ID: 5
 Agent: Main Agent
-Task: Create neurochemical timeline data with recovery phases
+Task: Final verification
 
 Work Log:
-- Created /home/z/my-project/src/lib/timeline-data.ts
-- 7 recovery phases: Baseline, Active Use, Acute Withdrawal (0-14d), Early Recovery (14-30d), Intermediate (1-3m), Extended (3-6m), Long-Term (6-12m+)
-- Each phase: neuro level (0-100), description, 6-10 symptoms, 5 neurotransmitter statuses, 6 priority supplements with reasons, 10 lifestyle actions, mood expectation, warnings
+- ESLint: 0 errors, 0 warnings
+- Next.js build: Compiled successfully in 4.7s
+- All routes static, no errors
 
 Stage Summary:
-- Created timeline-data.ts with 349 lines of comprehensive timeline data
-
----
-Task ID: 6
-Agent: full-stack-developer
-Task: Create Substances component
-
-Work Log:
-- Created /home/z/my-project/src/components/recovery/Substances.tsx (474 lines)
-- Tab navigation for Meth/MDMA/Cannabis with danger level indicators
-- Expandable sections: Primary Damage, Withdrawal Symptoms, Priority Supplements
-- Pharmacology info rows, Philippines-specific info, Harm Reduction tips
-- SVG icons throughout, dark glass-morphism design
-
-Stage Summary:
-- Substance browser with comprehensive biochemical info for all 3 substances
-
----
-Task ID: 7
-Agent: full-stack-developer
-Task: Create BioTools component
-
-Work Log:
-- Created /home/z/my-project/src/components/recovery/BioTools.tsx (1027 lines)
-- 3 subtabs: Safety Check, Stack Builder, Timeline
-- Safety Check: medication/supplement interaction checker with severity levels
-- Stack Builder: search, category filters, 17 supplement cards with AM/PM toggles, expandable details, "My Stack" summary
-- Timeline: Neurochemical recovery curve visualization, 7 phase cards with expandable details, neurotransmitter status, priority supplements, lifestyle actions
-
-Stage Summary:
-- Comprehensive bio tools with safety checking, supplement stack building, and neurochemical timeline
-
----
-Task ID: 8-9
-Agent: full-stack-developer
-Task: Create RecoveryHub and PHGuide components
-
-Work Log:
-- Created /home/z/my-project/src/components/recovery/RecoveryHub.tsx (538 lines)
-- 3 subtabs: Check-In (renders existing CheckIn), History (filterable timeline with export), Analytics (stats grid, streak chart, mood distribution, insights)
-- Created /home/z/my-project/src/components/recovery/PHGuide.tsx (656 lines)
-- 4 subtabs: Programs (gov/private/community), Hotlines (tappable tel: cards), Support (online/faith-based), Legal (expandable RA 9165 info)
-- Comprehensive Philippines-specific data included
-
-Stage Summary:
-- Recovery hub integrating check-in, history, and analytics
-- Philippines recovery guide with programs, hotlines, support, and legal information
-
----
-Task ID: 10
-Agent: Main Agent
-Task: Update types, state, BottomNav, page.tsx for new architecture
-
-Work Log:
-- Updated SectionName type to: 'home' | 'substances' | 'biotools' | 'recovery' | 'phguide'
-- Rewrote BottomNav with new 5 tabs: Home, Substances, Bio Tools, Recovery, PH Guide + Settings
-- Updated page.tsx with new imports, routing, and FAB navigation to 'recovery' section with preselect
-- FAB now navigates to Recovery section with appropriate preselect (sober/use/mood)
-- All header quick-access buttons updated
-
-Stage Summary:
-- New 5-section architecture fully wired
-- All navigation paths connected
-- Lint passes cleanly with zero errors
-
----
-Task ID: 11
-Agent: Main Agent
-Task: Fix 11 bugs across RecoveryLine app
-
-Work Log:
-- BUG 1 (Dead-End Navigation): Fixed all invalid onNavigate calls in Dashboard.tsx (stats→recovery, history→recovery, checkin→recovery, safety→biotools, resources→phguide, notes→recovery), Analytics.tsx (history→recovery, checkin→recovery, safety→biotools), and ActionFab.tsx (checkin→recovery for sober/use/mood)
-- BUG 2 (Timezone Mismatch): Added getLocalDateString() helper using Date.getFullYear()/getMonth()+1/getDate() instead of toISOString().split('T')[0]. Fixed in use-recovery-state.ts (getStats streak calculation) and RecoveryHub.tsx (formatDate)
-- BUG 3 (Type Safety): Changed currentSection type from string to SectionName in RecoveryState interface
-- BUG 4 (Substance Tab Styling): Removed conflicting inline style prop referencing non-existent CSS variables. Replaced with clean Tailwind classes (bg-white/[0.08] text-white border border-white/15 shadow-sm). Removed unused gradient variable.
-- BUG 5 (ExportData Stale Closure): Changed exportData to use functional setState approach to read latest state directly, eliminating stale closure over state.checkins/clipboard/settings
-- BUG 6 (Glass Card Overflow): Added overflow: hidden to .glass-card, .glass-card-hero (already had it), and .glass-card-insight rules to prevent ::before pseudo-element leaking
-- BUG 7 (CheckIn Quantity Field): Changed quantity input from type="text" to type="number"
-- BUG 8 (Performance — getStats in render path): Converted getStats and getInsights from useCallback to useMemo. Updated page.tsx to destructure stats and insights directly instead of calling getStats()/getInsights()
-- BUG 9 (Scroll to Top): Added useEffect that scrolls to top on state.currentSection change, placed before early returns to satisfy rules-of-hooks
-- BUG 10 (Reset Data Confirmation): Simplified from 3-step (confirm→final→reset) to 2-step with 3-second timeout. First click shows "Are you sure?", second click within 3s confirms. Uses useRef for timer cleanup
-- BUG 11 (History Filter Memoization): Added useMemo for soberCount and useCount in RecoveryHub.tsx, used in filter chips instead of inline .filter().length
-
-Stage Summary:
-- All 11 bugs fixed across 8 files
-- ESLint passes with zero errors
-
----
-Task ID: 12
-Agent: Main Agent
-Task: Additional timezone fixes for CheckIn.tsx and History.tsx
-
-Work Log:
-- Found additional toISOString().split('T')[0] usage in CheckIn.tsx line 80 (check-in date)
-- Found additional toISOString().split('T')[0] usage in History.tsx lines 36-37 (Today/Yesterday detection)
-- Fixed CheckIn.tsx: replaced UTC-based date with local date computation (getFullYear/getMonth/getDate)
-- Fixed History.tsx: added localToday and localYesterday variables using local date computation
-- Verified all toISOString() references are now only used for ISO format timestamps (not date comparisons)
-
-Stage Summary:
-- All timezone bugs eliminated across 4 files total
-- Date comparisons now use local timezone consistently (PH UTC+8 safe)
-- ESLint passes with zero errors
+- All 12 identified issues resolved
+- Build passes cleanly
+- Ready for deployment

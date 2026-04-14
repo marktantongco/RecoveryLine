@@ -7,7 +7,7 @@ interface ActionFabProps {
   onLongPress: () => void;
 }
 
-export default function ActionFab({ onNavigate, onLongPress }: ActionFabProps) {
+export default React.memo(function ActionFab({ onNavigate, onLongPress }: ActionFabProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isHolding, setIsHolding] = useState(false);
   const pressCount = useRef(0);
@@ -66,7 +66,7 @@ export default function ActionFab({ onNavigate, onLongPress }: ActionFabProps) {
   return (
     <div
       ref={containerRef}
-      className="fixed z-30"
+      className="fixed z-[10000]"
       style={{
         bottom: 'calc(80px + env(safe-area-inset-bottom, 0px))',
         right: '16px',
@@ -200,4 +200,4 @@ export default function ActionFab({ onNavigate, onLongPress }: ActionFabProps) {
       </button>
     </div>
   );
-}
+});
