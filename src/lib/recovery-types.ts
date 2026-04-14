@@ -48,7 +48,7 @@ export interface RecoveryState {
   dailyAvgSpending: number;
   spiritualEnabled: boolean;
   startDate: string | null;
-  currentSection: string;
+  currentSection: SectionName;
   showSettings: boolean;
   calcMode: boolean;
   checkinPreselect: 'sober' | 'use' | 'mood' | null;

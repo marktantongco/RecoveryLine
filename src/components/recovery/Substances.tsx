@@ -438,25 +438,15 @@ export default function Substances() {
         {TAB_CONFIG.map((tab) => {
           const isActive = activeTab === tab.id;
           const dotColor = getDangerDotColor(tab.dangerLevel);
-          const gradient = getDangerGradient(tab.dangerLevel);
           return (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex-1 py-2.5 rounded-xl text-xs font-medium transition-all flex items-center justify-center gap-1.5 ${
                 isActive
-                  ? `bg-gradient-to-r ${gradient} bg-opacity-15 text-white border border-white/15 shadow-sm`
+                  ? 'bg-white/[0.08] text-white border border-white/15 shadow-sm'
                   : 'text-slate-400 hover:text-slate-300 border border-transparent'
               }`}
-              style={
-                isActive
-                  ? {
-                      background: `linear-gradient(135deg, rgba(var(--tw-gradient-stops), 0.15), rgba(var(--tw-gradient-stops), 0.15))`,
-                      backgroundColor: 'rgba(255,255,255,0.06)',
-                      border: '1px solid rgba(255,255,255,0.12)',
-                    }
-                  : undefined
-              }
             >
               <span className={`w-1.5 h-1.5 rounded-full ${isActive ? dotColor : 'bg-slate-600'}`} />
               {tab.label}

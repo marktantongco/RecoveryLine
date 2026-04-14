@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useRecoveryState } from '@/hooks/use-recovery-state';
 import Dashboard from '@/components/recovery/Dashboard';
 import Substances from '@/components/recovery/Substances';
@@ -37,9 +37,14 @@ function AppContent() {
     toggleSpiritual,
     exportData,
     resetData,
-    getStats,
-    getInsights,
+    stats,
+    insights,
   } = useRecoveryState();
+
+  // Scroll to top on section change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [state.currentSection]);
 
   // Standard navigate (no preselect) — used by bottom nav, header, etc.
   const handleNavigate = useCallback((section: string) => {
@@ -80,9 +85,6 @@ function AppContent() {
   if (state.calcMode) {
     return <Calculator onExit={toggleCalcMode} />;
   }
-
-  const stats = getStats();
-  const insights = getInsights();
 
   const handleCheckinSubmit = (data: {
     type: CheckinType;

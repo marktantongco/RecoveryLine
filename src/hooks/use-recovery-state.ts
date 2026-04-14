@@ -1,11 +1,18 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Checkin, ClipboardItem, RecoveryState, SectionName, MoodKey } from '@/lib/recovery-types';
 import { STORAGE_KEY } from '@/lib/recovery-constants';
 
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
+}
+
+function getLocalDateString(d: Date = new Date()): string {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 const defaultState: RecoveryState = {
@@ -168,33 +175,36 @@ export function useRecoveryState() {
   }, []);
 
   const exportData = useCallback(() => {
-    const data = {
-      exportDate: new Date().toISOString(),
-      checkins: state.checkins,
-      clipboard: state.clipboard,
-      settings: {
-        dailyAvgSpending: state.dailyAvgSpending,
-        spiritualEnabled: state.spiritualEnabled,
-        startDate: state.startDate,
-      },
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `recoveryline-export-${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }, [state]);
+    setState((current) => {
+      const data = {
+        exportDate: new Date().toISOString(),
+        checkins: current.checkins,
+        clipboard: current.clipboard,
+        settings: {
+          dailyAvgSpending: current.dailyAvgSpending,
+          spiritualEnabled: current.spiritualEnabled,
+          startDate: current.startDate,
+        },
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `recoveryline-export-${getLocalDateString()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      return current;
+    });
+  }, []);
 
   const resetData = useCallback(() => {
     setState({ ...defaultState });
   }, []);
 
-  // Computed statistics
-  const getStats = useCallback(() => {
+  // Computed statistics via useMemo
+  const stats = useMemo(() => {
     const today = new Date();
-    const todayStr = today.toISOString().split('T')[0];
+    const todayStr = getLocalDateString(today);
     const checkins = state.checkins;
 
     const soberDays = checkins.filter((c) => c.type === 'sober').length;
@@ -218,17 +228,17 @@ export function useRecoveryState() {
     if (dateSet.has(todayStr)) {
       streak = 1;
       checkDate.setDate(checkDate.getDate() - 1);
-      while (dateSet.has(checkDate.toISOString().split('T')[0])) {
+      while (dateSet.has(getLocalDateString(checkDate))) {
         streak++;
         checkDate.setDate(checkDate.getDate() - 1);
       }
     } else {
       // Check from yesterday
       checkDate.setDate(checkDate.getDate() - 1);
-      if (dateSet.has(checkDate.toISOString().split('T')[0])) {
+      if (dateSet.has(getLocalDateString(checkDate))) {
         streak = 1;
         checkDate.setDate(checkDate.getDate() - 1);
-        while (dateSet.has(checkDate.toISOString().split('T')[0])) {
+        while (dateSet.has(getLocalDateString(checkDate))) {
           streak++;
           checkDate.setDate(checkDate.getDate() - 1);
         }
@@ -277,30 +287,29 @@ export function useRecoveryState() {
     };
   }, [state.checkins, state.startDate]);
 
-  // AI Insights
-  const getInsights = useCallback(() => {
-    const stats = getStats();
-    const insights: string[] = [];
+  // AI Insights via useMemo
+  const insights = useMemo(() => {
+    const result: string[] = [];
 
     if (stats.streak >= 7 && stats.streak < 14) {
-      insights.push(`🔥 ${stats.streak}-day streak! You're building real momentum. Keep going!`);
+      result.push(`🔥 ${stats.streak}-day streak! You're building real momentum. Keep going!`);
     } else if (stats.streak >= 14 && stats.streak < 30) {
-      insights.push(`💪 ${stats.streak} days strong! You're over halfway to your 30-day goal.`);
+      result.push(`💪 ${stats.streak} days strong! You're over halfway to your 30-day goal.`);
     } else if (stats.streak >= 30) {
-      insights.push(`🏆 ${stats.streak} days! You've exceeded your 30-day goal. Incredible!`);
+      result.push(`🏆 ${stats.streak} days! You've exceeded your 30-day goal. Incredible!`);
     } else if (stats.streak > 0) {
-      insights.push(`🌱 ${stats.streak}-day streak. Every day counts.`);
+      result.push(`🌱 ${stats.streak}-day streak. Every day counts.`);
     }
 
     if (stats.totalMoneySaved > 0) {
-      insights.push(`💰 You've saved ₱${stats.totalMoneySaved.toLocaleString()} so far!`);
+      result.push(`💰 You've saved ₱${stats.totalMoneySaved.toLocaleString()} so far!`);
     }
 
     const netBalance = stats.totalMoneySaved - stats.totalMoneySpent;
     if (netBalance > 0) {
-      insights.push(`📊 Net financial impact: +₱${netBalance.toLocaleString()} (saved vs spent)`);
+      result.push(`📊 Net financial impact: +₱${netBalance.toLocaleString()} (saved vs spent)`);
     } else if (netBalance < 0) {
-      insights.push(`📊 Financial tip: Consider tracking your savings more closely.`);
+      result.push(`📊 Financial tip: Consider tracking your savings more closely.`);
     }
 
     // Weekend pattern
@@ -311,25 +320,25 @@ export function useRecoveryState() {
       (stats.dayPattern['Wed'] || 0) +
       (stats.dayPattern['Thu'] || 0);
     if (weekendActivity > weekdayActivity * 1.5 && stats.totalCheckins > 5) {
-      insights.push('📅 Pattern detected: More check-in activity on weekends. Plan ahead for triggers.');
+      result.push('📅 Pattern detected: More check-in activity on weekends. Plan ahead for triggers.');
     }
 
     if (state.spiritualEnabled) {
       if (stats.streak === 1) {
-        insights.push('🙏 Day 1 is the most important. You chose recovery today.');
+        result.push('🙏 Day 1 is the most important. You chose recovery today.');
       } else if (stats.streak === 3) {
-        insights.push('🙏 Three days in — your brain is already starting to heal.');
+        result.push('🙏 Three days in — your brain is already starting to heal.');
       } else if (stats.streak >= 7) {
-        insights.push('🙏 A week of growth. Your resilience is building.');
+        result.push('🙏 A week of growth. Your resilience is building.');
       }
     }
 
-    if (insights.length === 0) {
-      insights.push('👋 Welcome to RecoveryLine! Start by logging your first check-in.');
+    if (result.length === 0) {
+      result.push('👋 Welcome to RecoveryLine! Start by logging your first check-in.');
     }
 
-    return insights;
-  }, [getStats, state.spiritualEnabled]);
+    return result;
+  }, [stats, state.spiritualEnabled]);
 
   return {
     state,
@@ -350,7 +359,7 @@ export function useRecoveryState() {
     toggleSpiritual,
     exportData,
     resetData,
-    getStats,
-    getInsights,
+    stats,
+    insights,
   };
 }

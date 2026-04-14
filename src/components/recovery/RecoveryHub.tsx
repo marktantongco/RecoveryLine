@@ -77,15 +77,26 @@ export default function RecoveryHub({
     [stats.moodDistribution],
   );
 
+  const soberCount = useMemo(() => checkins.filter((c) => c.type === 'sober').length, [checkins]);
+  const useCount = useMemo(() => checkins.filter((c) => c.type === 'use').length, [checkins]);
+
   const netBalance = stats.totalMoneySaved - stats.totalMoneySpent;
+
+  function getLocalDateString(d: Date = new Date()): string {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
 
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr + 'T00:00:00');
-    const today = new Date();
-    const yesterday = new Date(today);
+    const todayStr = getLocalDateString();
+    const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    if (dateStr === today.toISOString().split('T')[0]) return 'Today';
-    if (dateStr === yesterday.toISOString().split('T')[0]) return 'Yesterday';
+    const yesterdayStr = getLocalDateString(yesterday);
+    if (dateStr === todayStr) return 'Today';
+    if (dateStr === yesterdayStr) return 'Yesterday';
     return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   };
 
@@ -225,7 +236,7 @@ export default function RecoveryHub({
                 onClick={() => setFilter(f)}
                 className={`toggle-chip ${filter === f ? 'toggle-chip-active' : ''}`}
               >
-                {f === 'all' ? `All (${checkins.length})` : f === 'sober' ? `Sober (${checkins.filter((c) => c.type === 'sober').length})` : `Use (${checkins.filter((c) => c.type === 'use').length})`}
+                {f === 'all' ? `All (${checkins.length})` : f === 'sober' ? `Sober (${soberCount})` : `Use (${useCount})`}
               </button>
             ))}
           </div>

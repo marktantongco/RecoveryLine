@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { CURRENCY } from '@/lib/recovery-constants';
 import { useToast } from './Toast';
 
@@ -25,8 +25,32 @@ export default function Settings({
 }: SettingsProps) {
   const { showToast } = useToast();
   const [spending, setSpending] = useState(String(dailyAvgSpending));
-  const [showResetConfirm, setShowResetConfirm] = useState(false);
-  const [showResetFinal, setShowResetFinal] = useState(false);
+  const [confirmReset, setConfirmReset] = useState(false);
+  const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleReset = useCallback(() => {
+    if (!confirmReset) {
+      setConfirmReset(true);
+      if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+      resetTimerRef.current = setTimeout(() => {
+        setConfirmReset(false);
+      }, 3000);
+      return;
+    }
+    // Second click within 3 seconds — actually reset
+    if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+    setConfirmReset(false);
+    onReset();
+    onClose();
+    showToast('All data has been reset', 'info');
+  }, [confirmReset, onReset, onClose, showToast]);
+
+  // Cleanup timer on unmount
+  React.useEffect(() => {
+    return () => {
+      if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+    };
+  }, []);
 
   const handleSaveSpending = () => {
     const val = parseInt(spending);
@@ -46,20 +70,6 @@ export default function Settings({
   const handleSpiritualToggle = () => {
     onToggleSpiritual();
     showToast(spiritualEnabled ? 'Spiritual track disabled' : 'Spiritual track enabled', 'info');
-  };
-
-  const handleReset = () => {
-    if (!showResetConfirm) {
-      setShowResetConfirm(true);
-      return;
-    }
-    if (!showResetFinal) {
-      setShowResetFinal(true);
-      return;
-    }
-    onReset();
-    onClose();
-    showToast('All data has been reset', 'info');
   };
 
   return (
@@ -165,18 +175,14 @@ export default function Settings({
             <button
               onClick={handleReset}
               className={`w-full p-3.5 rounded-xl text-sm font-medium transition-all text-left ${
-                showResetFinal
-                  ? 'bg-red-500/20 text-red-400 border border-red-500/30'
-                  : showResetConfirm
-                  ? 'bg-red-500/10 text-red-400 border border-red-500/20'
+                confirmReset
+                  ? 'bg-red-500/20 text-red-400 border border-red-500/30 animate-pulse'
                   : 'bg-white/5 text-slate-400 hover:bg-red-500/10 hover:text-red-400 border border-transparent'
               }`}
             >
-              {!showResetConfirm
+              {!confirmReset
                 ? '\ud83d\uddd1\ufe0f Reset all data'
-                : !showResetFinal
-                ? '\u26a0\ufe0f Are you sure? This cannot be undone.'
-                : '\ud83d\udd34 FINAL: Tap again to permanently delete all data'}
+                : '\u26a0\ufe0f Are you sure? Tap again to confirm.'}
             </button>
           </div>
 

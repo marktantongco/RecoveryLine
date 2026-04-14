@@ -77,7 +77,7 @@ export default function CheckIn({ onSubmit, dailyAvgSpending, preselect, onPrese
     const data = {
       type: mode as CheckinType,
       mood: selectedMood,
-      date: new Date().toISOString().split('T')[0],
+      date: (() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; })(),
     };
 
     if (notes.trim()) (data as Record<string, unknown>).notes = notes.trim();
@@ -232,7 +232,7 @@ export default function CheckIn({ onSubmit, dailyAvgSpending, preselect, onPrese
         <div className="glass-card p-4 animate-fadeUp stagger-4" style={{ opacity: 0 }}>
           <label className="block text-xs font-semibold text-slate-400 mb-3">Quantity / Details</label>
           <input
-            type="text"
+            type="number"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
             placeholder="e.g., 0.5g, 2 pills, 1 sachet"

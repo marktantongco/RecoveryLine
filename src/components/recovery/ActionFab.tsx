@@ -94,7 +94,7 @@ export default function ActionFab({ onNavigate, onLongPress }: ActionFabProps) {
           }}
         >
           <button
-            onClick={() => handleAction('checkin', 'use')}
+            onClick={() => handleAction('recovery', 'use')}
             className="group flex flex-col items-center gap-1.5"
           >
             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 shadow-lg shadow-amber-500/30 flex items-center justify-center text-white group-hover:scale-110 group-active:scale-95 transition-all duration-200 ring-2 ring-amber-400/20">
@@ -121,7 +121,7 @@ export default function ActionFab({ onNavigate, onLongPress }: ActionFabProps) {
           }}
         >
           <button
-            onClick={() => handleAction('checkin', 'mood')}
+            onClick={() => handleAction('recovery', 'mood')}
             className="group flex flex-col items-center gap-1.5"
           >
             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-violet-500 shadow-lg shadow-purple-500/30 flex items-center justify-center text-white group-hover:scale-110 group-active:scale-95 transition-all duration-200 ring-2 ring-purple-400/20">
@@ -150,7 +150,7 @@ export default function ActionFab({ onNavigate, onLongPress }: ActionFabProps) {
           }}
         >
           <button
-            onClick={() => handleAction('checkin', 'sober')}
+            onClick={() => handleAction('recovery', 'sober')}
             className="group flex flex-col items-center gap-1.5"
           >
             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/30 flex items-center justify-center text-white group-hover:scale-110 group-active:scale-95 transition-all duration-200 ring-2 ring-emerald-400/20">

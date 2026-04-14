@@ -71,7 +71,7 @@ export default function Dashboard({ stats, insights, onNavigate }: DashboardProp
       {/* Quick Stats Grid - Clickable */}
       <div className="grid grid-cols-2 gap-3 animate-fadeUp stagger-1" style={{ opacity: 0 }}>
         <button
-          onClick={() => onNavigate('stats')}
+          onClick={() => onNavigate('recovery')}
           className="glass-card p-4 text-left hover:border-emerald-500/20 active:scale-[0.98] transition-all group"
         >
           <div className="flex items-center gap-2 mb-2">
@@ -82,7 +82,7 @@ export default function Dashboard({ stats, insights, onNavigate }: DashboardProp
           <p className="text-[10px] text-slate-600 mt-1 group-hover:text-slate-500 transition-colors">Tap for analytics {'\u2192'}</p>
         </button>
         <button
-          onClick={() => onNavigate('history')}
+          onClick={() => onNavigate('recovery')}
           className="glass-card p-4 text-left hover:border-sky-500/20 active:scale-[0.98] transition-all group"
         >
           <div className="flex items-center gap-2 mb-2">
@@ -93,7 +93,7 @@ export default function Dashboard({ stats, insights, onNavigate }: DashboardProp
           <p className="text-[10px] text-slate-600 mt-1 group-hover:text-slate-500 transition-colors">Tap for history {'\u2192'}</p>
         </button>
         <button
-          onClick={() => onNavigate('stats')}
+          onClick={() => onNavigate('recovery')}
           className="glass-card p-4 text-left hover:border-amber-500/20 active:scale-[0.98] transition-all group"
         >
           <div className="flex items-center gap-2 mb-2">
@@ -104,7 +104,7 @@ export default function Dashboard({ stats, insights, onNavigate }: DashboardProp
           <p className="text-[10px] text-slate-600 mt-1 group-hover:text-slate-500 transition-colors">Tap for stats {'\u2192'}</p>
         </button>
         <button
-          onClick={() => onNavigate('notes')}
+          onClick={() => onNavigate('recovery')}
           className="glass-card p-4 text-left hover:border-purple-500/20 active:scale-[0.98] transition-all group"
         >
           <div className="flex items-center gap-2 mb-2">
@@ -143,14 +143,14 @@ export default function Dashboard({ stats, insights, onNavigate }: DashboardProp
           </div>
           {!stats.todayCheckin ? (
             <button
-              onClick={() => onNavigate('checkin')}
+              onClick={() => onNavigate('recovery')}
               className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-500 text-white text-xs font-semibold shadow-lg shadow-sky-500/20 hover:shadow-sky-500/30 active:scale-95 transition-all flex-shrink-0 ml-3"
             >
               Check In Now
             </button>
           ) : (
             <button
-              onClick={() => onNavigate('checkin')}
+              onClick={() => onNavigate('recovery')}
               className="px-3 py-2 rounded-xl bg-white/5 text-xs text-slate-400 border border-white/8 hover:bg-white/10 transition-colors flex-shrink-0 ml-3"
             >
               Update
@@ -164,7 +164,7 @@ export default function Dashboard({ stats, insights, onNavigate }: DashboardProp
         <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-1">Quick Actions</h3>
         <div className="grid grid-cols-4 gap-2">
           <button
-            onClick={() => onNavigate('checkin')}
+            onClick={() => onNavigate('recovery')}
             className="glass-card p-3 flex flex-col items-center gap-1.5 hover:border-emerald-500/20 active:scale-95 transition-all group"
           >
             <div className="w-10 h-10 rounded-xl bg-emerald-500/15 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -175,7 +175,7 @@ export default function Dashboard({ stats, insights, onNavigate }: DashboardProp
             <span className="text-[10px] text-slate-400 font-medium">Check In</span>
           </button>
           <button
-            onClick={() => onNavigate('safety')}
+            onClick={() => onNavigate('biotools')}
             className="glass-card p-3 flex flex-col items-center gap-1.5 hover:border-purple-500/20 active:scale-95 transition-all group"
           >
             <div className="w-10 h-10 rounded-xl bg-purple-500/15 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -186,7 +186,7 @@ export default function Dashboard({ stats, insights, onNavigate }: DashboardProp
             <span className="text-[10px] text-slate-400 font-medium">Safety</span>
           </button>
           <button
-            onClick={() => onNavigate('resources')}
+            onClick={() => onNavigate('phguide')}
             className="glass-card p-3 flex flex-col items-center gap-1.5 hover:border-emerald-500/20 active:scale-95 transition-all group"
           >
             <div className="w-10 h-10 rounded-xl bg-emerald-500/15 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -197,7 +197,7 @@ export default function Dashboard({ stats, insights, onNavigate }: DashboardProp
             <span className="text-[10px] text-slate-400 font-medium">Resources</span>
           </button>
           <button
-            onClick={() => onNavigate('notes')}
+            onClick={() => onNavigate('recovery')}
             className="glass-card p-3 flex flex-col items-center gap-1.5 hover:border-amber-500/20 active:scale-95 transition-all group"
           >
             <div className="w-10 h-10 rounded-xl bg-amber-500/15 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -230,7 +230,7 @@ export default function Dashboard({ stats, insights, onNavigate }: DashboardProp
         </div>
         {insights.length > 0 && (
           <button
-            onClick={() => onNavigate('stats')}
+            onClick={() => onNavigate('recovery')}
             className="mt-3 text-xs text-sky-400 hover:text-sky-300 transition-colors font-medium flex items-center gap-1"
           >
             View full analytics {'\u2192'}
@@ -243,7 +243,7 @@ export default function Dashboard({ stats, insights, onNavigate }: DashboardProp
         <div className="flex items-center justify-between mb-3 px-1">
           <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Recent Activity</h3>
           <button
-            onClick={() => onNavigate('history')}
+            onClick={() => onNavigate('recovery')}
             className="text-xs text-sky-400 hover:text-sky-300 active:text-sky-500 transition-colors font-medium"
           >
             View All {'\u2192'}
@@ -254,7 +254,7 @@ export default function Dashboard({ stats, insights, onNavigate }: DashboardProp
             {stats.recentCheckins.map((checkin) => (
               <button
                 key={checkin.id}
-                onClick={() => onNavigate('history')}
+                onClick={() => onNavigate('recovery')}
                 className="glass-card p-3 flex items-center gap-3 w-full text-left hover:border-white/15 active:scale-[0.99] transition-all"
               >
                 <div className={`timeline-dot ${checkin.type === 'sober' ? 'timeline-dot-sober' : 'timeline-dot-use'}`} />
@@ -279,7 +279,7 @@ export default function Dashboard({ stats, insights, onNavigate }: DashboardProp
             <p className="text-sm text-slate-500 font-medium">No activity yet</p>
             <p className="text-xs text-slate-600 mt-1">Start your first check-in using the + button</p>
             <button
-              onClick={() => onNavigate('checkin')}
+              onClick={() => onNavigate('recovery')}
               className="mt-4 px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-500 text-white text-xs font-semibold shadow-lg shadow-sky-500/20 active:scale-95 transition-all"
             >
               First Check-In

@@ -119,3 +119,42 @@ Stage Summary:
 - New 5-section architecture fully wired
 - All navigation paths connected
 - Lint passes cleanly with zero errors
+
+---
+Task ID: 11
+Agent: Main Agent
+Task: Fix 11 bugs across RecoveryLine app
+
+Work Log:
+- BUG 1 (Dead-End Navigation): Fixed all invalid onNavigate calls in Dashboard.tsx (stats→recovery, history→recovery, checkin→recovery, safety→biotools, resources→phguide, notes→recovery), Analytics.tsx (history→recovery, checkin→recovery, safety→biotools), and ActionFab.tsx (checkin→recovery for sober/use/mood)
+- BUG 2 (Timezone Mismatch): Added getLocalDateString() helper using Date.getFullYear()/getMonth()+1/getDate() instead of toISOString().split('T')[0]. Fixed in use-recovery-state.ts (getStats streak calculation) and RecoveryHub.tsx (formatDate)
+- BUG 3 (Type Safety): Changed currentSection type from string to SectionName in RecoveryState interface
+- BUG 4 (Substance Tab Styling): Removed conflicting inline style prop referencing non-existent CSS variables. Replaced with clean Tailwind classes (bg-white/[0.08] text-white border border-white/15 shadow-sm). Removed unused gradient variable.
+- BUG 5 (ExportData Stale Closure): Changed exportData to use functional setState approach to read latest state directly, eliminating stale closure over state.checkins/clipboard/settings
+- BUG 6 (Glass Card Overflow): Added overflow: hidden to .glass-card, .glass-card-hero (already had it), and .glass-card-insight rules to prevent ::before pseudo-element leaking
+- BUG 7 (CheckIn Quantity Field): Changed quantity input from type="text" to type="number"
+- BUG 8 (Performance — getStats in render path): Converted getStats and getInsights from useCallback to useMemo. Updated page.tsx to destructure stats and insights directly instead of calling getStats()/getInsights()
+- BUG 9 (Scroll to Top): Added useEffect that scrolls to top on state.currentSection change, placed before early returns to satisfy rules-of-hooks
+- BUG 10 (Reset Data Confirmation): Simplified from 3-step (confirm→final→reset) to 2-step with 3-second timeout. First click shows "Are you sure?", second click within 3s confirms. Uses useRef for timer cleanup
+- BUG 11 (History Filter Memoization): Added useMemo for soberCount and useCount in RecoveryHub.tsx, used in filter chips instead of inline .filter().length
+
+Stage Summary:
+- All 11 bugs fixed across 8 files
+- ESLint passes with zero errors
+
+---
+Task ID: 12
+Agent: Main Agent
+Task: Additional timezone fixes for CheckIn.tsx and History.tsx
+
+Work Log:
+- Found additional toISOString().split('T')[0] usage in CheckIn.tsx line 80 (check-in date)
+- Found additional toISOString().split('T')[0] usage in History.tsx lines 36-37 (Today/Yesterday detection)
+- Fixed CheckIn.tsx: replaced UTC-based date with local date computation (getFullYear/getMonth/getDate)
+- Fixed History.tsx: added localToday and localYesterday variables using local date computation
+- Verified all toISOString() references are now only used for ISO format timestamps (not date comparisons)
+
+Stage Summary:
+- All timezone bugs eliminated across 4 files total
+- Date comparisons now use local timezone consistently (PH UTC+8 safe)
+- ESLint passes with zero errors
