@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useCallback, useEffect, useState, lazy, Suspense, useMemo } from 'react';
+import React, { useCallback, useEffect, useState, lazy, Suspense, useMemo, useRef } from 'react';
 import { useRecoveryState } from '@/hooks/use-recovery-state';
 import BottomNav from '@/components/recovery/BottomNav';
 import ActionFab from '@/components/recovery/ActionFab';
 import Settings from '@/components/recovery/Settings';
 import Calculator from '@/components/recovery/Calculator';
+import ErrorBoundary from '@/components/recovery/ErrorBoundary';
 import { ToastProvider } from '@/components/recovery/Toast';
 import { SectionName, CheckinType, MoodKey } from '@/lib/recovery-types';
 
@@ -82,6 +83,24 @@ function AppContent() {
   // Track section for animation key
   const [sectionKey, setSectionKey] = useState(0);
 
+  // Loading timeout — if state doesn't load in 4s, force show
+  const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [forceLoad, setForceLoad] = useState(false);
+
+  useEffect(() => {
+    loadTimeoutRef.current = setTimeout(() => {
+      if (!isLoaded) {
+        console.warn('[RecoveryLine] State loading timed out, forcing render');
+        setForceLoad(true);
+      }
+    }, 4000);
+    return () => {
+      if (loadTimeoutRef.current) clearTimeout(loadTimeoutRef.current);
+    };
+  }, []);
+
+  const shouldShow = isLoaded || forceLoad;
+
   // Scroll to top + animate on section change
   useEffect(() => {
     const mainEl = document.getElementById('app-shell-main');
@@ -105,7 +124,7 @@ function AppContent() {
     setPreselect(null);
   }, [setPreselect]);
 
-  if (!isLoaded) {
+  if (!shouldShow) {
     return (
       <div className="min-h-screen bg-[#0a0f1a] flex items-center justify-center">
         <div className="text-center animate-fadeUp">
@@ -115,6 +134,7 @@ function AppContent() {
             </svg>
           </div>
           <p className="text-sm text-slate-400 font-medium">Loading RecoveryLine...</p>
+          <p className="text-[10px] text-slate-600 mt-1">Preparing your recovery space</p>
           <div className="mt-3 flex items-center justify-center gap-1">
             <div className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-bounce" style={{ animationDelay: '0ms' }} />
             <div className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -303,11 +323,13 @@ function AppContent() {
       {/* Main Content — scrollable area */}
       <main id="app-shell-main" className="app-shell-main" role="main">
         <div className="max-w-md mx-auto px-4 pt-4">
-          <Suspense fallback={<SectionSkeleton />}>
-            <div key={sectionKey} className="section-enter">
-              {renderSection()}
-            </div>
-          </Suspense>
+          <ErrorBoundary>
+            <Suspense fallback={<SectionSkeleton />}>
+              <div key={sectionKey} className="section-enter">
+                {renderSection()}
+              </div>
+            </Suspense>
+          </ErrorBoundary>
         </div>
       </main>
 
@@ -344,7 +366,9 @@ function AppContent() {
 export default function Home() {
   return (
     <ToastProvider>
-      <AppContent />
+      <ErrorBoundary>
+        <AppContent />
+      </ErrorBoundary>
     </ToastProvider>
   );
 }

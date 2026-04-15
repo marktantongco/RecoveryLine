@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import {
   COMPARATIVE_MINDSETS,
   WELLNESS_TOOLS,
@@ -20,6 +20,13 @@ type SubTab = 'comparative' | 'wellness' | 'contemplative';
 function getStaggerClass(idx: number): string {
   if (idx < 6) return `stagger-${idx + 1}`;
   return '';
+}
+
+function getDayOfYear(): number {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const diff = now.getTime() - start.getTime();
+  return Math.floor(diff / (1000 * 60 * 60 * 24));
 }
 
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
@@ -128,6 +135,381 @@ function FilterIcon({ className = 'w-3.5 h-3.5' }: { className?: string }) {
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
     </svg>
+  );
+}
+
+// ─── Breathing Exercise ───────────────────────────────────────────────────────
+
+type BreathingPhase = 'idle' | 'in' | 'hold' | 'out';
+
+const BREATHING_PHASES: { phase: BreathingPhase; label: string; duration: number }[] = [
+  { phase: 'in', label: 'Breathe In', duration: 4000 },
+  { phase: 'hold', label: 'Hold', duration: 4000 },
+  { phase: 'out', label: 'Breathe Out', duration: 4000 },
+];
+
+function BreathingExercise() {
+  const [isActive, setIsActive] = useState(false);
+  const [currentPhase, setCurrentPhase] = useState<BreathingPhase>('idle');
+  const [cycles, setCycles] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [tick, setTick] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const startTimeRef = useRef<number>(0);
+  const animFrameRef = useRef<number>(0);
+
+  // Derived: current phase config
+  const phaseConfig = useMemo(() => {
+    if (currentPhase === 'idle') return null;
+    return BREATHING_PHASES.find(p => p.phase === currentPhase) ?? BREATHING_PHASES[0];
+  }, [currentPhase]);
+
+  // Start/stop logic
+  const start = useCallback(() => {
+    setCycles(0);
+    setCurrentPhase('in');
+    setProgress(0);
+    setIsActive(true);
+    setTick(t => t + 1);
+  }, []);
+
+  const stop = useCallback(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+    if (animFrameRef.current) {
+      cancelAnimationFrame(animFrameRef.current);
+      animFrameRef.current = 0;
+    }
+    setIsActive(false);
+    setCurrentPhase('idle');
+    setProgress(0);
+  }, []);
+
+  // Phase transition effect
+  useEffect(() => {
+    if (!isActive || currentPhase === 'idle' || !phaseConfig) return;
+
+    // Animate progress
+    startTimeRef.current = performance.now();
+    const duration = phaseConfig.duration;
+    const tickAnim = (now: number) => {
+      const elapsed = now - startTimeRef.current;
+      const pct = Math.min(elapsed / duration, 1);
+      setProgress(pct);
+      if (pct < 1) {
+        animFrameRef.current = requestAnimationFrame(tickAnim);
+      }
+    };
+    animFrameRef.current = requestAnimationFrame(tickAnim);
+
+    // Schedule next phase
+    timerRef.current = setTimeout(() => {
+      if (currentPhase === 'out') {
+        setCycles(c => c + 1);
+        setCurrentPhase('in');
+      } else {
+        const idx = BREATHING_PHASES.findIndex(p => p.phase === currentPhase);
+        const nextPhase = BREATHING_PHASES[(idx + 1) % BREATHING_PHASES.length].phase;
+        setCurrentPhase(nextPhase);
+      }
+      setProgress(0);
+    }, duration);
+
+    return () => {
+      if (animFrameRef.current) {
+        cancelAnimationFrame(animFrameRef.current);
+        animFrameRef.current = 0;
+      }
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [isActive, currentPhase, phaseConfig, tick]);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+    };
+  }, []);
+
+  // Circle size based on phase
+  const getCircleScale = useMemo(() => {
+    if (currentPhase === 'idle') return 0.6;
+    if (currentPhase === 'in') return 0.6 + 0.4 * progress;
+    if (currentPhase === 'hold') return 1.0;
+    if (currentPhase === 'out') return 1.0 - 0.4 * progress;
+    return 0.6;
+  }, [currentPhase, progress]);
+
+  const getPhaseColor = () => {
+    switch (currentPhase) {
+      case 'in': return 'text-emerald-400';
+      case 'hold': return 'text-amber-400';
+      case 'out': return 'text-sky-400';
+      default: return 'text-slate-500';
+    }
+  };
+
+  const getRingColor = () => {
+    switch (currentPhase) {
+      case 'in': return 'stroke-emerald-400';
+      case 'hold': return 'stroke-amber-400';
+      case 'out': return 'stroke-sky-400';
+      default: return 'stroke-slate-700';
+    }
+  };
+
+  const getGlowColor = () => {
+    switch (currentPhase) {
+      case 'in': return 'shadow-emerald-500/20';
+      case 'hold': return 'shadow-amber-500/20';
+      case 'out': return 'shadow-sky-500/20';
+      default: return '';
+    }
+  };
+
+  const circumference = 2 * Math.PI * 54;
+  const strokeDashoffset = circumference * (1 - progress);
+
+  return (
+    <div className="glass-card p-5 animate-fadeUp stagger-2" style={{ opacity: 0 }}>
+      <div className="flex items-center gap-2.5 mb-4">
+        <div className="w-7 h-7 rounded-lg bg-sky-500/10 flex items-center justify-center flex-shrink-0">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
+            <path d="M12 6v6l4 2" />
+          </svg>
+        </div>
+        <h3 className="text-xs font-bold text-white uppercase tracking-wider">Breathing Exercise</h3>
+      </div>
+
+      <p className="text-[11px] text-slate-400 leading-relaxed mb-5">
+        A calming 4-4-4 breathing technique. Breathe in for 4 seconds, hold for 4 seconds, and breathe out for 4 seconds. Helps reduce anxiety and ground yourself.
+      </p>
+
+      {/* Breathing Circle */}
+      <div className="flex flex-col items-center gap-4">
+        <div className="relative w-40 h-40 flex items-center justify-center">
+          {/* Background ring */}
+          <svg className="absolute inset-0" viewBox="0 0 120 120" width="160" height="160">
+            <circle cx="60" cy="60" r="54" fill="none" strokeWidth="2" className={getRingColor()} opacity="0.15" />
+            <circle
+              cx="60" cy="60" r="54" fill="none" strokeWidth="2"
+              className={getRingColor()}
+              strokeLinecap="round"
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeDashoffset}
+              transform="rotate(-90 60 60)"
+              style={{ transition: 'stroke-dashoffset 0.1s linear' }}
+            />
+          </svg>
+
+          {/* Animated circle */}
+          <div
+            className={`rounded-full flex items-center justify-center transition-transform duration-100 shadow-lg ${getGlowColor()}`}
+            style={{
+              width: `${100 * getCircleScale}px`,
+              height: `${100 * getCircleScale}px`,
+              background: currentPhase === 'idle'
+                ? 'rgba(255,255,255,0.04)'
+                : currentPhase === 'in'
+                  ? 'rgba(16,185,129,0.12)'
+                  : currentPhase === 'hold'
+                    ? 'rgba(245,158,11,0.12)'
+                    : 'rgba(56,189,248,0.12)',
+              border: `2px solid ${
+                currentPhase === 'idle'
+                  ? 'rgba(255,255,255,0.08)'
+                  : currentPhase === 'in'
+                    ? 'rgba(16,185,129,0.3)'
+                    : currentPhase === 'hold'
+                      ? 'rgba(245,158,11,0.3)'
+                      : 'rgba(56,189,248,0.3)'
+              }`,
+            }}
+          >
+            <span className={`text-sm font-bold ${getPhaseColor()} transition-colors`}>
+              {currentPhase === 'idle' ? (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                  <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+                </svg>
+              ) : (
+                currentPhase === 'in' || currentPhase === 'out'
+                  ? Math.ceil(progress * 4)
+                  : '4'
+              )}
+            </span>
+          </div>
+        </div>
+
+        {/* Phase Label */}
+        <div className="text-center">
+          <p className={`text-sm font-semibold ${getPhaseColor()} transition-colors`}>
+            {currentPhase === 'idle' ? 'Ready' : currentPhase === 'in' ? 'Breathe In' : currentPhase === 'hold' ? 'Hold' : 'Breathe Out'}
+          </p>
+          <p className="text-[10px] text-slate-500 mt-1">
+            {isActive ? `${cycles} cycle${cycles !== 1 ? 's' : ''} completed` : 'Tap start to begin'}
+          </p>
+        </div>
+
+        {/* Start / Stop Button */}
+        <button
+          onClick={isActive ? stop : start}
+          className={`mt-2 px-6 py-2.5 rounded-xl text-xs font-semibold transition-all active:scale-[0.98] ${
+            isActive
+              ? 'bg-red-500/15 text-red-400 border border-red-500/20 hover:bg-red-500/20'
+              : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20'
+          }`}
+        >
+          {isActive ? 'Stop' : 'Start'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Daily Affirmation ────────────────────────────────────────────────────────
+
+const AFFIRMATIONS: string[] = [
+  "I am worthy of a healthy, vibrant life free from addiction.",
+  "Every day in recovery is a victory worth celebrating.",
+  "I have the strength to overcome any challenge that comes my way.",
+  "My past does not define my future — I am creating a new story.",
+  "I choose progress over perfection, one step at a time.",
+  "I am surrounded by people who support my healing journey.",
+  "My body is healing, my mind is clearing, and my spirit is growing.",
+  "I am not alone in this journey — help is always available.",
+  "Today, I choose self-compassion over self-criticism.",
+  "I am resilient, and setbacks are temporary, not permanent.",
+  "My recovery is a gift I give to myself and those who love me.",
+  "I trust the process and honor my commitment to change.",
+  "I deserve joy, peace, and fulfillment in my life.",
+  "Every breath I take is a reminder of my strength to keep going.",
+  "I am proud of how far I have come in my recovery journey.",
+  "I release guilt and shame — they do not serve me anymore.",
+  "New possibilities open for me as I continue to heal and grow.",
+];
+
+function DailyAffirmation() {
+  const affirmation = useMemo(() => {
+    const dayIndex = getDayOfYear() % AFFIRMATIONS.length;
+    return AFFIRMATIONS[dayIndex];
+  }, []);
+
+  return (
+    <div className="glass-card p-5 animate-fadeUp stagger-3" style={{ opacity: 0 }}>
+      <div className="flex items-center gap-2.5 mb-4">
+        <div className="w-7 h-7 rounded-lg bg-violet-500/10 flex items-center justify-center flex-shrink-0">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" />
+            <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z" />
+          </svg>
+        </div>
+        <div>
+          <h3 className="text-xs font-bold text-white uppercase tracking-wider">Daily Affirmation</h3>
+          <p className="text-[10px] text-slate-500 mt-0.5">
+            {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+          </p>
+        </div>
+      </div>
+
+      <div className="rounded-xl bg-violet-500/[0.05] border border-violet-500/10 p-4">
+        <div className="flex items-start gap-3">
+          <svg className="w-6 h-6 text-violet-500/30 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" />
+          </svg>
+          <p className="text-sm text-slate-200 italic leading-relaxed font-light">
+            {affirmation}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Journaling Prompt ────────────────────────────────────────────────────────
+
+const JOURNAL_PROMPTS: string[] = [
+  "What triggered my desire to use today, and how did I respond?",
+  "What are three things I am grateful for in my recovery journey?",
+  "How has my body felt different since I started my recovery?",
+  "What coping strategies worked well for me this week?",
+  "Describe a moment this week when you felt proud of yourself.",
+  "What relationships in my life support my recovery, and how can I nurture them?",
+  "What emotions am I currently avoiding, and how can I face them safely?",
+  "Write a letter to your future self, one year from now in recovery.",
+  "What would I tell someone who is just starting their recovery journey?",
+  "Identify a negative thought pattern and write a healthier alternative.",
+  "What activities or hobbies bring me genuine joy without substances?",
+  "How do I define 'recovery' for myself? Has this definition changed?",
+  "What boundaries do I need to set to protect my sobriety?",
+  "Describe your ideal sober day from morning to night.",
+  "What lessons has addiction taught me that I can use positively?",
+  "How can I be more patient and kind with myself during difficult moments?",
+  "What role does community or support groups play in my recovery?",
+  "What physical sensations in my body tell me I am stressed, and how can I respond?",
+  "Write about a person who has inspired your recovery. What qualities do they have?",
+  "What would my life look like in 5 years if I stay committed to recovery?",
+  "Reflect on a craving you experienced. What helped you get through it?",
+];
+
+function JournalPrompt() {
+  const [promptOffset, setPromptOffset] = useState(0);
+
+  const todaysPrompt = useMemo(() => {
+    const dayIndex = getDayOfYear() % JOURNAL_PROMPTS.length;
+    return JOURNAL_PROMPTS[(dayIndex + promptOffset) % JOURNAL_PROMPTS.length];
+  }, [promptOffset]);
+
+  const nextPrompt = () => {
+    setPromptOffset(prev => prev + 1);
+  };
+
+  return (
+    <div className="glass-card p-5 animate-fadeUp stagger-4" style={{ opacity: 0 }}>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+            </svg>
+          </div>
+          <h3 className="text-xs font-bold text-white uppercase tracking-wider">Journal Prompt</h3>
+        </div>
+        <button
+          onClick={nextPrompt}
+          className="px-3 py-1.5 rounded-lg text-[10px] text-emerald-400 font-medium bg-emerald-500/10 border border-emerald-500/15 hover:bg-emerald-500/15 transition-all active:scale-[0.98]"
+        >
+          New Prompt
+        </button>
+      </div>
+
+      <div className="rounded-xl bg-emerald-500/[0.05] border border-emerald-500/10 p-4">
+        <div className="flex items-start gap-3">
+          <span className="text-lg flex-shrink-0 mt-0.5">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+              <path d="M12 17h.01" />
+            </svg>
+          </span>
+          <p className="text-sm text-slate-200 leading-relaxed font-light">
+            {todaysPrompt}
+          </p>
+        </div>
+      </div>
+
+      <p className="text-[10px] text-slate-500 mt-3 text-center">
+        Take a few minutes to write your thoughts. There are no wrong answers.
+      </p>
+    </div>
   );
 }
 
@@ -788,7 +1170,7 @@ function ContemplativeTab() {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export default function MindPsychology() {
+const MindPsychology = React.memo(function MindPsychology() {
   const [activeTab, setActiveTab] = useState<SubTab>('comparative');
 
   return (
@@ -802,6 +1184,11 @@ export default function MindPsychology() {
         <p className="text-xs text-slate-400 mt-0.5">Mental wellness framework for recovery</p>
       </div>
 
+      {/* Quick Wellness Widgets */}
+      <BreathingExercise />
+      <DailyAffirmation />
+      <JournalPrompt />
+
       {/* Sub-tab Navigation */}
       <SubTabNav active={activeTab} onChange={setActiveTab} />
 
@@ -811,4 +1198,6 @@ export default function MindPsychology() {
       {activeTab === 'contemplative' && <ContemplativeTab />}
     </div>
   );
-}
+});
+
+export default MindPsychology;

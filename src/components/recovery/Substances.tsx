@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { SUBSTANCES, SUBSTANCE_LIST } from '@/lib/substance-data';
 import type { SubstanceData } from '@/lib/substance-data';
 
@@ -108,11 +108,22 @@ const Icons = {
       <path d="M12 5v13" />
     </svg>
   ),
+  search: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.3-4.3" />
+    </svg>
+  ),
+  x: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+    </svg>
+  ),
 };
 
 // --- Substance Detail View ---
 
-function SubstanceDetail({ substance }: { substance: SubstanceData }) {
+const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { substance: SubstanceData }) {
   const [damageExpanded, setDamageExpanded] = useState(false);
   const [withdrawalExpanded, setWithdrawalExpanded] = useState(false);
   const [supplementsExpanded, setSupplementsExpanded] = useState(false);
@@ -169,6 +180,22 @@ function SubstanceDetail({ substance }: { substance: SubstanceData }) {
                 {name}
               </span>
             ))}
+          </div>
+
+          {/* Quick Actions */}
+          <div className="flex gap-2 mt-3">
+            <button
+              onClick={() => setDamageExpanded(!damageExpanded)}
+              className="flex-1 py-2 rounded-xl bg-white/5 text-[10px] text-slate-400 font-medium hover:bg-white/8 transition-all active:scale-[0.99]"
+            >
+              View Damage ({substance.primaryDamage.items.length} areas)
+            </button>
+            <button
+              onClick={() => setSupplementsExpanded(!supplementsExpanded)}
+              className="flex-1 py-2 rounded-xl bg-emerald-500/10 text-[10px] text-emerald-400 font-medium hover:bg-emerald-500/15 transition-all active:scale-[0.99] border border-emerald-500/15"
+            >
+              Supplements ({substance.recoveryFocus.prioritySupplements.length})
+            </button>
           </div>
 
           {/* Description */}
@@ -378,6 +405,21 @@ function SubstanceDetail({ substance }: { substance: SubstanceData }) {
         </div>
       </div>
 
+      {/* --- RECOVERY TIPS --- */}
+      <div className="glass-card p-4 animate-fadeUp stagger-6" style={{ opacity: 0 }}>
+        <SectionHeader icon={Icons.recovery} title="Recovery Tips" />
+        <div className="space-y-2">
+          {substance.recoveryFocus.prioritySupplements.slice(0, 4).map((supp, i) => (
+            <div key={i} className="flex items-start gap-2.5 p-2 rounded-xl bg-emerald-500/[0.03] hover:bg-emerald-500/[0.06] transition-colors">
+              <span className="w-5 h-5 rounded-md bg-emerald-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-[10px] font-bold text-emerald-400">{i + 1}</span>
+              </span>
+              <p className="text-[11px] text-slate-400 leading-relaxed">{supp}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* --- Disclaimer --- */}
       <div className="glass-card p-3 animate-fadeUp stagger-6" style={{ opacity: 0 }}>
         <p className="text-[10px] text-slate-500 leading-relaxed">
@@ -386,7 +428,7 @@ function SubstanceDetail({ substance }: { substance: SubstanceData }) {
       </div>
     </div>
   );
-}
+});
 
 // --- Sub-components ---
 
@@ -420,10 +462,24 @@ const TAB_CONFIG: { id: SubstanceId; label: string; dangerLevel: number }[] = [
   { id: 'cannabis', label: 'Cannabis', dangerLevel: 2 },
 ];
 
-export default function Substances() {
+const Substances = React.memo(function Substances() {
   const [activeTab, setActiveTab] = useState<SubstanceId>('methamphetamine');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const activeSubstance = SUBSTANCES[activeTab];
+
+  const searchResults = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return [];
+    return SUBSTANCE_LIST.filter((s) => {
+      const nameMatch = s.name.toLowerCase().includes(q);
+      const aliasMatch = s.aliases.some((a) => a.toLowerCase().includes(q));
+      const streetMatch = s.streetNames.some((sn) => sn.toLowerCase().includes(q));
+      return nameMatch || aliasMatch || streetMatch;
+    });
+  }, [searchQuery]);
+
+  const isSearching = searchQuery.trim().length > 0;
 
   return (
     <div className="space-y-4 pb-6">
@@ -433,32 +489,112 @@ export default function Substances() {
         <p className="text-xs text-slate-400 mt-0.5">Detailed biochemical information</p>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="glass-card p-1.5 flex animate-fadeUp stagger-1" style={{ opacity: 0 }}>
-        {TAB_CONFIG.map((tab) => {
-          const isActive = activeTab === tab.id;
-          const dotColor = getDangerDotColor(tab.dangerLevel);
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 py-2.5 rounded-xl text-xs font-medium transition-all flex items-center justify-center gap-1.5 ${
-                isActive
-                  ? 'bg-white/[0.08] text-white border border-white/15 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-300 border border-transparent'
-              }`}
-            >
-              <span className={`w-1.5 h-1.5 rounded-full ${isActive ? dotColor : 'bg-slate-600'}`} />
-              {tab.label}
-            </button>
-          );
-        })}
+      {/* Search Input */}
+      <div className="glass-card p-1.5 flex items-center gap-2 animate-fadeUp stagger-1" style={{ opacity: 0 }}>
+        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0">
+          {React.cloneElement(Icons.search as React.ReactElement, { width: 14, height: 14, className: 'text-slate-500' })}
+        </div>
+        <input
+          type="text"
+          placeholder="Search substances, aliases..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="flex-1 bg-transparent text-xs text-white placeholder:text-slate-500 outline-none min-w-0"
+        />
+        {isSearching && (
+          <button
+            onClick={() => setSearchQuery('')}
+            className="w-6 h-6 rounded-md bg-white/5 flex items-center justify-center flex-shrink-0 hover:bg-white/10 transition-colors"
+          >
+            {React.cloneElement(Icons.x as React.ReactElement, { width: 12, height: 12, className: 'text-slate-500' })}
+          </button>
+        )}
       </div>
 
-      {/* Active Substance Detail */}
-      <div key={activeTab}>
-        {activeSubstance && <SubstanceDetail substance={activeSubstance} />}
-      </div>
+      {/* Tab Navigation (hidden when searching) */}
+      {!isSearching && (
+        <div className="glass-card p-1.5 flex animate-fadeUp stagger-1" style={{ opacity: 0 }}>
+          {TAB_CONFIG.map((tab) => {
+            const isActive = activeTab === tab.id;
+            const dotColor = getDangerDotColor(tab.dangerLevel);
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex-1 py-2.5 rounded-xl text-xs font-medium transition-all flex items-center justify-center gap-1.5 ${
+                  isActive
+                    ? 'bg-white/[0.08] text-white border border-white/15 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-300 border border-transparent'
+                }`}
+              >
+                <span className={`w-1.5 h-1.5 rounded-full ${isActive ? dotColor : 'bg-slate-600'}`} />
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Search Results (flat list) */}
+      {isSearching && (
+        <div className="space-y-3 animate-fadeUp">
+          {searchResults.length > 0 ? (
+            <>
+              <p className="text-[10px] text-slate-500 px-1">{searchResults.length} result{searchResults.length !== 1 ? 's' : ''} found</p>
+              {searchResults.map((substance) => (
+                <button
+                  key={substance.id}
+                  onClick={() => {
+                    setActiveTab(substance.id as SubstanceId);
+                    setSearchQuery('');
+                  }}
+                  className="glass-card p-3 w-full text-left hover:bg-white/[0.04] transition-all active:scale-[0.995] animate-fadeUp"
+                  style={{ opacity: 0 }}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-xs font-semibold text-white truncate">{substance.name}</h3>
+                      <p className="text-[10px] text-slate-500 mt-0.5 truncate">
+                        {substance.aliases.slice(0, 3).join(', ')}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      <span className="text-[10px] text-slate-500">{substance.dangerLevel}/5</span>
+                      <div className="flex items-center gap-0.5">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <span
+                            key={i}
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              i < substance.dangerLevel ? getDangerDotColor(substance.dangerLevel) : 'bg-white/10'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </>
+          ) : (
+            <div className="glass-card p-6 text-center">
+              <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center mx-auto mb-3">
+                {React.cloneElement(Icons.search as React.ReactElement, { width: 18, height: 18, className: 'text-slate-600' })}
+              </div>
+              <p className="text-xs text-slate-400 font-medium">No substances found</p>
+              <p className="text-[10px] text-slate-500 mt-1">Try a different search term</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Active Substance Detail (hidden when searching) */}
+      {!isSearching && (
+        <div key={activeTab}>
+          {activeSubstance && <SubstanceDetail substance={activeSubstance} />}
+        </div>
+      )}
     </div>
   );
-}
+});
+
+export default Substances;
