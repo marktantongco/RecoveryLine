@@ -9,6 +9,10 @@ import Calculator from '@/components/recovery/Calculator';
 import ErrorBoundary from '@/components/recovery/ErrorBoundary';
 import { ToastProvider } from '@/components/recovery/Toast';
 import { SectionName, CheckinType, MoodKey } from '@/lib/recovery-types';
+import { haptic } from '@/lib/utils';
+
+// Navigation order for directional transitions
+const NAV_ORDER: SectionName[] = ['home', 'substances', 'biotools', 'recovery', 'nutrition', 'mindpsych', 'protocol', 'phguide'];
 
 // Dynamic imports for code splitting — only load section when needed
 // Error logging wrapper for lazy imports to surface silent failures
@@ -92,6 +96,9 @@ function AppContent() {
 
   // Track section for animation key
   const [sectionKey, setSectionKey] = useState(0);
+  // Track previous section for directional transitions
+  const prevSectionRef = useRef(state.currentSection);
+  const [slideDirection, setSlideDirection] = useState<'right' | 'left'>('right');
 
   // Loading timeout — if state doesn't load in 4s, force show
   const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -117,13 +124,22 @@ function AppContent() {
     if (mainEl) {
       mainEl.scrollTo({ top: 0, behavior: 'smooth' });
     }
+    // Determine slide direction
+    const prevIdx = NAV_ORDER.indexOf(prevSectionRef.current);
+    const nextIdx = NAV_ORDER.indexOf(state.currentSection);
+    setSlideDirection(nextIdx >= prevIdx ? 'right' : 'left');
+    prevSectionRef.current = state.currentSection;
     setSectionKey((k) => k + 1);
   }, [state.currentSection]);
 
   // Standard navigate (no preselect)
   const handleNavigate = useCallback((section: string) => {
-    setSection(section as SectionName);
-  }, [setSection]);
+    const target = section as SectionName;
+    if (target !== state.currentSection) {
+      haptic('light');
+    }
+    setSection(target);
+  }, [setSection, state.currentSection]);
 
   // FAB navigate — with preselect mode for check-in
   const handleFabNavigate = useCallback((section: string, preselect?: string) => {
@@ -177,22 +193,38 @@ function AppContent() {
   };
 
   const renderSection = () => {
+    const directionClass = slideDirection === 'right' ? 'animate-slideInRight' : 'animate-slideInLeft';
+    const sectionWrapper = (key: string, jsx: React.ReactNode) => (
+      <ErrorBoundary fallback={
+        <div className="text-center py-12">
+          <p className="text-sm text-slate-500 mb-3">Section unavailable</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 rounded-lg bg-white/5 text-xs text-slate-400 border border-white/10 hover:bg-white/10 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      }>
+        {jsx}
+      </ErrorBoundary>
+    );
     switch (state.currentSection) {
       case 'home':
-        return <Dashboard stats={stats} insights={insights} onNavigate={handleNavigate} />;
+        return sectionWrapper('home', <Dashboard stats={stats} insights={insights} onNavigate={handleNavigate} />);
       case 'substances':
-        return <Substances />;
+        return sectionWrapper('substances', <Substances />);
       case 'biotools':
-        return (
+        return sectionWrapper('biotools', (
           <BioTools
             selectedMeds={state.selectedMeds}
             selectedSupplements={state.selectedSupplements}
             onToggleMed={toggleMed}
             onToggleSupplement={toggleSupplement}
           />
-        );
+        ));
       case 'recovery':
-        return (
+        return sectionWrapper('recovery', (
           <RecoveryHub
             stats={stats}
             insights={insights}
@@ -208,17 +240,17 @@ function AppContent() {
             onAddClipboard={addClipboardItem}
             onDeleteClipboard={deleteClipboardItem}
           />
-        );
+        ));
       case 'nutrition':
-        return <NutritionJuices />;
+        return sectionWrapper('nutrition', <NutritionJuices />);
       case 'mindpsych':
-        return <MindPsychology />;
+        return sectionWrapper('mindpsych', <MindPsychology />);
       case 'protocol':
-        return <RecoveryProtocol />;
+        return sectionWrapper('protocol', <RecoveryProtocol />);
       case 'phguide':
-        return <PHGuide />;
+        return sectionWrapper('phguide', <PHGuide />);
       default:
-        return <Dashboard stats={stats} insights={insights} onNavigate={handleNavigate} />;
+        return sectionWrapper('default', <Dashboard stats={stats} insights={insights} onNavigate={handleNavigate} />);
     }
   };
 
@@ -338,7 +370,7 @@ function AppContent() {
         <div className="max-w-md mx-auto px-4 pt-4">
           <ErrorBoundary>
             <Suspense fallback={<SectionSkeleton />}>
-              <div key={sectionKey} className="section-enter">
+              <div key={sectionKey} className={slideDirection === 'right' ? 'animate-slideInRight' : 'animate-slideInLeft'}>
                 {renderSection()}
               </div>
             </Suspense>

@@ -535,7 +535,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
 
       {/* --- RECOVERY TIPS --- */}
       {substance.recoveryTips && substance.recoveryTips.length > 0 && (
-        <div className="glass-card p-4 animate-fadeUp stagger-5" style={{ opacity: 0 }}>
+        <div className="glass-card p-4 animate-fadeUp stagger-4" style={{ opacity: 0 }}>
           <SectionHeader icon={Icons.harm} title="Recovery Tips" />
           <div className="space-y-1.5">
             {substance.recoveryTips.map((tip, i) => (
@@ -551,7 +551,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
       )}
 
       {/* --- PHILIPPINES --- */}
-      <div className="glass-card p-4 animate-fadeUp stagger-4" style={{ opacity: 0 }}>
+      <div className="glass-card p-4 animate-fadeUp stagger-5" style={{ opacity: 0 }}>
         <SectionHeader icon={Icons.philippines} title="Philippines" />
 
         <div className="space-y-2.5">
@@ -563,7 +563,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
       </div>
 
       {/* --- Disclaimer --- */}
-      <div className="glass-card p-3 animate-fadeUp stagger-5" style={{ opacity: 0 }}>
+      <div className="glass-card p-3 animate-fadeUp stagger-6" style={{ opacity: 0 }}>
         <p className="text-[10px] text-slate-500 leading-relaxed">
           <strong className="text-slate-400">Disclaimer:</strong> This information is for educational purposes only and is not medical advice. Always consult a healthcare professional for substance-related concerns.
         </p>
@@ -610,6 +610,8 @@ const Substances = React.memo(function Substances() {
   // Scroll indicator state
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [hasOverflow, setHasOverflow] = useState(false);
 
   // Ref for the scrollable drug tab container
   const tabContainerRef = useRef<HTMLDivElement>(null);
@@ -636,8 +638,12 @@ const Substances = React.memo(function Substances() {
     const container = tabContainerRef.current;
     if (!container) return;
     const { scrollLeft, scrollWidth, clientWidth } = container;
+    const overflow = scrollWidth > clientWidth + 2;
+    setHasOverflow(overflow);
     setCanScrollLeft(scrollLeft > 2);
     setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 2);
+    const maxScroll = scrollWidth - clientWidth;
+    setScrollProgress(maxScroll > 0 ? scrollLeft / maxScroll : 0);
   }, []);
 
   // Update indicators on scroll and when active tab changes
@@ -751,6 +757,15 @@ const Substances = React.memo(function Substances() {
               );
             })}
           </div>
+          {/* Scroll progress bar */}
+          {hasOverflow && (
+            <div className="mt-1 h-[2px] rounded-full bg-white/5 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-sky-500 to-emerald-500 transition-[width] duration-100"
+                style={{ width: `${Math.max(0.02, scrollProgress * 100)}%` }}
+              />
+            </div>
+          )}
         </div>
       )}
 

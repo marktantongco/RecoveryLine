@@ -1141,7 +1141,7 @@ function BeverageCard({ beverage, index }: { beverage: BeverageEntry; index: num
           </span>
         </div>
 
-        {/* Best For */
+        {/* Best For */}
         <div className="rounded-xl bg-white/[0.03] p-2.5 mb-2">
           <p className="text-[10px] text-slate-500 mb-0.5">Best For</p>
           <p className="text-[11px] text-sky-400 font-medium leading-relaxed">{beverage.bestFor}</p>

@@ -167,3 +167,28 @@ Stage Summary:
 - 11 hydration beverages with ratings added
 - 5 daily hydration schedules added
 - Total: 30+ new data entries added across 2 files
+
+---
+Task ID: 6
+Agent: full-stack-developer
+Task: Comprehensive audit fixes and upgrades
+
+Work Log:
+- Fixed stagger animation order in SubstanceDetail (stagger-4/5/6 were out of sequence)
+- Added position:relative to .glass-card for noise overlay pseudo-element
+- Changed More menu overlay from transparent to dark blur backdrop (rgba(0,0,0,0.4) + blur(4px))
+- Added drug tab scroll progress indicator bar (sky-500 to emerald-500 gradient, 2px height)
+- Added haptic('light') feedback on section navigation (only when section actually changes)
+- Wrapped each lazy section in individual ErrorBoundary with "Section unavailable" fallback + retry button
+- Memoized handleDelete and handleExport in RecoveryHub with useCallback
+- Added directional section transitions based on NAV_ORDER index comparison (slideInLeft/slideInRight)
+- Added slideInLeft keyframes and .animate-slideInLeft class to globals.css
+- Added will-change: transform, opacity and animation-fill-mode: forwards for animated elements
+- Verified -webkit-overflow-scrolling: touch already present on .app-shell-main
+- Fixed pre-existing NutritionJuices.tsx parse error (missing closing } on JSX comment at line 1144)
+- Build passes successfully
+
+Stage Summary:
+- 3 bug fixes + 5 upgrades + 2 CSS optimizations applied
+- Pre-existing build-blocking NutritionJuices.tsx parse error fixed
+- Build verified clean (5.4s compile)

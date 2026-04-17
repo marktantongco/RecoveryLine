@@ -102,18 +102,18 @@ export default function RecoveryHub({
     return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = useCallback((id: string) => {
     haptic('light');
     onDelete(id);
     setConfirmDeleteId(null);
     showToast('Entry deleted', 'info');
-  };
+  }, [onDelete, showToast]);
 
-  const handleExport = () => {
+  const handleExport = useCallback(() => {
     haptic('medium');
     onExport();
     showToast('Data exported as JSON', 'success');
-  };
+  }, [onExport, showToast]);
 
   const tabs: { key: SubTab; label: string; icon: React.ReactNode }[] = [
     {

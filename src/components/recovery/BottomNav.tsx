@@ -211,7 +211,7 @@ export default React.memo(function BottomNav({
       {moreMenuOpen && (
         <div
           className="fixed inset-0 z-[9998]"
-          style={{ background: 'transparent' }}
+          style={{ background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)' }}
           onClick={closeMoreMenu}
           onContextMenu={(e) => e.preventDefault()}
           aria-hidden="true"
