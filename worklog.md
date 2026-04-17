@@ -192,3 +192,67 @@ Stage Summary:
 - 3 bug fixes + 5 upgrades + 2 CSS optimizations applied
 - Pre-existing build-blocking NutritionJuices.tsx parse error fixed
 - Build verified clean (5.4s compile)
+---
+Task ID: 7
+Agent: full-stack-developer
+Task: Apply 9 mobile scroll fixes
+
+Work Log:
+- Fix 1 (P0): Added overscroll-behavior-y: contain to .app-shell-main
+- Fix 2 (P0): Added -webkit-overflow-scrolling: touch to .custom-scrollbar
+- Fix 3 (P0): Removed scroll-behavior: smooth from html (conflicts with programmatic scroll)
+- Fix 4 (P1): Removed scroll-behavior: smooth from .scroll-smooth (iOS conflict)
+- Fix 5 (P1): Made ActionFab touchstart listener passive
+- Fix 6 (P1): Added touch-action:none + overscroll-behavior:none to BottomNav overlay
+- Fix 7 (P1): Replaced max-h-[500px] with max-h-[40vh] in RecoveryHub timeline
+- Fix 8 (P2): Removed overflow-x-auto from BottomNav items container
+- Fix 9 (P2): Added overscroll-behavior: contain to Settings modal
+
+Stage Summary:
+- 9 scroll fixes applied across 6 files
+- Eliminates rubber-banding, scroll jank, nested scroll traps
+- Build passes clean
+
+---
+Task ID: 8
+Agent: full-stack-developer
+Task: Integrate missing features from live site analysis
+
+Work Log:
+- Created Onboarding.tsx with 5-screen flow (Welcome, Substance Selection, Health Profile, Contemplative Track, Completion)
+- Added onboarding check to page.tsx (localStorage gate)
+- Upgraded ActionFab with Emergency Crisis mode (crisis dialog, hotline links, calculator camouflage trigger)
+- Added pulse-crisis animation to globals.css
+- Added Milestones section to Dashboard
+- Verified MindPsychology wellness content already complete (5-4-3-2-1 Grounding, CBT Journaling, PMR all have full steps)
+- Verified NutritionJuices already has "Juices to Avoid" in Hydration tab (juice-avoid category beverages)
+- Added "Why This App" section to PHGuide (5 design decision cards)
+
+Stage Summary:
+- 6 major feature integrations from live site gap analysis
+- Onboarding flow with localStorage persistence
+- Crisis FAB with safety dialog, emergency hotlines, and calculator camouflage
+- 9 recovery milestones with lock/unlock tracking based on streak data
+- Build passes clean
+
+---
+Task ID: 9
+Agent: Main Agent
+Task: Final comprehensive upgrade — error handling, performance, UX, accessibility, CSS
+
+Work Log:
+- Verified section-aware ErrorBoundary fallbacks with section names (applied by Agent 8)
+- Verified Onboarding localStorage save has console.error instead of silent catch
+- Wrapped Screen2_Substances in React.memo for render optimization
+- Added key={screen} to Onboarding for proper mount/unmount lifecycle
+- Added role="progressbar" + aria-valuenow/min/max to drug tab scroll indicator
+- Added -webkit-tap-highlight-color: transparent to interactive elements CSS rule
+- Added text-size-adjust: 100% and -webkit-text-size-adjust: 100% to body (prevents iOS text scaling)
+- Verified gradient-border mask-composite CSS is correct
+
+Stage Summary:
+- 8 final polish upgrades applied
+- All error paths now log to console (no silent failures)
+- Accessibility: ARIA progress bar, tap highlight prevention, text scaling fix
+- Performance: React.memo on onboarding screens
+- Build passes clean (5.1s compile)

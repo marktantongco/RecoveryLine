@@ -25,6 +25,7 @@ function lazyWithLog(factory: () => Promise<{ default: React.ComponentType }>, n
   );
 }
 
+const Onboarding = lazyWithLog(() => import('@/components/recovery/Onboarding'), 'Onboarding');
 const Dashboard = lazyWithLog(() => import('@/components/recovery/Dashboard'), 'Dashboard');
 const Substances = lazyWithLog(() => import('@/components/recovery/Substances'), 'Substances');
 const BioTools = lazyWithLog(() => import('@/components/recovery/BioTools'), 'BioTools');
@@ -194,16 +195,15 @@ function AppContent() {
 
   const renderSection = () => {
     const directionClass = slideDirection === 'right' ? 'animate-slideInRight' : 'animate-slideInLeft';
-    const sectionWrapper = (key: string, jsx: React.ReactNode) => (
+    const sectionWrapper = (key: string, sectionName: string, jsx: React.ReactNode) => (
       <ErrorBoundary fallback={
-        <div className="text-center py-12">
-          <p className="text-sm text-slate-500 mb-3">Section unavailable</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 rounded-lg bg-white/5 text-xs text-slate-400 border border-white/10 hover:bg-white/10 transition-colors"
-          >
-            Retry
-          </button>
+        <div className="flex flex-col items-center justify-center py-16 px-4">
+          <div className="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center mb-4">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+          </div>
+          <p className="text-sm font-medium text-slate-300 mb-1">Section unavailable</p>
+          <p className="text-xs text-slate-500 mb-4">The <strong>{sectionName}</strong> section encountered an error.</p>
+          <button onClick={() => window.location.reload()} className="px-4 py-2 rounded-lg bg-white/5 text-xs text-slate-400 border border-white/10 hover:bg-white/10 active:scale-95 transition-all">Reload</button>
         </div>
       }>
         {jsx}
@@ -211,11 +211,11 @@ function AppContent() {
     );
     switch (state.currentSection) {
       case 'home':
-        return sectionWrapper('home', <Dashboard stats={stats} insights={insights} onNavigate={handleNavigate} />);
+        return sectionWrapper('home', 'Dashboard', <Dashboard stats={stats} insights={insights} onNavigate={handleNavigate} />);
       case 'substances':
-        return sectionWrapper('substances', <Substances />);
+        return sectionWrapper('substances', 'Substances', <Substances />);
       case 'biotools':
-        return sectionWrapper('biotools', (
+        return sectionWrapper('biotools', 'Bio Tools', (
           <BioTools
             selectedMeds={state.selectedMeds}
             selectedSupplements={state.selectedSupplements}
@@ -224,7 +224,7 @@ function AppContent() {
           />
         ));
       case 'recovery':
-        return sectionWrapper('recovery', (
+        return sectionWrapper('recovery', 'Recovery', (
           <RecoveryHub
             stats={stats}
             insights={insights}
@@ -242,15 +242,15 @@ function AppContent() {
           />
         ));
       case 'nutrition':
-        return sectionWrapper('nutrition', <NutritionJuices />);
+        return sectionWrapper('nutrition', 'Nutrition', <NutritionJuices />);
       case 'mindpsych':
-        return sectionWrapper('mindpsych', <MindPsychology />);
+        return sectionWrapper('mindpsych', 'Mind & Psych', <MindPsychology />);
       case 'protocol':
-        return sectionWrapper('protocol', <RecoveryProtocol />);
+        return sectionWrapper('protocol', 'Recovery Protocol', <RecoveryProtocol />);
       case 'phguide':
-        return sectionWrapper('phguide', <PHGuide />);
+        return sectionWrapper('phguide', 'PH Guide', <PHGuide />);
       default:
-        return sectionWrapper('default', <Dashboard stats={stats} insights={insights} onNavigate={handleNavigate} />);
+        return sectionWrapper('default', 'Dashboard', <Dashboard stats={stats} insights={insights} onNavigate={handleNavigate} />);
     }
   };
 
@@ -409,6 +409,54 @@ function AppContent() {
 }
 
 export default function Home() {
+  const [isOnboarded, setIsOnboarded] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    try {
+      const onboarded = localStorage.getItem('recoveryline_onboarded') === 'true';
+      setIsOnboarded(onboarded);
+    } catch {
+      setIsOnboarded(true);
+    }
+  }, []);
+
+  // Show loading while checking localStorage
+  if (isOnboarded === null) {
+    return (
+      <div className="min-h-screen bg-[#0a0f1a] flex items-center justify-center">
+        <div className="text-center animate-fadeUp">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center shadow-2xl shadow-sky-500/20 mx-auto mb-4 animate-pulse-glow">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+            </svg>
+          </div>
+          <p className="text-sm text-slate-400 font-medium">Loading RecoveryLine...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isOnboarded) {
+    return (
+      <ToastProvider>
+        <ErrorBoundary fallback={
+          <div className="flex flex-col items-center justify-center py-16 px-4">
+            <div className="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center mb-4">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+            </div>
+            <p className="text-sm font-medium text-slate-300 mb-1">Section unavailable</p>
+            <p className="text-xs text-slate-500 mb-4">The <strong>Onboarding</strong> section encountered an error.</p>
+            <button onClick={() => window.location.reload()} className="px-4 py-2 rounded-lg bg-white/5 text-xs text-slate-400 border border-white/10 hover:bg-white/10 active:scale-95 transition-all">Reload</button>
+          </div>
+        }>
+          <Suspense fallback={null}>
+            <Onboarding />
+          </Suspense>
+        </ErrorBoundary>
+      </ToastProvider>
+    );
+  }
+
   return (
     <ToastProvider>
       <ErrorBoundary>

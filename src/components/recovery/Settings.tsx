@@ -66,7 +66,7 @@ const Settings = React.memo(function Settings({
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center" role="dialog" aria-modal="true" aria-label="Settings">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-md bg-[#111827] border border-white/10 rounded-t-3xl sm:rounded-3xl p-6 pb-[calc(1.5rem+80px+env(safe-area-inset-bottom,0px))] max-h-[85vh] overflow-y-auto custom-scrollbar animate-fadeUp">
+      <div className="relative w-full max-w-md bg-[#111827] border border-white/10 rounded-t-3xl sm:rounded-3xl p-6 pb-[calc(1.5rem+80px+env(safe-area-inset-bottom,0px))] max-h-[85vh] overflow-y-auto custom-scrollbar animate-fadeUp" style={{ overscrollBehavior: 'contain' }}>
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-bold text-white">Settings</h2>

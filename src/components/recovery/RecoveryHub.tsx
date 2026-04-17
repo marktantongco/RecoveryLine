@@ -262,7 +262,7 @@ export default function RecoveryHub({
 
           {/* Timeline */}
           {Object.keys(grouped).length > 0 ? (
-            <div className="space-y-5 max-h-[500px] overflow-y-auto custom-scrollbar pr-1">
+            <div className="space-y-5 max-h-[40vh] overflow-y-auto custom-scrollbar pr-1">
               {Object.entries(grouped).map(([date, items]) => (
                 <div key={date} className="animate-fadeUp" style={{ opacity: 0 }}>
                   <p className="text-xs font-semibold text-slate-500 mb-2 px-1">{formatDate(date)} &middot; {date}</p>

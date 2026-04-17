@@ -211,7 +211,7 @@ export default React.memo(function BottomNav({
       {moreMenuOpen && (
         <div
           className="fixed inset-0 z-[9998]"
-          style={{ background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)' }}
+          style={{ background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)', touchAction: 'none', overscrollBehavior: 'none' }}
           onClick={closeMoreMenu}
           onContextMenu={(e) => e.preventDefault()}
           aria-hidden="true"
@@ -311,7 +311,7 @@ export default React.memo(function BottomNav({
         role="navigation"
         aria-label="Main navigation"
       >
-        <div className="flex items-center justify-around max-w-md mx-auto px-1 py-1 no-scrollbar overflow-x-auto">
+        <div className="flex items-center justify-around max-w-md mx-auto px-1 py-1 no-scrollbar">
           {/* 5 main nav items */}
           {NAV_ITEMS.map((item) => {
             const isActive = currentSection === item.id;

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { EMERGENCY_HOTLINES } from '@/lib/recovery-constants';
 
-type SubTab = 'programs' | 'hotlines' | 'support' | 'legal';
+type SubTab = 'programs' | 'hotlines' | 'support' | 'legal' | 'why';
 
 const GOV_PROGRAMS = [
   {
@@ -203,6 +203,17 @@ export default function PHGuide() {
       icon: (
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </svg>
+      ),
+    },
+    {
+      key: 'why',
+      label: 'Why This App',
+      icon: (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+          <path d="M12 17h.01" />
         </svg>
       ),
     },
@@ -645,6 +656,124 @@ export default function PHGuide() {
                 <p className="text-xs font-semibold text-amber-400 mb-1">Disclaimer</p>
                 <p className="text-xs text-slate-500 leading-relaxed">
                   The legal information provided here is for educational purposes only and should not be considered legal advice. Laws may change over time. For specific legal concerns, consult with a licensed attorney or contact PAO (Public Attorney&apos;s Office).
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Why This App Tab */}
+      {activeTab === 'why' && (
+        <div className="space-y-4 animate-fadeUp">
+          <div className="glass-card-hero p-5 animate-fadeUp" style={{ opacity: 0 }}>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-sky-500/15">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2Z" />
+                  <path d="M12 16v-4" />
+                  <path d="M12 8h.01" />
+                </svg>
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-white">Why This App</h2>
+                <p className="text-xs text-slate-400">Design decisions behind RecoveryLine</p>
+              </div>
+            </div>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Every design choice in RecoveryLine is intentional and rooted in the realities of substance recovery in the Philippines. Here&apos;s why we built it this way.
+            </p>
+          </div>
+
+          {/* Design Decision Cards */}
+          <div className="space-y-3">
+            {/* Dark Mode by Default */}
+            <div className="glass-card p-4 animate-fadeUp" style={{ opacity: 0, animationDelay: '0.05s' }}>
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-lg bg-violet-500/15 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-sm font-semibold text-white mb-1">Dark Mode by Default</h4>
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    Filipino stigma culture means you may need to use this app in public or around others. Dark mode makes the screen less readable from a distance, providing an extra layer of privacy. It also reduces eye strain during late-night check-ins and cravings management.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* PWA Architecture */}
+            <div className="glass-card p-4 animate-fadeUp" style={{ opacity: 0, animationDelay: '0.1s' }}>
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-lg bg-sky-500/15 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                    <path d="M12 18h.01" />
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-sm font-semibold text-white mb-1">PWA Architecture</h4>
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    No app store means no download history, no search results, and no trail. Install directly from the browser and remove instantly. The built-in calculator camouflage lets you switch to a realistic calculator in one tap if someone looks at your screen — no one will know it&apos;s a recovery app.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Taglish & Local Context */}
+            <div className="glass-card p-4 animate-fadeUp" style={{ opacity: 0, animationDelay: '0.15s' }}>
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-lg bg-emerald-500/15 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="2" y1="12" x2="22" y2="12" />
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-sm font-semibold text-white mb-1">Taglish &amp; Local Context</h4>
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    Recovery resources rarely reflect the Filipino experience. We use local ingredient names (malunggay, calamansi, buko), reference Philippine government programs (PDEA, DDB, DOH), and include substance aliases used locally (shabu, basi, ginebra). Hotlines are Philippine-specific. Nutrition advice accounts for palengke availability and Filipino meal patterns.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Privacy-First Design */}
+            <div className="glass-card p-4 animate-fadeUp" style={{ opacity: 0, animationDelay: '0.2s' }}>
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-lg bg-red-500/15 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-sm font-semibold text-white mb-1">Privacy-First Design</h4>
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    All data is stored locally on your device — nothing is sent to any server. No accounts, no sign-ups, no email verification. No analytics tracking. Even the export feature produces a file that only you control. Under Philippine law (RA 9165, Section 55), rehabilitation records must be kept confidential. RecoveryLine goes further — no records exist outside your device.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Additional context */}
+          <div className="glass-card-insight p-4 animate-fadeUp" style={{ opacity: 0, animationDelay: '0.25s' }}>
+            <div className="flex items-start gap-3">
+              <div className="w-7 h-7 rounded-lg bg-emerald-500/15 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  <path d="m9 12 2 2 4-4" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-emerald-400 mb-1">Open Source &amp; Free Forever</p>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  RecoveryLine is and will always be 100% free. No premium tiers, no subscriptions, no paywalls. Recovery tools should be accessible to everyone, regardless of financial situation. Every feature in this app exists because someone in recovery needed it.
                 </p>
               </div>
             </div>

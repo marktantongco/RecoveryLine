@@ -98,6 +98,197 @@ function getMoodColor(mood: MoodKey): string {
   return '#ef4444';
 }
 
+// ─── Milestones Section ────────────────────────────────────────────────────────
+
+interface Milestone {
+  id: string;
+  label: string;
+  description: string;
+  icon: string;
+  checkFn: (streak: number, soberDays: number, totalCheckins: number) => boolean;
+}
+
+const MILESTONES: Milestone[] = [
+  {
+    id: 'first_24h_clean',
+    label: 'First 24 Hours Clean',
+    description: 'Survived the first day without substances',
+    icon: '⏱️',
+    checkFn: (streak) => streak >= 1,
+  },
+  {
+    id: 'first_week_complete',
+    label: 'First Week Complete',
+    description: 'Seven consecutive days of progress',
+    icon: '🗓️',
+    checkFn: (streak) => streak >= 7,
+  },
+  {
+    id: 'sleeping_without_substance',
+    label: 'Natural Sleep',
+    description: 'Your brain is learning to sleep without chemicals',
+    icon: '😴',
+    checkFn: (streak) => streak >= 5,
+  },
+  {
+    id: 'two_weeks_clear',
+    label: 'Two Weeks Clear',
+    description: 'Dopamine receptors beginning to stabilize',
+    icon: '🌟',
+    checkFn: (streak) => streak >= 14,
+  },
+  {
+    id: 'first_cravings_resisted',
+    label: 'Cravings Conquered',
+    description: 'You faced cravings and chose recovery',
+    icon: '🛡️',
+    checkFn: (_s, __sober, checkins) => checkins >= 5,
+  },
+  {
+    id: 'gut_healing_underway',
+    label: 'Gut Healing Underway',
+    description: 'Your microbiome is rebuilding after substance damage',
+    icon: '🦠',
+    checkFn: (streak) => streak >= 10,
+  },
+  {
+    id: 'sleep_improving',
+    label: 'Sleep Improving',
+    description: 'Sleep architecture is normalizing — deeper, longer rest',
+    icon: '🌙',
+    checkFn: (streak) => streak >= 21,
+  },
+  {
+    id: 'one_month_clear',
+    label: 'One Month Clear',
+    description: 'Significant neurotransmitter upregulation achieved',
+    icon: '🏆',
+    checkFn: (streak) => streak >= 30,
+  },
+  {
+    id: 'three_months_clear',
+    label: 'Three Months Clear',
+    description: 'Near-full brain recovery — neuroplasticity in full effect',
+    icon: '💎',
+    checkFn: (streak) => streak >= 90,
+  },
+];
+
+function MilestonesSection({ streak, soberDays, totalCheckins }: { streak: number; soberDays: number; totalCheckins: number }) {
+  const unlockedCount = MILESTONES.filter((m) => m.checkFn(streak, soberDays, totalCheckins)).length;
+  const currentMilestone = MILESTONES.find((m) => !m.checkFn(streak, soberDays, totalCheckins)) ?? MILESTONES[MILESTONES.length - 1];
+  const nextMilestoneIdx = MILESTONES.findIndex((m) => !m.checkFn(streak, soberDays, totalCheckins));
+
+  return (
+    <div className="glass-card p-4 animate-fadeUp stagger-4" style={{ opacity: 0 }}>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7" />
+            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7" />
+            <path d="M4 22h16" />
+            <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+          </svg>
+          <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">Recovery Milestones</span>
+        </div>
+        <span className="text-[10px] text-amber-400 font-semibold">
+          {unlockedCount}/{MILESTONES.length} unlocked
+        </span>
+      </div>
+
+      {/* Current / Next Milestone */}
+      <div className="rounded-xl bg-amber-500/[0.06] border border-amber-500/15 p-3 mb-3">
+        <div className="flex items-center gap-3">
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl ${
+            currentMilestone.checkFn(streak, soberDays, totalCheckins)
+              ? 'bg-emerald-500/15'
+              : 'bg-white/[0.04]'
+          }`}>
+            {currentMilestone.icon}
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-semibold text-white">{currentMilestone.label}</p>
+              {currentMilestone.checkFn(streak, soberDays, totalCheckins) ? (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>
+              ) : (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              )}
+            </div>
+            <p className="text-[11px] text-slate-400 leading-relaxed">{currentMilestone.description}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Milestone progress bar */}
+      <div className="mb-3">
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-[10px] text-slate-500">Progress</span>
+          <span className="text-[10px] text-amber-400 font-medium">{Math.round((unlockedCount / MILESTONES.length) * 100)}%</span>
+        </div>
+        <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-amber-500 to-emerald-500 transition-all duration-1000"
+            style={{ width: `${(unlockedCount / MILESTONES.length) * 100}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Milestone dots grid */}
+      <div className="flex flex-wrap gap-1.5">
+        {MILESTONES.map((m, i) => {
+          const isUnlocked = m.checkFn(streak, soberDays, totalCheckins);
+          const isNext = i === nextMilestoneIdx;
+          return (
+            <div
+              key={m.id}
+              className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs transition-all ${
+                isUnlocked
+                  ? 'bg-emerald-500/15 ring-1 ring-emerald-500/30'
+                  : isNext
+                    ? 'bg-amber-500/15 ring-1 ring-amber-500/30 animate-pulse'
+                    : 'bg-white/[0.04]'
+              }`}
+              title={m.label}
+            >
+              {isUnlocked ? (
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m5 12 5 5L20 7" />
+                </svg>
+              ) : isNext ? (
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 8v4" />
+                  <path d="M12 16h.01" />
+                </svg>
+              ) : (
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#334155" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Inspirational quote */}
+      {unlockedCount > 0 && (
+        <p className="text-[10px] text-slate-500 italic mt-3 text-center">
+          Every milestone you unlock is proof that your brain is healing. Keep going.
+        </p>
+      )}
+    </div>
+  );
+}
+
 // ─── Weekly Stats Computation ────────────────────────────────────────────────
 
 function getStartOfWeek(): Date {
@@ -548,6 +739,11 @@ export default React.memo(function Dashboard({ stats, insights, onNavigate }: Da
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════
+          RECOVERY MILESTONES
+          ═══════════════════════════════════════════════════════════════════════ */}
+      <MilestonesSection streak={stats.streak} soberDays={stats.soberDays} totalCheckins={stats.totalCheckins} />
+
+      {/* ═══════════════════════════════════════════════════════════════════════
           TODAY'S STATUS — Clickable
           ═══════════════════════════════════════════════════════════════════════ */}
       <div className="glass-card p-4 animate-fadeUp stagger-4" style={{ opacity: 0 }}>
@@ -582,7 +778,7 @@ export default React.memo(function Dashboard({ stats, insights, onNavigate }: Da
           ) : (
             <button
               onClick={() => onNavigate('recovery')}
-              className="px-3 py-2 rounded-xl bg-white/5 text-xs text-slate-400 border border-white/8 hover:bg-white/10 transition-colors flex-shrink-0 ml-3"
+              className="px-3 py-2 rounded-xl bg-white/5 text-xs text-slate-400 border border-white/8 hover:bg-white/10 active:scale-95 transition-all flex-shrink-0 ml-3"
             >
               Update
             </button>
@@ -752,7 +948,7 @@ export default React.memo(function Dashboard({ stats, insights, onNavigate }: Da
         {insights.length > 0 && (
           <button
             onClick={() => onNavigate('recovery')}
-            className="mt-3 text-xs text-sky-400 hover:text-sky-300 transition-colors font-medium flex items-center gap-1"
+            className="mt-3 text-xs text-sky-400 hover:text-sky-300 active:scale-95 transition-colors font-medium flex items-center gap-1"
           >
             View full analytics {'\u2192'}
           </button>
@@ -767,7 +963,7 @@ export default React.memo(function Dashboard({ stats, insights, onNavigate }: Da
           <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Recent Activity</h3>
           <button
             onClick={() => onNavigate('recovery')}
-            className="text-xs text-sky-400 hover:text-sky-300 active:text-sky-500 transition-colors font-medium"
+            className="text-xs text-sky-400 hover:text-sky-300 active:text-sky-500 active:scale-95 transition-all font-medium"
           >
             View All {'\u2192'}
           </button>

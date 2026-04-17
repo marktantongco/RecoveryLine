@@ -759,7 +759,7 @@ const Substances = React.memo(function Substances() {
           </div>
           {/* Scroll progress bar */}
           {hasOverflow && (
-            <div className="mt-1 h-[2px] rounded-full bg-white/5 overflow-hidden">
+            <div className="mt-1 h-[2px] rounded-full bg-white/5 overflow-hidden" role="progressbar" aria-valuenow={Math.round(scrollProgress * 100)} aria-valuemin={0} aria-valuemax={100} aria-label="Drug tabs scroll progress">
               <div
                 className="h-full rounded-full bg-gradient-to-r from-sky-500 to-emerald-500 transition-[width] duration-100"
                 style={{ width: `${Math.max(0.02, scrollProgress * 100)}%` }}
