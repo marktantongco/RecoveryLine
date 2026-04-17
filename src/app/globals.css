@@ -96,7 +96,8 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
   transition: border-color 0.2s ease, transform 0.15s ease;
-  overflow: hidden;
+  /* overflow removed — was killing overflow-x-auto on child elements (Tailwind v4 layer specificity)
+     Use Tailwind 'overflow-hidden' class where clipping is actually needed */
 }
 
 .glass-card-elevated {
@@ -518,12 +519,7 @@ textarea:focus {
   scrollbar-width: none;
 }
 
-/* Content visibility for offscreen sections */
-.section-enter {
-  animation: fadeUp 0.4s ease-out;
-  content-visibility: auto;
-  contain-intrinsic-size: 0 800px;
-}
+/* Duplicate section-enter removed (see line ~363) */
 
 /* More menu slide-up animation */
 @keyframes slideUpMenu {

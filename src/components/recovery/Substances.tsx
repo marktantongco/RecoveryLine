@@ -256,11 +256,13 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
           <div className="mt-3">
             {/* Damages Dropdown */}
             <div
-              className={`transition-[grid-template-rows] duration-300 ease-in-out ${
-                expandedDropdown === 'damage' ? 'grid grid-rows-[1fr]' : 'grid grid-rows-[0fr]'
-              }`}
+              style={{
+                display: 'grid',
+                gridTemplateRows: expandedDropdown === 'damage' ? '1fr' : '0fr',
+                transition: 'grid-template-rows 0.3s ease-in-out',
+              }}
             >
-              <div className="overflow-hidden">
+              <div style={{ overflow: 'hidden', minHeight: 0 }}>
                 <div className="max-h-48 overflow-y-auto custom-scrollbar space-y-1.5 mb-1">
                   <p className="text-[10px] font-semibold text-red-400 uppercase tracking-wide mb-2">10 Damage Areas</p>
                   {substance.primaryDamage.items.map((item, i) => (
@@ -281,11 +283,13 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
 
             {/* Reductions Dropdown */}
             <div
-              className={`transition-[grid-template-rows] duration-300 ease-in-out ${
-                expandedDropdown === 'reduction' ? 'grid grid-rows-[1fr]' : 'grid grid-rows-[0fr]'
-              }`}
+              style={{
+                display: 'grid',
+                gridTemplateRows: expandedDropdown === 'reduction' ? '1fr' : '0fr',
+                transition: 'grid-template-rows 0.3s ease-in-out',
+              }}
             >
-              <div className="overflow-hidden">
+              <div style={{ overflow: 'hidden', minHeight: 0 }}>
                 <div className="max-h-48 overflow-y-auto custom-scrollbar space-y-1.5 mb-1">
                   <p className="text-[10px] font-semibold text-sky-400 uppercase tracking-wide mb-2">10 Harm Reductions</p>
                   {substance.harmReduction.map((tip, i) => (
@@ -302,11 +306,13 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
 
             {/* Withdrawals Dropdown */}
             <div
-              className={`transition-[grid-template-rows] duration-300 ease-in-out ${
-                expandedDropdown === 'withdrawal' ? 'grid grid-rows-[1fr]' : 'grid grid-rows-[0fr]'
-              }`}
+              style={{
+                display: 'grid',
+                gridTemplateRows: expandedDropdown === 'withdrawal' ? '1fr' : '0fr',
+                transition: 'grid-template-rows 0.3s ease-in-out',
+              }}
             >
-              <div className="overflow-hidden">
+              <div style={{ overflow: 'hidden', minHeight: 0 }}>
                 <div className="max-h-56 overflow-y-auto custom-scrollbar mb-1">
                   <p className="text-[10px] font-semibold text-amber-400 uppercase tracking-wide mb-2">10 Withdrawal Symptoms</p>
                   {/* Timeline + Severity */}
@@ -699,7 +705,7 @@ const Substances = React.memo(function Substances() {
         <div className="relative animate-fadeUp stagger-1" style={{ opacity: 0 }}>
           {/* Left scroll indicator */}
           {canScrollLeft && (
-            <div className="absolute left-0 top-0 bottom-0 w-10 bg-gradient-to-r from-[#0a0f1a] via-[#0a0f1a]/80 to-transparent z-10 flex items-center justify-start pointer-events-none rounded-l-2xl">
+            <div className="absolute left-0 top-0 bottom-0 w-10 bg-gradient-to-r from-[rgba(17,24,39,0.95)] via-[rgba(17,24,39,0.8)] to-transparent z-10 flex items-center justify-start pointer-events-none rounded-l-2xl">
               <button
                 onClick={() => tabContainerRef.current?.scrollBy({ left: -140, behavior: 'smooth' })}
                 className="pointer-events-auto w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/60 hover:text-white/90 transition-colors active:scale-90 ml-1"
@@ -711,7 +717,7 @@ const Substances = React.memo(function Substances() {
           )}
           {/* Right scroll indicator */}
           {canScrollRight && (
-            <div className="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-[#0a0f1a] via-[#0a0f1a]/80 to-transparent z-10 flex items-center justify-end pointer-events-none rounded-r-2xl">
+            <div className="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-[rgba(17,24,39,0.95)] via-[rgba(17,24,39,0.8)] to-transparent z-10 flex items-center justify-end pointer-events-none rounded-r-2xl">
               <button
                 onClick={() => tabContainerRef.current?.scrollBy({ left: 140, behavior: 'smooth' })}
                 className="pointer-events-auto w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/60 hover:text-white/90 transition-colors active:scale-90 mr-1"
