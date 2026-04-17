@@ -433,3 +433,137 @@ Stage Summary:
 - Splash screen fully removed — app renders instantly on first frame
 - PWA install fixed — manifest has required id field, SW cache bumped
 - **Mobile scroll ROOT CAUSE fixed**: The flex chain html → body → .app-shell → .app-shell-main was broken because body had no height and .app-shell used min-height. Now body=100%, app-shell=height:100dvh, so .app-shell-main with flex:1 gets a constrained height and overflow-y:auto activates properly.
+---
+Task ID: 3
+Agent: Main Agent
+Task: Add per-substance phase-based recovery protocols and supplement use cases
+
+Work Log:
+
+### substance-data.ts Updates
+- Added `recoveryPhases` optional field to `SubstanceData` interface (lines 42-50) with sub-fields: name, timeline, neurochemicalState?, prioritySupplements (name+dosage), dietaryFocus, milestones, medicalNote?
+- Added 4-phase `recoveryPhases` data for 5 substances:
+
+  1. **methamphetamine** (4 phases): Acute Withdrawal/The Crash (Days 0-14) with detailed neurochemical state (dopamine near zero, CRF hyperactive, microglia activated, gut permeability high), Early Recovery/Rebuilding Foundation (Days 14-60), Rebuilding/Neuroplasticity Window (Months 2-6), Maintenance/Long-Term Recovery (Month 6+). Includes PH-specific dietary focus (buko juice, malunggay, atchara, luyang dilaw, bangus, galunggong).
+
+  2. **mdma** (4 phases): Post-Roll Comedown/Serotonin Depletion (Days 0-7), SERT Recovery Window (Days 7-28), Neuroregeneration Phase (Months 1-3), Long-Term Neuroprotection (Month 3+). Focus on serotonin system restoration with 5-HTP, EGCG, omega-3 protocols.
+
+  3. **cannabis** (4 phases): Acute Withdrawal/The Rebound (Days 0-14), Early Recovery/The Fog Lifting (Days 14-45), Rebuilding/Cognitive Comeback (Months 1.5-4), Maintenance/Endocannabinoid Balance (Month 4+). Focus on CB1 receptor upregulation and cognitive recovery.
+
+  4. **ghb** (5 phases): Acute Withdrawal with MEDICAL NOTE (Days 0-14), Early Recovery/GABA Rebalancing (Days 14-60), Rebuilding/Nervous System Recovery (Months 2-6), Maintenance/Long-Term Stability (Month 6+). GHB phase includes life-threatening withdrawal warning and medicalNote field.
+
+  5. **cocaine** (4 phases): Acute Withdrawal/The Crash (Days 0-14), Early Recovery/Cardiovascular Watch (Days 14-60), Rebuilding/Dopamine & Cardio Recovery (Months 2-6), Maintenance/Cardiovascular Vigilance (Month 6+). Unique focus on cardiovascular repair with CoQ10, Hawthorn, and cardio-specific milestones.
+
+- Remaining 6 substances (heroin, alcohol, benzodiazepines, ketamine, lsd, nicotine) left without recoveryPhases (optional field, no data yet)
+- Each phase has 3-4 milestones for progress tracking
+
+### supplement-data.ts Updates
+- Added `useCases: string[]` field to `SupplementData` interface (line 19)
+- Added `SUPPLEMENT_USE_CASES` constant (13 categories: All, Dopamine Recovery, Serotonin Restoration, GABA & Calm, Gut Repair, Neuroprotection, Cardiovascular, Sleep Support, Energy & Focus, Hormonal Balance, Immune Support, Liver Detox, Craving Reduction)
+- Exported `SupplementUseCase` type
+- Updated `SUPPLEMENT_CATEGORIES` type to `(SupplementCategory | 'All')[]` to properly type the 'All' entry
+
+**16 original supplements — useCases + forSubstances updates:**
+- Magnesium Glycinate: useCases + forSubstances expanded to 9 substances
+- NAC: useCases + forSubstances expanded to 7 substances
+- 5-HTP: useCases + forSubstances expanded to 4 substances
+- L-Glutamine: useCases + forSubstances expanded to 5 substances
+- L-Tyrosine: useCases + forSubstances expanded to 3 substances
+- Mucuna Pruriens: useCases + forSubstances expanded to 3 substances
+- Alpha-Lipoic Acid: useCases + forSubstances expanded to 4 substances
+- Vitamin D3: useCases + forSubstances expanded to 7 substances
+- Omega-3: useCases + forSubstances expanded to 8 substances
+- Probiotics: useCases + forSubstances expanded to 8 substances
+- Zinc: useCases + forSubstances expanded to 6 substances
+- B-Complex: useCases + forSubstances expanded to 7 substances
+- Ashwagandha: useCases + forSubstances expanded to 7 substances
+- L-Theanine: useCases + forSubstances expanded to 7 substances
+- Melatonin: useCases + forSubstances expanded to 6 substances
+- Vitamin C: useCases + forSubstances expanded to 6 substances
+
+**13 newer supplements — useCases added:**
+- Inositol: ['GABA & Calm', 'Craving Reduction', 'Mood Support']
+- Phosphatidylserine: ['Neuroprotection', 'Energy & Focus', 'Sleep Support']
+- Tongkat Ali: ['Hormonal Balance', 'Energy & Focus', 'Neuroprotection']
+- Shilajit: ['Hormonal Balance', 'Energy & Focus', 'Neuroprotection']
+- Whey Protein: ['Gut Repair', 'Energy & Focus', 'Hormonal Balance']
+- Creatine: ['Energy & Focus', 'Neuroprotection', 'Gut Repair']
+- DGL: ['Gut Repair', 'Immune Support', 'Liver Detox']
+- Aloe Vera: ['Gut Repair', 'Immune Support', 'Neuroprotection']
+- Zinc Carnosine: ['Gut Repair', 'Neuroprotection', 'Immune Support']
+- Quercetin: ['Neuroprotection', 'Immune Support', 'Craving Reduction']
+- DLPA: ['Dopamine Recovery', 'Energy & Focus', 'Craving Reduction']
+- Butyrate: ['Gut Repair', 'Neuroprotection', 'Immune Support']
+
+### Lint Verification
+- `bun run lint`: 0 errors, 444 warnings (all pre-existing warnings from app_bundle.js and page.tsx — no new issues introduced)
+
+Stage Summary:
+- SubstanceData interface extended with optional recoveryPhases (4-phase protocol per substance)
+- 5 substances with complete 4-phase recovery protocols (20 phases total, ~80 milestones)
+- SupplementData interface extended with useCases field (13 categories)
+- All 29 supplements now have useCases arrays
+- All 16 original supplements have expanded forSubstances arrays (3 → 9 substances per supplement)
+- SUPPLEMENT_USE_CASES and SupplementUseCase exported for UI filtering
+- File grew: substance-data.ts 1133 → 1570 lines, supplement-data.ts 1032 → 1065 lines
+---
+Task ID: 7
+Agent: full-stack-developer
+Task: Display per-substance phase-based recovery protocols in Substances.tsx
+
+Work Log:
+- Read Substances.tsx (695 lines) to understand existing structure and stagger animation order
+- Identified insertion point: after "Recovery Protocol" card (stagger-2) and before "Pharmacology" card (stagger-3)
+- Inserted new "Substance-Specific Recovery Phases" section at line 522 with stagger-3 class
+- Section conditionally renders only when `substance.recoveryPhases` exists and is non-empty
+- Each phase renders with color-coded theming (red → amber → emerald → sky across 4 phases)
+- Phase card includes: numbered badge, phase name, timeline, and optional connector line between phases
+- Phase content sections: Medical Warning (red alert with triangle icon), Neurochemical State, Priority Supplements (table with name + dosage columns), Dietary Focus (emerald chips), Milestones (phase-colored badges)
+- Medical notes rendered with prominent red warning styling for dangerous withdrawals (e.g., GHB)
+- Milestones use `replace(/_/g, ' ')` to convert snake_case to readable text
+- Shifted stagger numbers for all subsequent sections: Pharmacology 3→4, Recovery Tips 4→5, Philippines 5→6, Disclaimer 6→7
+- Used existing Icons.brain for the section header — no new imports needed
+- Lint: 0 errors, 444 warnings (all pre-existing)
+
+Stage Summary:
+- New "Substance-Specific Recovery Phases" section added to SubstanceDetail component
+- Displays 4-phase protocols for 5 substances (methamphetamine, mdma, cannabis, ghb, cocaine)
+- Includes medical warnings, neurochemical state, supplement table, dietary focus chips, milestones
+- Color-coded phases with connector lines for visual timeline progression
+- Stagger animations renumbered (3→4→5→6→7) to maintain sequential ordering
+- No new imports — uses existing Icons.brain and SubstanceData.recoveryPhases type
+- Build passes clean
+---
+Task ID: 6
+Agent: full-stack-developer
+Task: Add "Substance-Specific Protocols" section to RecoveryProtocol.tsx
+
+Work Log:
+- Read RecoveryProtocol.tsx (637 lines), substance-data.ts (1570 lines), and worklog.md for context
+- Identified 5 substances with recoveryPhases: cocaine (dangerLevel 5, stimulant), methamphetamine (5, stimulant), GHB (4, depressant), MDMA (4, empathogen), cannabis (2, cannabinoid)
+- Added imports for SUBSTANCES, SUBSTANCE_LIST, and SubstanceData type from @/lib/substance-data
+- Created `getSubstanceAccent()` function with per-category color system:
+  - Category overrides: empathogen (violet/purple), cannabinoid (lime/green), dissociative (cyan/sky)
+  - Default: danger-level-based colors (5=rose, 4=amber, 3=orange, 2=yellow, 1=emerald)
+- Created `DangerDots` component showing 5 dots (filled=rose for level, dim=white/8 for remaining)
+- Created `getCategoryLabel()` helper mapping category enum to display string
+- Created `SubstanceProtocolCard` component: shows substance name + danger dots, 120-char description snippet, category badge, phase count badge, chevron indicator
+- Created `SubstancePhaseCard` component: expandable phase card with medical note (red alert), neurochemical state, priority supplements (name + dosage), dietary focus bullets, milestones (underscore→space)
+- Created `SubstanceProtocolDetail` component: back button, hero card with substance info + danger level badge, recovery focus summary (neurotransmitters as chips, target organs, timeline), phase cards list
+- Added `activeSubstanceId` state to main component
+- Updated conditional rendering: SYMBIOTIC section cards and substance section now both check `!activeSectionData && !activeSubstanceId`
+- Added "Substance-Specific Recovery Protocols" hero card (rose-to-violet gradient) with substance/phase counts
+- Added substance card list (filtered to only those with recoveryPhases)
+- Added substance detail view with IIFE rendering pattern
+- All existing functionality preserved — no changes to SectionCard, PhaseCard, FAQAccordion, SectionDetail, etc.
+- Lint: 0 errors, 444 warnings (all pre-existing)
+- Dev server: ✓ Compiled in 168ms, no errors
+
+Stage Summary:
+- 3 new sub-components added to RecoveryProtocol.tsx (SubstanceProtocolCard, SubstancePhaseCard, SubstanceProtocolDetail)
+- 3 utility functions (getSubstanceAccent, DangerDots, getCategoryLabel)
+- New "Substance-Specific Recovery Protocols" section after existing SYMBIOTIC_PROTOCOL cards
+- 5 substances with 4-phase protocols displayed (cocaine, methamphetamine, GHB, MDMA, cannabis)
+- Per-substance accent colors by category/danger level (violet for MDMA, lime for cannabis, cyan for GHB, rose for cocaine/meth)
+- Detail view includes recovery focus summary and expandable phase cards
+- File grew: RecoveryProtocol.tsx 637 → 1163 lines

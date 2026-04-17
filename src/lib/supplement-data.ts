@@ -16,9 +16,27 @@ export interface SupplementData {
   stackNotes: string;
   philippinesAvailability: string;
   priceRange: string;
+  useCases: string[];
 }
 
-export const SUPPLEMENT_CATEGORIES: SupplementCategory[] = [
+export const SUPPLEMENT_USE_CASES = [
+  'All',
+  'Dopamine Recovery',
+  'Serotonin Restoration',
+  'GABA & Calm',
+  'Gut Repair',
+  'Neuroprotection',
+  'Cardiovascular',
+  'Sleep Support',
+  'Energy & Focus',
+  'Hormonal Balance',
+  'Immune Support',
+  'Liver Detox',
+  'Craving Reduction',
+] as const;
+export type SupplementUseCase = (typeof SUPPLEMENT_USE_CASES)[number];
+
+export const SUPPLEMENT_CATEGORIES: (SupplementCategory | 'All')[] = [
   'All',
   'Minerals',
   'Amino Acids',
@@ -60,11 +78,12 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'Take 1-2 hours before bed for optimal sleep benefits',
       'Choose glycinate form — oxide and citrate are poorly absorbed',
     ],
-    forSubstances: ['methamphetamine', 'mdma', 'cannabis'],
+    forSubstances: ['methamphetamine', 'mdma', 'cannabis', 'ghb', 'cocaine', 'heroin', 'alcohol', 'benzodiazepines', 'nicotine'],
     stackNotes:
       'Foundation supplement — stack with everything. Take separately from zinc (2+ hours apart) for optimal absorption. Can be combined with L-Theanine for enhanced calming effect.',
     philippinesAvailability: 'Widely available at Watsons, Mercury Drug, Healthy Options, Lazada, Shopee. Look for "Magnesium Glycinate" or "Magnesium Bisglycinate" — avoid Magnesium Oxide.',
     priceRange: '₱300-800 per 60-90 capsules',
+    useCases: ['GABA & Calm', 'Sleep Support', 'Neuroprotection', 'Dopamine Recovery', 'Serotonin Restoration'],
   },
   {
     id: 'nac',
@@ -94,11 +113,12 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'May cause mild nausea at first — start with 600mg',
       'Not for use with nitroglycerin or activated charcoal',
     ],
-    forSubstances: ['methamphetamine', 'mdma', 'cannabis'],
+    forSubstances: ['methamphetamine', 'mdma', 'cannabis', 'ghb', 'cocaine', 'heroin', 'alcohol'],
     stackNotes:
       'Pair with Vitamin C (enhances glutathione recycling). Combine with Alpha-Lipoic Acid for comprehensive antioxidant coverage. Take separately from probiotics (2+ hours apart).',
     philippinesAvailability: 'Available at Watsons, Mercury Drug, Lazada, Shopee. Also sold as a respiratory supplement (brand names vary). Look for "NAC 600mg" capsules.',
     priceRange: '₱400-900 per 30-60 capsules',
+    useCases: ['Craving Reduction', 'Neuroprotection', 'Liver Detox', 'Gut Repair', 'Immune Support'],
   },
   {
     id: '5htp',
@@ -128,11 +148,12 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'Take with a small carbohydrate snack (enhances brain uptake)',
       'Do not use for more than 3 months without a break',
     ],
-    forSubstances: ['mdma', 'methamphetamine'],
+    forSubstances: ['mdma', 'methamphetamine', 'cocaine', 'heroin'],
     stackNotes:
       'Stack with Vitamin B6 (cofactor for conversion to serotonin). Take with L-Tryptophan for dual-pathway serotonin support. Avoid combining with L-Tyrosine (they compete for the same transporter). Cycle: 2 weeks on, 1 week off.',
     philippinesAvailability: 'Available at Healthy Options, Lazada, Shopee. Look for "5-HTP" or "5-Hydroxytryptophan" in 50mg or 100mg capsules.',
     priceRange: '₱500-1,200 per 60 capsules',
+    useCases: ['Serotonin Restoration', 'Sleep Support', 'Mood Support'],
   },
   {
     id: 'l-glutamine',
@@ -163,11 +184,12 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'Dissolve in water — slightly bitter taste',
       'Those with severe liver disease should consult a doctor',
     ],
-    forSubstances: ['methamphetamine', 'mdma', 'cannabis'],
+    forSubstances: ['methamphetamine', 'ghb', 'heroin', 'alcohol', 'cocaine'],
     stackNotes:
       'Combine with probiotics for synergistic gut repair. Pair with Zinc Carnosine for enhanced intestinal healing. Take NAC separately (they use the same transporters).',
     philippinesAvailability: 'Available at Watsons, Mercury Drug, Lazada, Shopee. Powder form (unflavored) is most economical. Also available in capsules but dosage is too low (500mg per capsule).',
     priceRange: '₱400-800 per 300g powder (most cost-effective)',
+    useCases: ['Gut Repair', 'GABA & Calm', 'Craving Reduction', 'Energy & Focus'],
   },
   {
     id: 'l-tyrosine',
@@ -197,11 +219,12 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'Caution with L-DOPA or Parkinson\'s medications',
       'Start with 500mg, increase only if well-tolerated',
     ],
-    forSubstances: ['methamphetamine', 'mdma'],
+    forSubstances: ['methamphetamine', 'cocaine', 'heroin'],
     stackNotes:
       'Pair with Vitamin B6 and Vitamin C (cofactors for dopamine conversion). Combine with Mucuna Pruriens for dual-pathway dopamine support. Take separately from 5-HTP (competes for absorption). Cycle: 2-3 weeks on, 1 week off.',
     philippinesAvailability: 'Available at Healthy Options, Lazada, Shopee. Look for "L-Tyrosine 500mg" capsules.',
     priceRange: '₱400-900 per 60-90 capsules',
+    useCases: ['Dopamine Recovery', 'Energy & Focus'],
   },
   {
     id: 'mucuna-pruriens',
@@ -231,11 +254,12 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'Avoid prolonged daily use without breaks (dopamine receptor desensitization)',
       'May cause GI discomfort at higher doses',
     ],
-    forSubstances: ['methamphetamine'],
+    forSubstances: ['methamphetamine', 'cocaine', 'heroin'],
     stackNotes:
       'Alternate with L-Tyrosine — use one or the other, not both simultaneously. Pair with Vitamin B6 for optimal conversion to dopamine. Avoid combining with 5-HTP. Cycle: 2 weeks on, 1 week off.',
     philippinesAvailability: 'Available at Healthy Options, Lazada, Shopee. Look for "Mucuna Pruriens" standardized to 15-20% L-DOPA extract.',
     priceRange: '₱500-1,500 per 60 capsules',
+    useCases: ['Dopamine Recovery', 'Hormonal Balance'],
   },
   {
     id: 'alpha-lipoic-acid',
@@ -266,11 +290,12 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'May lower blood sugar — monitor if diabetic',
       'Can cause mild heartburn in some people',
     ],
-    forSubstances: ['methamphetamine', 'mdma'],
+    forSubstances: ['methamphetamine', 'mdma', 'alcohol', 'heroin'],
     stackNotes:
       'Ultimate antioxidant stack: ALA + NAC + Vitamin C (covers all antioxidant pathways). Take with B-vitamins for enhanced mitochondrial function. Pair with Acetyl-L-Carnitine (ALCAR) for synergistic mitochondrial repair.',
     philippinesAvailability: 'Available at Healthy Options, Watsons, Lazada, Shopee. Look for "Alpha-Lipoic Acid" or "R-ALA" (preferred — more potent form).',
     priceRange: '₱500-1,200 per 60 capsules',
+    useCases: ['Neuroprotection', 'Liver Detox', 'Energy & Focus'],
   },
   {
     id: 'vitamin-d3',
@@ -301,11 +326,12 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'Do not exceed 10,000 IU/day without medical supervision',
       'Pair with Vitamin K2 (MK-7) for proper calcium metabolism',
     ],
-    forSubstances: ['methamphetamine', 'mdma', 'cannabis'],
+    forSubstances: ['methamphetamine', 'mdma', 'cannabis', 'cocaine', 'heroin', 'alcohol', 'benzodiazepines'],
     stackNotes:
       'Foundation supplement — stack with everything. Take with Vitamin K2 (100-200mcg) for calcium routing. Pair with Magnesium (required for Vitamin D activation). Consider testing 25-OH Vitamin D levels.',
     philippinesAvailability: 'Available at Watsons, Mercury Drug, Lazada, Shopee. Common brands: Kirkland (Costco), Mason Natural, Puritan\'s Pride. Look for Vitamin D3 (cholecalciferol), not D2 (ergocalciferol — 3x less effective).',
     priceRange: '₱200-600 per 100-200 softgel capsules',
+    useCases: ['Dopamine Recovery', 'Serotonin Restoration', 'Immune Support', 'Hormonal Balance', 'Mood Support'],
   },
   {
     id: 'omega3',
@@ -337,11 +363,12 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'Mild fish burps are normal — enteric-coated capsules help',
       'Caution with blood thinners (mild antiplatelet effect)',
     ],
-    forSubstances: ['methamphetamine', 'mdma', 'cannabis'],
+    forSubstances: ['methamphetamine', 'mdma', 'cannabis', 'ghb', 'cocaine', 'heroin', 'alcohol', 'benzodiazepines'],
     stackNotes:
       'Foundation supplement. Pair with Vitamin E (protects omega-3s from oxidation). Combine with ALA for comprehensive anti-inflammatory coverage. Take with meals for absorption.',
     philippinesAvailability: 'Widely available at Watsons, Mercury Drug, Healthy Options, Lazada, Shopee. Popular brands: Nordic Naturals, Kirkland, Puritan\'s Pride. Look for high EPA:DHA content (minimum 1000mg combined per serving).',
     priceRange: '₱400-1,500 per 100-200 softgel capsules',
+    useCases: ['Neuroprotection', 'Dopamine Recovery', 'Serotonin Restoration', 'Cardiovascular', 'Immune Support', 'Gut Repair'],
   },
   {
     id: 'probiotics',
@@ -373,11 +400,12 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'Take with prebiotics (inulin, FOS) to feed the good bacteria',
       'Store properly — many need refrigeration',
     ],
-    forSubstances: ['methamphetamine', 'mdma', 'cannabis'],
+    forSubstances: ['methamphetamine', 'mdma', 'cannabis', 'ghb', 'cocaine', 'heroin', 'alcohol', 'benzodiazepines'],
     stackNotes:
       'Pair with prebiotics (inulin powder or foods like banana, garlic, onion). Combine with L-Glutamine for synergistic gut repair. Take separately from antibiotics (2+ hours apart). Consider rotating probiotic brands every 2-3 months for diversity.',
     philippinesAvailability: 'Available at Watsons, Mercury Drug, Lazada, Shopee. Look for multi-strain formulas with 10-50 billion CFU. Good brands: Puritan\'s Pride, Now Foods, Healthy Options brands.',
     priceRange: '₱400-1,500 per 30-60 capsules',
+    useCases: ['Gut Repair', 'Immune Support', 'Serotonin Restoration', 'GABA & Calm', 'Mood Support'],
   },
   {
     id: 'zinc',
@@ -408,11 +436,12 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'Excessive zinc (>40mg/day) depletes copper — balance with 1-2mg copper if supplementing long-term',
       'May cause nausea on empty stomach',
     ],
-    forSubstances: ['methamphetamine', 'mdma', 'cannabis'],
+    forSubstances: ['methamphetamine', 'mdma', 'cannabis', 'cocaine', 'heroin', 'alcohol'],
     stackNotes:
       'Take separately from magnesium (different timing). Pair with Vitamin D3 for testosterone support. Consider adding 1-2mg copper if supplementing zinc >15mg/day for extended periods.',
     philippinesAvailability: 'Available at Watsons, Mercury Drug, Lazada, Shopee. Look for "Zinc Picolinate" — more bioavailable than zinc gluconate or oxide.',
     priceRange: '₱200-500 per 60-100 tablets',
+    useCases: ['Hormonal Balance', 'Immune Support', 'GABA & Calm', 'Dopamine Recovery'],
   },
   {
     id: 'b-complex',
@@ -443,11 +472,12 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'Take with food to prevent nausea',
       'Urine will turn bright yellow (normal — riboflavin/B2 excretion)',
     ],
-    forSubstances: ['methamphetamine', 'mdma', 'cannabis'],
+    forSubstances: ['methamphetamine', 'mdma', 'cannabis', 'cocaine', 'heroin', 'alcohol', 'benzodiazepines'],
     stackNotes:
       'Foundation supplement. B6 is specifically needed when taking 5-HTP or L-Tyrosine (cofactor for conversion). Combine with Magnesium for synergistic calming effect. May make urine bright yellow (harmless B2 effect).',
     philippinesAvailability: 'Widely available everywhere — Watsons, Mercury Drug, 7-Eleven, Lazada, Shopee. Very affordable. Look for "Vitamin B-Complex" or "B-50" formula.',
     priceRange: '₱100-400 per 100 tablets (very affordable)',
+    useCases: ['Energy & Focus', 'Dopamine Recovery', 'Serotonin Restoration', 'Neuroprotection', 'Sleep Support'],
   },
   {
     id: 'ashwagandha',
@@ -479,11 +509,12 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'Avoid during pregnancy',
       'Allow 4-8 weeks for full effects (cumulative benefits)',
     ],
-    forSubstances: ['methamphetamine', 'mdma', 'cannabis'],
+    forSubstances: ['methamphetamine', 'cannabis', 'ghb', 'cocaine', 'heroin', 'alcohol', 'benzodiazepines'],
     stackNotes:
       'Stack with Magnesium Glycinate and L-Theanine for the ultimate calming combo. Combine with Zinc for enhanced testosterone support. Avoid taking with thyroid medications without doctor supervision.',
     philippinesAvailability: 'Available at Healthy Options, Lazada, Shopee. Look for "Ashwagandha KSM-66" (standardized extract — much more potent than plain root powder).',
     priceRange: '₱500-1,500 per 60 capsules',
+    useCases: ['GABA & Calm', 'Hormonal Balance', 'Sleep Support', 'Neuroprotection'],
   },
   {
     id: 'l-theanine',
@@ -514,11 +545,12 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'Safe for long-term daily use',
       'Avoid very high doses (>800mg) — paradoxical effects possible',
     ],
-    forSubstances: ['methamphetamine', 'mdma', 'cannabis'],
+    forSubstances: ['methamphetamine', 'mdma', 'cannabis', 'ghb', 'cocaine', 'alcohol', 'benzodiazepines'],
     stackNotes:
       'Combine with Magnesium Glycinate for enhanced calming. Add to morning coffee/tea for "alert calm" (100mg theanine per 100mg caffeine). Stack with Ashwagandha in the evening for comprehensive stress support. Take before social situations that trigger anxiety.',
     philippinesAvailability: 'Available at Healthy Options, Watsons, Lazada, Shopee. Also available by drinking 3-4 cups of high-quality green tea daily (provides 100-200mg L-theanine).',
     priceRange: '₱300-800 per 60 capsules (or free via green tea)',
+    useCases: ['GABA & Calm', 'Energy & Focus', 'Sleep Support'],
   },
   {
     id: 'melatonin',
@@ -550,11 +582,12 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'Use blue light filters on screens after 8 PM for best results',
       'Short-term use (2-4 weeks) to reset sleep cycle, then reduce',
     ],
-    forSubstances: ['methamphetamine', 'mdma', 'cannabis'],
+    forSubstances: ['methamphetamine', 'mdma', 'cannabis', 'cocaine', 'alcohol', 'benzodiazepines'],
     stackNotes:
       'Combine with Magnesium Glycinate for synergistic sleep support. Add L-Theanine (200mg) to reduce anxiety at bedtime. Stack with GABA (100-200mg) for enhanced sleep onset. Avoid with alcohol (disrupts melatonin production).',
     philippinesAvailability: 'Widely available at Watsons, Mercury Drug, Lazada, Shopee. Very affordable. Also available as sublingual tablets for faster absorption.',
     priceRange: '₱100-300 per 60-100 tablets',
+    useCases: ['Sleep Support', 'Neuroprotection', 'Immune Support'],
   },
   {
     id: 'vitamin-c',
@@ -585,11 +618,12 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'Natural sources: citrus fruits, guava, papaya, malunggay (Philippines!)',
       'Buffered form (sodium ascorbate) is gentler on the stomach',
     ],
-    forSubstances: ['methamphetamine', 'mdma'],
+    forSubstances: ['methamphetamine', 'mdma', 'cannabis', 'cocaine', 'heroin', 'alcohol'],
     stackNotes:
       'Take WITH NAC and ALA for the "antioxidant trifecta" — comprehensive coverage of all oxidative stress pathways. Vitamin C regenerates glutathione while NAC produces it. Take before and after any substance use for maximum neuroprotection.',
     philippinesAvailability: 'Everywhere — Watsons, Mercury Drug, 7-Eleven, sari-sari stores, palengke. Very cheap. Philippines has abundant natural sources: calamansi, guava, papaya, malunggay.',
     priceRange: '₱50-200 per 100 tablets (extremely affordable)',
+    useCases: ['Neuroprotection', 'Immune Support', 'Craving Reduction', 'Liver Detox'],
   },
   {
     id: 'inositol',
@@ -625,6 +659,7 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'Stack with 5-HTP for enhanced serotonin effects. Combine with NAC for craving reduction (different mechanisms). Take with Magnesium for synergistic anxiety reduction. Powder form recommended at these doses.',
     philippinesAvailability: 'Available at Healthy Options, Lazada, Shopee. Most cost-effective as bulk powder. Capsules are too low-dose (500mg each — would need 4-36 capsules per day).',
     priceRange: '₱400-1,000 per 100g powder (most economical)',
+    useCases: ['GABA & Calm', 'Craving Reduction', 'Mood Support'],
   },
   {
     id: 'phosphatidylserine',
@@ -660,6 +695,7 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'Pair with Omega-3 Fish Oil (DHA works synergistically with PS for membrane repair). Combine with ALA for mitochondrial support. Stack with B-Complex for enhanced neurotransmitter function.',
     philippinesAvailability: 'Available at Healthy Options, Lazada, Shopee. Look for "Phosphatidylserine" — soy-derived is most common. Higher-end supplement.',
     priceRange: '₱800-2,000 per 60-90 softgel capsules',
+    useCases: ['Neuroprotection', 'Energy & Focus', 'Sleep Support'],
   },
   {
     id: 'tongkat-ali',
@@ -695,6 +731,7 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'Pair with Zinc and Shilajit for synergistic testosterone support. Take with fatty food for absorption. Combine with Ashwagandha for comprehensive hormonal support — Tongkat Ali boosts testosterone while Ashwagandha reduces cortisol.',
     philippinesAvailability: 'Available at Healthy Options, Lazada, Shopee. Look for Tongkat Ali standardized to 2% Eurycomanone extract — this is the clinically studied marker compound.',
     priceRange: '₱500-1,500 per 60 capsules',
+    useCases: ['Hormonal Balance', 'Energy & Focus', 'Neuroprotection'],
   },
   {
     id: 'shilajit',
@@ -730,6 +767,7 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'Synergizes with Tongkat Ali for comprehensive testosterone support. Enhances effectiveness of CoQ10 and other antioxidants. Take with breakfast for consistent energy throughout the day.',
     philippinesAvailability: 'Available at Healthy Options, Lazada, Shopee. Look for purified Shilajit resin or capsules standardized to 60-70% fulvic acid content. Avoid cheap, untested products.',
     priceRange: '₱800-2,000 per 30-60 capsules',
+    useCases: ['Hormonal Balance', 'Energy & Focus', 'Neuroprotection'],
   },
   {
     id: 'whey-protein',
@@ -765,6 +803,7 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'Combine with creatine for synergistic muscle and brain effects. Take post-workout for optimal absorption and muscle protein synthesis. Mix with water or coconut water for electrolyte replenishment.',
     philippinesAvailability: 'Available at Watsons, Mercury Drug, Healthy Options, Lazada, Shopee. Popular brands: Optimum Nutrition, Muscletech, Dymatize. Look for whey protein isolate for lower lactose content.',
     priceRange: '₱800-2,500 per 2-5 lbs tub',
+    useCases: ['Gut Repair', 'Energy & Focus', 'Hormonal Balance'],
   },
   {
     id: 'creatine',
@@ -800,6 +839,7 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'Combine with whey protein for synergistic muscle and cognitive benefits. Take with juice or a carbohydrate source for enhanced absorption. Foundation supplement for physical recovery — pair with resistance exercise for maximum effect.',
     philippinesAvailability: 'Available at Watsons, Mercury Drug, Healthy Options, Lazada, Shopee. Look for Creapure (German-manufactured, highest purity) or micronized creatine monohydrate. Avoid "designer" creatine products — plain monohydrate is proven and cheapest.',
     priceRange: '₱500-1,500 per 60-100 servings',
+    useCases: ['Energy & Focus', 'Neuroprotection', 'Gut Repair'],
   },
   {
     id: 'dgl',
@@ -835,6 +875,7 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'Pair with L-Glutamine and probiotics for comprehensive gut healing stack. Works synergistically with Aloe Vera for enhanced soothing and protective effects. Essential part of the leaky gut repair protocol.',
     philippinesAvailability: 'Available at Healthy Options, Lazada, Shopee. Also available as DGL chewable tablets (preferred form — chewing activates the compounds).',
     priceRange: '₱300-800 per 60 tablets',
+    useCases: ['Gut Repair', 'Immune Support', 'Liver Detox'],
   },
   {
     id: 'aloe-vera',
@@ -870,6 +911,7 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'Combine with L-Glutamine and DGL for maximum gut healing synergy. Fresh aloe vera gel from local markets is also excellent and free. Use as part of the comprehensive gut repair protocol alongside probiotics.',
     philippinesAvailability: 'Fresh aloe vera grows abundantly in the Philippines and is available at most palengkes. Supplement capsules available at Healthy Options, Lazada, Shopee. Fresh is better and free.',
     priceRange: '₱200-600 per 60 capsules (supplement); Free if grown at home',
+    useCases: ['Gut Repair', 'Immune Support', 'Neuroprotection'],
   },
   {
     id: 'zinc-carnosine',
@@ -905,6 +947,7 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'Pair with probiotics and L-Glutamine for synergistic gut healing. Essential supplement for leaky gut repair protocol. Take with meals for optimal adherence to the intestinal lining.',
     philippinesAvailability: 'Available at Healthy Options, Lazada, Shopee. Less common than regular zinc — may need to order online. Look for "Zinc Carnosine" or "Polaprezinc" formulations.',
     priceRange: '₱600-1,200 per 60 tablets',
+    useCases: ['Gut Repair', 'Neuroprotection', 'Immune Support'],
   },
   {
     id: 'quercetin',
@@ -940,6 +983,7 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'Combine with L-Glutamine for enhanced gut healing synergy. Works with bromelain (from pineapple) for enhanced anti-inflammatory effect. Take with Vitamin C for synergistic antioxidant coverage — Vitamin C recycles oxidized quercetin back to its active form.',
     philippinesAvailability: 'Available at Healthy Options, Lazada, Shopee. Quercetin Phytosome form recommended for better absorption. Also found naturally in onions and capers.',
     priceRange: '₱400-1,000 per 60 capsules',
+    useCases: ['Neuroprotection', 'Immune Support', 'Craving Reduction'],
   },
   {
     id: 'dlpa',
@@ -975,6 +1019,7 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'Alternative to L-Tyrosine for dopamine support — provides both dopamine AND endorphin precursors in one supplement. Do NOT combine with 5-HTP (competes for absorption). Cycle: 2-3 weeks on, 1 week off to maintain sensitivity.',
     philippinesAvailability: 'Available at Healthy Options, Lazada, Shopee. Look for DLPA (D,L-Phenylalanine) 500mg capsules.',
     priceRange: '₱400-900 per 60 capsules',
+    useCases: ['Dopamine Recovery', 'Energy & Focus', 'Craving Reduction'],
   },
   {
     id: 'butyrate',
@@ -1010,6 +1055,7 @@ export const SUPPLEMENTS_DB: SupplementData[] = [
       'Works synergistically with prebiotics (prebiotics feed probiotics, which produce butyrate naturally). Combine with probiotics and L-Glutamine for complete gut healing stack. Butyrate is the "end product" of the synbiotic approach — consider adding prebiotic fiber (inulin, FOS) to feed the bacteria that make butyrate naturally.',
     philippinesAvailability: 'Available at Healthy Options, Lazada, Shopee. Calcium butyrate and sodium butyrate forms available. Look for "Calcium Butyrate" or "Tributyrin" supplements.',
     priceRange: '₱400-1,000 per 60 capsules',
+    useCases: ['Gut Repair', 'Neuroprotection', 'Immune Support'],
   },
 ];
 

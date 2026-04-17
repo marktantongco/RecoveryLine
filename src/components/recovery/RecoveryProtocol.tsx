@@ -2,6 +2,8 @@
 
 import React, { useState, useCallback } from 'react';
 import { SYMBIOTIC_PROTOCOL, type ProtocolSection } from '@/lib/recovery-protocol-data';
+import { SUBSTANCES, SUBSTANCE_LIST } from '@/lib/substance-data';
+import type { SubstanceData } from '@/lib/substance-data';
 
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
 
@@ -68,6 +70,146 @@ function ArrowRightIcon({ className = 'w-3 h-3' }: { className?: string }) {
       <path d="m12 5 7 7-7 7" />
     </svg>
   );
+}
+
+// ─── Substance Category Accent Colors ───────────────────────────────────────
+
+function getSubstanceAccent(category: SubstanceData['category'], dangerLevel: SubstanceData['dangerLevel']) {
+  const dangerColors: Record<number, { gradient: string; text: string; dot: string; bg: string; bgStrong: string; border: string; badge: string; ring: string; shadow: string; glow: string }> = {
+    5: {
+      gradient: 'from-rose-500 to-red-600',
+      text: 'text-rose-400',
+      dot: 'bg-rose-400',
+      bg: 'bg-rose-500/10',
+      bgStrong: 'bg-rose-500/15',
+      border: 'border-rose-500/20',
+      badge: 'bg-rose-500/15 text-rose-400 border-rose-500/20',
+      ring: 'ring-rose-500/20',
+      shadow: 'shadow-rose-500/15',
+      glow: 'bg-rose-500/5',
+    },
+    4: {
+      gradient: 'from-amber-500 to-orange-500',
+      text: 'text-amber-400',
+      dot: 'bg-amber-400',
+      bg: 'bg-amber-500/10',
+      bgStrong: 'bg-amber-500/15',
+      border: 'border-amber-500/20',
+      badge: 'bg-amber-500/15 text-amber-400 border-amber-500/20',
+      ring: 'ring-amber-500/20',
+      shadow: 'shadow-amber-500/15',
+      glow: 'bg-amber-500/5',
+    },
+    3: {
+      gradient: 'from-orange-500 to-yellow-500',
+      text: 'text-orange-400',
+      dot: 'bg-orange-400',
+      bg: 'bg-orange-500/10',
+      bgStrong: 'bg-orange-500/15',
+      border: 'border-orange-500/20',
+      badge: 'bg-orange-500/15 text-orange-400 border-orange-500/20',
+      ring: 'ring-orange-500/20',
+      shadow: 'shadow-orange-500/15',
+      glow: 'bg-orange-500/5',
+    },
+    2: {
+      gradient: 'from-yellow-500 to-lime-500',
+      text: 'text-yellow-400',
+      dot: 'bg-yellow-400',
+      bg: 'bg-yellow-500/10',
+      bgStrong: 'bg-yellow-500/15',
+      border: 'border-yellow-500/20',
+      badge: 'bg-yellow-500/15 text-yellow-400 border-yellow-500/20',
+      ring: 'ring-yellow-500/20',
+      shadow: 'shadow-yellow-500/15',
+      glow: 'bg-yellow-500/5',
+    },
+    1: {
+      gradient: 'from-emerald-500 to-green-500',
+      text: 'text-emerald-400',
+      dot: 'bg-emerald-400',
+      bg: 'bg-emerald-500/10',
+      bgStrong: 'bg-emerald-500/15',
+      border: 'border-emerald-500/20',
+      badge: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20',
+      ring: 'ring-emerald-500/20',
+      shadow: 'shadow-emerald-500/15',
+      glow: 'bg-emerald-500/5',
+    },
+  };
+
+  // Override for specific categories to add variety
+  if (category === 'empathogen') {
+    return {
+      gradient: 'from-violet-500 to-purple-500',
+      text: 'text-violet-400',
+      dot: 'bg-violet-400',
+      bg: 'bg-violet-500/10',
+      bgStrong: 'bg-violet-500/15',
+      border: 'border-violet-500/20',
+      badge: 'bg-violet-500/15 text-violet-400 border-violet-500/20',
+      ring: 'ring-violet-500/20',
+      shadow: 'shadow-violet-500/15',
+      glow: 'bg-violet-500/5',
+    };
+  }
+  if (category === 'cannabinoid') {
+    return {
+      gradient: 'from-lime-500 to-green-500',
+      text: 'text-lime-400',
+      dot: 'bg-lime-400',
+      bg: 'bg-lime-500/10',
+      bgStrong: 'bg-lime-500/15',
+      border: 'border-lime-500/20',
+      badge: 'bg-lime-500/15 text-lime-400 border-lime-500/20',
+      ring: 'ring-lime-500/20',
+      shadow: 'shadow-lime-500/15',
+      glow: 'bg-lime-500/5',
+    };
+  }
+  if (category === 'dissociative') {
+    return {
+      gradient: 'from-cyan-500 to-sky-500',
+      text: 'text-cyan-400',
+      dot: 'bg-cyan-400',
+      bg: 'bg-cyan-500/10',
+      bgStrong: 'bg-cyan-500/15',
+      border: 'border-cyan-500/20',
+      badge: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/20',
+      ring: 'ring-cyan-500/20',
+      shadow: 'shadow-cyan-500/15',
+      glow: 'bg-cyan-500/5',
+    };
+  }
+
+  return dangerColors[dangerLevel] || dangerColors[4];
+}
+
+function DangerDots({ level }: { level: SubstanceData['dangerLevel'] }) {
+  return (
+    <div className="flex items-center gap-0.5">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <span
+          key={i}
+          className={`w-1.5 h-1.5 rounded-full transition-colors ${
+            i < level ? 'bg-rose-400' : 'bg-white/[0.08]'
+          }`}
+        />
+      ))}
+    </div>
+  );
+}
+
+function getCategoryLabel(category: SubstanceData['category']): string {
+  const labels: Record<SubstanceData['category'], string> = {
+    stimulant: 'Stimulant',
+    depressant: 'Depressant',
+    empathogen: 'Empathogen',
+    cannabinoid: 'Cannabinoid',
+    dissociative: 'Dissociative',
+    hallucinogen: 'Hallucinogen',
+  };
+  return labels[category];
 }
 
 // ─── Icon Selector ────────────────────────────────────────────────────────────
@@ -547,10 +689,332 @@ function SectionDetail({ section }: { section: ProtocolSection }) {
   );
 }
 
+// ─── Substance Protocol Card ────────────────────────────────────────────────
+
+function SubstanceProtocolCard({
+  substance,
+  index,
+  isActive,
+  onClick,
+}: {
+  substance: SubstanceData;
+  index: number;
+  isActive: boolean;
+  onClick: () => void;
+}) {
+  const accent = getSubstanceAccent(substance.category, substance.dangerLevel);
+  const staggerClass = index < 6 ? `stagger-${index + 1}` : '';
+  const phasesCount = substance.recoveryPhases?.length ?? 0;
+  const snippet = substance.description.slice(0, 120) + '…';
+
+  return (
+    <button
+      onClick={onClick}
+      className={`glass-card p-5 text-left w-full transition-all active:scale-[0.99] animate-fadeUp ${staggerClass} ${
+        isActive
+          ? `border ${accent.border} ${accent.bg}`
+          : 'hover:border-white/[0.12]'
+      }`}
+      style={staggerClass ? { opacity: 0 } : undefined}
+    >
+      <div className="flex items-start gap-4">
+        <div
+          className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${accent.gradient} flex items-center justify-center shadow-lg ${accent.shadow} flex-shrink-0`}
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+            <line x1="12" y1="9" x2="12" y2="13" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <h3 className="text-base font-bold text-white truncate">{substance.name}</h3>
+            <DangerDots level={substance.dangerLevel} />
+          </div>
+          <p className="text-[11px] text-slate-500 mb-2 line-clamp-2 leading-relaxed">{snippet}</p>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className={`text-[10px] px-2 py-0.5 rounded-full border font-medium ${accent.badge}`}>
+              {getCategoryLabel(substance.category)}
+            </span>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.04] text-slate-500 border border-white/[0.06] font-medium">
+              {phasesCount} {phasesCount === 1 ? 'phase' : 'phases'}
+            </span>
+          </div>
+        </div>
+        <div className="flex-shrink-0 mt-1">
+          <ChevronDownIcon
+            className={`w-4 h-4 text-slate-500 transition-transform duration-300 ${isActive ? 'rotate-180' : ''}`}
+          />
+        </div>
+      </div>
+    </button>
+  );
+}
+
+// ─── Substance Phase Card (for per-substance protocol detail) ──────────────────
+
+function SubstancePhaseCard({
+  phase,
+  phaseIndex,
+  totalPhases,
+  accent,
+}: {
+  phase: NonNullable<SubstanceData['recoveryPhases']>[0];
+  phaseIndex: number;
+  totalPhases: number;
+  accent: ReturnType<typeof getSubstanceAccent>;
+}) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const isLast = phaseIndex === totalPhases - 1;
+  const staggerClass = phaseIndex < 6 ? `stagger-${phaseIndex + 1}` : '';
+
+  return (
+    <>
+      <PhaseConnector isLast={false} accent={accent} />
+      <div
+        className={`glass-card overflow-hidden animate-fadeUp ${staggerClass} transition-all`}
+        style={staggerClass ? { opacity: 0 } : undefined}
+      >
+        {/* Phase Header */}
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="w-full p-4 text-left hover:bg-white/[0.02] transition-colors"
+        >
+          <div className="flex items-start gap-3">
+            <div className={`w-10 h-10 rounded-xl ${accent.bgStrong} flex items-center justify-center flex-shrink-0 ring-1 ${accent.ring}`}>
+              <span className={`text-sm font-bold ${accent.text}`}>{phaseIndex + 1}</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <h4 className="text-sm font-bold text-white">{phase.name}</h4>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full border font-medium ${accent.badge}`}>
+                  {phase.timeline}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-slate-500">{phase.prioritySupplements.length} supplements</span>
+                <span className="text-[10px] text-slate-600">·</span>
+                <span className="text-[10px] text-slate-500">{phase.milestones.length} milestones</span>
+              </div>
+            </div>
+            <ChevronDownIcon
+              className={`w-4 h-4 text-slate-500 flex-shrink-0 mt-1 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+            />
+          </div>
+        </button>
+
+        {/* Expanded Content */}
+        {isExpanded && (
+          <div className="border-t border-white/[0.06]">
+            {/* Medical Note (if present) */}
+            {phase.medicalNote && (
+              <div className="p-4 border-b border-red-500/20">
+                <div className="flex items-start gap-2.5">
+                  <svg className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                  </svg>
+                  <p className="text-[11px] text-red-300 leading-relaxed font-medium">{phase.medicalNote}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Neurochemical State (if present) */}
+            {phase.neurochemicalState && (
+              <div className="p-4 border-b border-white/[0.04]">
+                <p className="text-[10px] font-semibold text-slate-400 mb-2">Neurochemical State</p>
+                <div className={`rounded-xl ${accent.bg} border ${accent.border} p-3`}>
+                  <p className="text-[11px] text-slate-300 leading-relaxed">{phase.neurochemicalState}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Priority Supplements */}
+            {phase.prioritySupplements.length > 0 && (
+              <div className="p-4 border-b border-white/[0.04]">
+                <p className="text-[10px] font-semibold text-slate-400 mb-2.5">Priority Supplements</p>
+                <div className="space-y-1.5">
+                  {phase.prioritySupplements.map((supp, i) => (
+                    <div key={i} className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <BulletIcon />
+                        <span className="text-[11px] text-white font-medium">{supp.name}</span>
+                      </div>
+                      <span className={`text-[10px] ${accent.text} font-medium whitespace-nowrap`}>{supp.dosage}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Dietary Focus */}
+            {phase.dietaryFocus.length > 0 && (
+              <div className="p-4 border-b border-white/[0.04]">
+                <p className="text-[10px] font-semibold text-slate-400 mb-2.5">Dietary Focus</p>
+                <div className="space-y-2">
+                  {phase.dietaryFocus.map((item, i) => (
+                    <div key={i} className="flex items-start gap-2.5">
+                      <BulletIcon />
+                      <p className="text-[11px] text-slate-400 leading-relaxed">{item}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Milestones */}
+            <div className="p-4">
+              <p className="text-[10px] font-semibold text-slate-400 mb-2.5">Milestones</p>
+              <div className="space-y-2">
+                {phase.milestones.map((milestone, i) => (
+                  <div key={i} className="flex items-start gap-2.5">
+                    <CheckCircleIcon className={`w-4 h-4 ${accent.text} flex-shrink-0 mt-0.5`} />
+                    <span className="text-[11px] text-slate-400 leading-relaxed capitalize">
+                      {milestone.replace(/_/g, ' ')}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+      <PhaseConnector isLast={isLast} accent={accent} />
+    </>
+  );
+}
+
+// ─── Substance Protocol Detail View ───────────────────────────────────────────
+
+function SubstanceProtocolDetail({
+  substance,
+  onBack,
+}: {
+  substance: SubstanceData;
+  onBack: () => void;
+}) {
+  const accent = getSubstanceAccent(substance.category, substance.dangerLevel);
+  const phases = substance.recoveryPhases ?? [];
+
+  return (
+    <div className="space-y-4 pb-6 animate-fadeUp" key={substance.id}>
+      {/* Back Button */}
+      <div className="animate-fadeUp">
+        <button
+          onClick={onBack}
+          className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.03] border border-white/[0.06] text-slate-400 hover:text-slate-300 hover:bg-white/[0.06] active:scale-[0.99] transition-all"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          <span className="text-xs font-medium">All Protocols</span>
+        </button>
+      </div>
+
+      {/* Hero Card */}
+      <div className="glass-card-hero p-5 relative overflow-hidden">
+        <div className={`absolute -top-16 -right-16 w-40 h-40 rounded-full ${accent.glow} blur-3xl pointer-events-none`} />
+        <div className={`absolute -bottom-12 -left-12 w-32 h-32 rounded-full ${accent.glow} blur-3xl pointer-events-none`} />
+        <div className="relative">
+          <div className="flex items-start gap-4 mb-3">
+            <div
+              className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${accent.gradient} flex items-center justify-center shadow-lg ${accent.shadow} flex-shrink-0`}
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-0.5">
+                <h2 className="text-lg font-bold text-white truncate">{substance.name}</h2>
+                <DangerDots level={substance.dangerLevel} />
+              </div>
+              <p className="text-xs font-semibold text-slate-400">Recovery Protocol</p>
+            </div>
+          </div>
+          <p className="text-[11px] text-slate-400 leading-relaxed mb-3">{substance.description.slice(0, 250)}{substance.description.length > 250 ? '…' : ''}</p>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className={`text-[10px] px-2.5 py-1 rounded-full border font-medium ${accent.badge}`}>
+              {getCategoryLabel(substance.category)}
+            </span>
+            <span className="text-[10px] px-2.5 py-1 rounded-full bg-white/[0.04] text-slate-500 border border-white/[0.06] font-medium">
+              {phases.length} {phases.length === 1 ? 'Phase' : 'Phases'}
+            </span>
+            <span className="text-[10px] px-2.5 py-1 rounded-full bg-white/[0.04] text-slate-500 border border-white/[0.06] font-medium">
+              Danger Level {substance.dangerLevel}/5
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Recovery Focus Summary */}
+      <div className="glass-card p-4 animate-fadeUp stagger-1" style={{ opacity: 0 }}>
+        <p className="text-[10px] font-semibold text-slate-400 mb-2.5 flex items-center gap-2">
+          <div className={`w-1.5 h-1.5 rounded-full ${accent.dot}`} />
+          Recovery Focus
+        </p>
+        <div className="space-y-2">
+          <div>
+            <p className="text-[10px] text-slate-500 mb-1 font-medium">Neurotransmitters</p>
+            <div className="flex flex-wrap gap-1">
+              {substance.recoveryFocus.neurotransmitters.map((nt) => (
+                <span key={nt} className={`text-[10px] px-2 py-0.5 rounded-full border ${accent.badge}`}>
+                  {nt}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="text-[10px] text-slate-500 mb-1 font-medium">Target Organs</p>
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              {substance.recoveryFocus.organs.join(', ')}
+            </p>
+          </div>
+          <div>
+            <p className="text-[10px] text-slate-500 mb-1 font-medium">Recovery Timeline</p>
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              {substance.recoveryFocus.timeline.slice(0, 200)}{substance.recoveryFocus.timeline.length > 200 ? '…' : ''}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Phase Cards */}
+      <div>
+        <div className="flex items-center gap-2 mb-3 px-1 animate-fadeUp stagger-2" style={{ opacity: 0 }}>
+          <div className={`w-7 h-7 rounded-lg ${accent.bgStrong} flex items-center justify-center`}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={accent.text}>
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+          </div>
+          <h3 className="text-sm font-bold text-slate-300">Recovery Phases</h3>
+        </div>
+        <div className="space-y-0">
+          {phases.map((phase, idx) => (
+            <SubstancePhaseCard
+              key={idx}
+              phase={phase}
+              phaseIndex={idx}
+              totalPhases={phases.length}
+              accent={accent}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function RecoveryProtocol() {
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [activeSubstanceId, setActiveSubstanceId] = useState<string | null>(null);
 
   const activeSectionData = activeSection
     ? SYMBIOTIC_PROTOCOL.find((s) => s.id === activeSection) ?? null
@@ -618,7 +1082,7 @@ export default function RecoveryProtocol() {
       )}
 
       {/* Section Navigation Cards */}
-      {!activeSectionData && (
+      {!activeSectionData && !activeSubstanceId && (
         <div className="space-y-3">
           {SYMBIOTIC_PROTOCOL.map((section, index) => (
             <SectionCard
@@ -631,6 +1095,68 @@ export default function RecoveryProtocol() {
           ))}
         </div>
       )}
+
+      {/* ─── Substance-Specific Recovery Protocols ──────────────────────── */}
+      {!activeSectionData && !activeSubstanceId && (
+        <div className="space-y-4 animate-fadeUp stagger-3" style={{ opacity: 0 }}>
+          {/* Hero Card */}
+          <div className="relative overflow-hidden rounded-2xl border border-white/[0.08]" style={{ background: 'linear-gradient(135deg, rgba(244,63,94,0.06) 0%, rgba(17,24,39,0.95) 25%, rgba(17,24,39,0.95) 75%, rgba(168,85,247,0.06) 100%)' }}>
+            <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full bg-rose-500/5 blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-12 -left-12 w-32 h-32 rounded-full bg-violet-500/5 blur-3xl pointer-events-none" />
+            <div className="relative p-5">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500/80 to-violet-500/80 flex items-center justify-center shadow-lg shadow-rose-500/15">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="text-base font-bold text-white">Substance-Specific Recovery Protocols</h2>
+                  <p className="text-[11px] text-slate-400">Phase-based recovery guides per substance</p>
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-500 leading-relaxed">
+                Detailed, phase-by-phase recovery protocols for specific substances. Each protocol outlines supplements, dietary focus, milestones, and neurochemical targets across 4 recovery phases.
+              </p>
+              <div className="flex items-center gap-2 mt-3 flex-wrap">
+                <span className="text-[10px] px-2.5 py-1 rounded-full bg-rose-500/15 text-rose-400 border border-rose-500/20 font-medium">
+                  {SUBSTANCE_LIST.filter((s) => s.recoveryPhases).length} Substances
+                </span>
+                <span className="text-[10px] px-2.5 py-1 rounded-full bg-white/[0.04] text-slate-500 border border-white/[0.06] font-medium">
+                  {SUBSTANCE_LIST.filter((s) => s.recoveryPhases).reduce((sum, s) => sum + (s.recoveryPhases?.length ?? 0), 0)} Phases
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Substance Cards */}
+          <div className="space-y-3">
+            {SUBSTANCE_LIST.filter((s) => s.recoveryPhases).map((substance, index) => (
+              <SubstanceProtocolCard
+                key={substance.id}
+                substance={substance}
+                index={index}
+                isActive={activeSubstanceId === substance.id}
+                onClick={() => setActiveSubstanceId(substance.id)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Substance Protocol Detail View */}
+      {!activeSectionData && activeSubstanceId && (() => {
+        const substance = SUBSTANCES[activeSubstanceId];
+        if (!substance?.recoveryPhases) return null;
+        return (
+          <SubstanceProtocolDetail
+            substance={substance}
+            onBack={() => setActiveSubstanceId(null)}
+          />
+        );
+      })()}
     </div>
   );
 }

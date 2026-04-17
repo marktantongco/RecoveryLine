@@ -519,8 +519,130 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
         </div>
       </div>
 
+      {/* --- SUBSTANCE-SPECIFIC RECOVERY PHASES --- */}
+      {substance.recoveryPhases && substance.recoveryPhases.length > 0 && (
+        <div className="glass-card p-4 animate-fadeUp stagger-3" style={{ opacity: 0 }}>
+          <SectionHeader icon={Icons.brain} title="Substance-Specific Recovery Phases" />
+          <p className="text-[11px] text-slate-400 leading-relaxed mb-3">
+            Phase-based supplement protocol and dietary guidance specific to {substance.name} recovery.
+          </p>
+          <div className="space-y-3">
+            {substance.recoveryPhases.map((phase, phaseIdx) => {
+              const phaseColors = [
+                { accent: 'red', bg: 'bg-red-500/5', border: 'border-red-500/10', text: 'text-red-400', dot: 'bg-red-400', badge: 'bg-red-500/15 text-red-400 border-red-500/20', supplementBg: 'bg-red-500/[0.03]', supplementBorder: 'border-red-500/[0.06]' },
+                { accent: 'amber', bg: 'bg-amber-500/5', border: 'border-amber-500/10', text: 'text-amber-400', dot: 'bg-amber-400', badge: 'bg-amber-500/15 text-amber-400 border-amber-500/20', supplementBg: 'bg-amber-500/[0.03]', supplementBorder: 'border-amber-500/[0.06]' },
+                { accent: 'emerald', bg: 'bg-emerald-500/5', border: 'border-emerald-500/10', text: 'text-emerald-400', dot: 'bg-emerald-400', badge: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20', supplementBg: 'bg-emerald-500/[0.03]', supplementBorder: 'border-emerald-500/[0.06]' },
+                { accent: 'sky', bg: 'bg-sky-500/5', border: 'border-sky-500/10', text: 'text-sky-400', dot: 'bg-sky-400', badge: 'bg-sky-500/15 text-sky-400 border-sky-500/20', supplementBg: 'bg-sky-500/[0.03]', supplementBorder: 'border-sky-500/[0.06]' },
+              ];
+              const colors = phaseColors[phaseIdx] || phaseColors[3];
+              return (
+                <div key={phaseIdx} className="space-y-2">
+                  {/* Phase connector line */}
+                  {phaseIdx > 0 && (
+                    <div className="flex items-center justify-center">
+                      <div className="w-px h-6 bg-white/[0.06]" />
+                    </div>
+                  )}
+                  {/* Phase Card */}
+                  <div className={`rounded-xl border ${colors.border} overflow-hidden`}>
+                    {/* Phase Header */}
+                    <div className={`p-3 ${colors.bg}`}>
+                      <div className="flex items-center gap-2 mb-1">
+                        <div className={`w-6 h-6 rounded-lg ${colors.badge} flex items-center justify-center flex-shrink-0 ring-1 ${colors.border}`}>
+                          <span className="text-[10px] font-bold">{phaseIdx + 1}</span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-semibold text-white leading-tight">{phase.name}</p>
+                          <p className="text-[10px] text-slate-400 mt-0.5">{phase.timeline}</p>
+                        </div>
+                      </div>
+                    </div>
+                    {/* Phase Content */}
+                    <div className="p-3 space-y-2.5">
+                      {/* Medical Note */}
+                      {phase.medicalNote && (
+                        <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-2.5">
+                          <p className="text-[10px] font-bold text-red-400 uppercase tracking-wide mb-1 flex items-center gap-1">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            Medical Warning
+                          </p>
+                          <p className="text-[10px] text-red-300 leading-relaxed">{phase.medicalNote}</p>
+                        </div>
+                      )}
+
+                      {/* Neurochemical State */}
+                      {phase.neurochemicalState && (
+                        <div className="rounded-lg bg-white/[0.02] p-2.5">
+                          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">Neurochemical State</p>
+                          <p className="text-[10px] text-slate-400 leading-relaxed">{phase.neurochemicalState}</p>
+                        </div>
+                      )}
+
+                      {/* Priority Supplements */}
+                      <div>
+                        <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">Priority Supplements ({phase.prioritySupplements.length})</p>
+                        <div className="overflow-x-auto -mx-1">
+                          <table className="w-full text-left min-w-[320px]">
+                            <thead>
+                              <tr className="border-b border-white/[0.04]">
+                                <th className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider pb-1.5 pr-2">Supplement</th>
+                                <th className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider pb-1.5">Dosage</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/[0.03]">
+                              {phase.prioritySupplements.map((supp, si) => (
+                                <tr key={si}>
+                                  <td className="py-1.5 pr-2">
+                                    <span className="text-[10px] text-slate-300 font-medium">{supp.name}</span>
+                                  </td>
+                                  <td className="py-1.5">
+                                    <span className={`text-[10px] ${colors.text} font-medium whitespace-nowrap`}>{supp.dosage}</span>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+
+                      {/* Dietary Focus */}
+                      {phase.dietaryFocus && phase.dietaryFocus.length > 0 && (
+                        <div>
+                          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">Dietary Focus</p>
+                          <div className="flex flex-wrap gap-1">
+                            {phase.dietaryFocus.map((item, di) => (
+                              <span key={di} className="px-2 py-0.5 rounded-md bg-emerald-500/[0.06] text-[9px] text-emerald-400/80 border border-emerald-500/10 leading-snug">
+                                {item}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Milestones */}
+                      {phase.milestones && phase.milestones.length > 0 && (
+                        <div>
+                          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">Milestones</p>
+                          <div className="flex flex-wrap gap-1">
+                            {phase.milestones.map((milestone, mi) => (
+                              <span key={mi} className={`px-2 py-0.5 rounded-md ${colors.badge} text-[9px] font-medium leading-snug`}>
+                                {milestone.replace(/_/g, ' ')}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* --- PHARMACOLOGY --- */}
-      <div className="glass-card p-4 animate-fadeUp stagger-3" style={{ opacity: 0 }}>
+      <div className="glass-card p-4 animate-fadeUp stagger-4" style={{ opacity: 0 }}>
         <SectionHeader icon={Icons.pharmacology} title="Pharmacology" />
 
         <div className="space-y-2.5">
@@ -535,7 +657,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
 
       {/* --- RECOVERY TIPS --- */}
       {substance.recoveryTips && substance.recoveryTips.length > 0 && (
-        <div className="glass-card p-4 animate-fadeUp stagger-4" style={{ opacity: 0 }}>
+        <div className="glass-card p-4 animate-fadeUp stagger-5" style={{ opacity: 0 }}>
           <SectionHeader icon={Icons.harm} title="Recovery Tips" />
           <div className="space-y-1.5">
             {substance.recoveryTips.map((tip, i) => (
@@ -551,7 +673,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
       )}
 
       {/* --- PHILIPPINES --- */}
-      <div className="glass-card p-4 animate-fadeUp stagger-5" style={{ opacity: 0 }}>
+      <div className="glass-card p-4 animate-fadeUp stagger-6" style={{ opacity: 0 }}>
         <SectionHeader icon={Icons.philippines} title="Philippines" />
 
         <div className="space-y-2.5">
@@ -563,7 +685,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
       </div>
 
       {/* --- Disclaimer --- */}
-      <div className="glass-card p-3 animate-fadeUp stagger-6" style={{ opacity: 0 }}>
+      <div className="glass-card p-3 animate-fadeUp stagger-7" style={{ opacity: 0 }}>
         <p className="text-[10px] text-slate-400 leading-relaxed">
           <strong className="text-slate-300">Disclaimer:</strong> This information is for educational purposes only and is not medical advice. Always consult a healthcare professional for substance-related concerns.
         </p>

@@ -3,8 +3,8 @@
 import React, { useState, useMemo } from 'react';
 import { MEDICATIONS, SUPPLEMENTS, SAFETY_RULES } from '@/lib/recovery-constants';
 import { SafetyRule } from '@/lib/recovery-types';
-import { SUPPLEMENTS_DB, SUPPLEMENT_CATEGORIES, searchSupplements } from '@/lib/supplement-data';
-import type { SupplementData } from '@/lib/supplement-data';
+import { SUPPLEMENTS_DB, SUPPLEMENT_CATEGORIES, SUPPLEMENT_USE_CASES, searchSupplements } from '@/lib/supplement-data';
+import type { SupplementData, SupplementUseCase } from '@/lib/supplement-data';
 import { TIMELINE_PHASES } from '@/lib/timeline-data';
 import type { TimelinePhase } from '@/lib/timeline-data';
 import { useToast } from './Toast';
@@ -379,17 +379,22 @@ function StackBuilderTab() {
   const { showToast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('All');
+  const [activeUseCase, setActiveUseCase] = useState<string>('All');
+  const [filterMode, setFilterMode] = useState<'category' | 'usecase'>('category');
   const [stackItems, setStackItems] = useState<StackItem[]>([]);
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
   const [showStackSummary, setShowStackSummary] = useState(true);
 
   const filteredSupplements = useMemo(() => {
     let results = searchQuery ? searchSupplements(searchQuery) : SUPPLEMENTS_DB;
-    if (activeCategory !== 'All') {
+    if (filterMode === 'category' && activeCategory !== 'All') {
       results = results.filter((s) => s.category === activeCategory);
     }
+    if (filterMode === 'usecase' && activeUseCase !== 'All') {
+      results = results.filter((s) => s.useCases?.includes(activeUseCase));
+    }
     return results;
-  }, [searchQuery, activeCategory]);
+  }, [searchQuery, activeCategory, activeUseCase, filterMode]);
 
   const toggleExpand = (id: string) => {
     setExpandedCards((prev) => {
@@ -527,21 +532,66 @@ function StackBuilderTab() {
         />
       </div>
 
-      {/* Category Filter Chips */}
-      <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 no-scrollbar animate-fadeUp stagger-3" style={{ opacity: 0 }}>
-        {SUPPLEMENT_CATEGORIES.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setActiveCategory(cat)}
-            className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all border ${
-              activeCategory === cat
-                ? 'bg-sky-500/15 text-sky-400 border-sky-500/25'
-                : 'bg-white/[0.03] text-slate-500 border-white/[0.06] hover:text-slate-300 hover:border-white/[0.12]'
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
+      {/* Filter Mode Toggle + Category/Use-Case Chips */}
+      <div className="animate-fadeUp stagger-3" style={{ opacity: 0 }}>
+        {/* Mode Toggle */}
+        <div className="flex items-center gap-2 mb-2.5">
+          <span className="text-[10px] text-slate-500 uppercase tracking-wide font-semibold">Filter by</span>
+          <div className="flex gap-1 p-0.5 rounded-lg bg-white/[0.03] border border-white/[0.06]">
+            <button
+              onClick={() => setFilterMode('category')}
+              className={`px-2.5 py-1 rounded-md text-[10px] font-medium transition-all ${
+                filterMode === 'category'
+                  ? 'bg-sky-500/15 text-sky-400 border border-sky-500/20'
+                  : 'text-slate-500 hover:text-slate-300 border border-transparent'
+              }`}
+            >
+              Category
+            </button>
+            <button
+              onClick={() => setFilterMode('usecase')}
+              className={`px-2.5 py-1 rounded-md text-[10px] font-medium transition-all ${
+                filterMode === 'usecase'
+                  ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20'
+                  : 'text-slate-500 hover:text-slate-300 border border-transparent'
+              }`}
+            >
+              Use-Case
+            </button>
+          </div>
+        </div>
+
+        {/* Filter Chips */}
+        <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 no-scrollbar">
+          {filterMode === 'category'
+            ? SUPPLEMENT_CATEGORIES.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all border ${
+                    activeCategory === cat
+                      ? 'bg-sky-500/15 text-sky-400 border-sky-500/25'
+                      : 'bg-white/[0.03] text-slate-500 border-white/[0.06] hover:text-slate-300 hover:border-white/[0.12]'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))
+            : SUPPLEMENT_USE_CASES.map((uc) => (
+                <button
+                  key={uc}
+                  onClick={() => setActiveUseCase(uc)}
+                  className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all border ${
+                    activeUseCase === uc
+                      ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/25'
+                      : 'bg-white/[0.03] text-slate-500 border-white/[0.06] hover:text-slate-300 hover:border-white/[0.12]'
+                  }`}
+                >
+                  {uc}
+                </button>
+              ))
+          }
+        </div>
       </div>
 
       {/* Count */}
@@ -588,6 +638,11 @@ function StackBuilderTab() {
                   <span className={`text-[10px] px-2 py-0.5 rounded-full border font-medium ${getCategoryColor(supp.category)}`}>
                     {supp.category}
                   </span>
+                  {supp.useCases && supp.useCases.length > 0 && (
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400/80 border border-emerald-500/15 font-medium">
+                      {supp.useCases[0]}
+                    </span>
+                  )}
                   <span className="text-[10px] text-slate-500">{supp.dosage}</span>
                 </div>
 
