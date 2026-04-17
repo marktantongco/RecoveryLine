@@ -133,6 +133,20 @@ function AppContent() {
     setSectionKey((k) => k + 1);
   }, [state.currentSection]);
 
+  // Cleanup will-change on animated elements after animation ends (prevents mobile scroll blocking)
+  useEffect(() => {
+    const animClasses = ['animate-fadeUp', 'animate-slideInRight', 'animate-slideInLeft', 'animate-scaleIn'];
+    const els = document.querySelectorAll(animClasses.map(c => `.${c}`).join(', '));
+    els.forEach((el) => {
+      (el as HTMLElement).style.willChange = 'transform, opacity';
+      const handler = () => {
+        (el as HTMLElement).style.willChange = 'auto';
+        el.removeEventListener('animationend', handler);
+      };
+      el.addEventListener('animationend', handler);
+    });
+  }, [sectionKey]);
+
   // Standard navigate (no preselect)
   const handleNavigate = useCallback((section: string) => {
     const target = section as SectionName;

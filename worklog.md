@@ -390,3 +390,25 @@ Stage Summary:
 - Shimmer skeleton, chip micro-interaction, counter-animate utilities added
 - All existing functionality preserved — zero logic changes
 - Build passes clean: ✓ Compiled successfully
+---
+Task ID: 1
+Agent: Main Agent
+Task: Fix mobile scroll stuck issue in RecoveryLine PWA
+
+Work Log:
+- Diagnosed 6 root causes of mobile scroll stuck
+- Removed `contain: content` from all glass card variants (.glass-card, .glass-card-elevated, .glass-card-hero, .glass-card-insight, .glass-card-hero-glow) — iOS Safari scroll trap
+- Replaced `transform: translateZ(0)` with `isolation: isolate` for stacking context without creating new scroll containers
+- Removed `will-change: transform, opacity` from CSS animation classes — was permanently blocking mobile scroll
+- Added JS `animationend` listener in page.tsx to manage will-change lifecycle (set during animation, clear after)
+- Changed `.overflow-x-auto` touch-action from `pan-x` to `pan-x pan-y` to allow vertical scroll when touching horizontal containers
+- Removed `overscroll-behavior: none` from html element, kept only on body
+- Removed `transform: translateZ(0)` and `will-change-transform` from BottomNav component
+- Changed viewport from `maximumScale: 1, userScalable: false` to `maximumScale: 5, userScalable: true` to prevent zoom-lock scroll interference
+- Cleaned .next cache and rebuilt successfully
+
+Stage Summary:
+- All 6 root causes of mobile scroll stuck fixed
+- Build passes cleanly with no errors
+- Key fix: CSS `contain` + `transform: translateZ(0)` created GPU layers that trapped touch events on iOS Safari
+- Key fix: `will-change` was never cleaned up, keeping persistent GPU layers that blocked scrolling

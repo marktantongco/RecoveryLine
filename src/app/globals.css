@@ -79,25 +79,24 @@
   * {
     @apply border-border outline-ring/50;
   }
-  html, body {
+  html {
     height: 100dvh;
     height: 100vh;
     overflow: hidden;
-    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
   }
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-inter), system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
+    overflow: hidden;
+    overscroll-behavior: none;
     touch-action: pan-y;
     text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
   }
-  html {
-    -webkit-tap-highlight-color: transparent;
-  }
+
 }
 
 /* Mobile touch scrolling */
@@ -108,7 +107,7 @@
 .overflow-x-auto {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
-  touch-action: pan-x;
+  touch-action: pan-x pan-y;
 }
 
 /* Prevent accidental scroll trapping on interactive elements */
@@ -151,10 +150,7 @@ button, a, [role="button"] {
   border-radius: 16px;
   box-shadow: var(--shadow-sm);
   transition: border-color 0.25s ease, transform 0.2s var(--ease-out-expo), box-shadow 0.25s ease;
-  contain: content;
-  /* Prevent GPU layer from blocking mobile touch scroll */
- -webkit-transform: translateZ(0);
-  transform: translateZ(0);
+  isolation: isolate;
 }
 
 /* Card hover lift — disabled on touch devices to prevent scroll interference */
@@ -186,10 +182,8 @@ button, a, [role="button"] {
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 16px;
   box-shadow: var(--shadow-md);
-  contain: content;
   transition: border-color 0.25s ease, box-shadow 0.25s ease;
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
+  isolation: isolate;
 }
 
 .glass-card-hero {
@@ -202,10 +196,8 @@ button, a, [role="button"] {
   position: relative;
   overflow: hidden;
   box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  contain: content;
   transition: border-color 0.25s ease, box-shadow 0.25s ease;
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
+  isolation: isolate;
 }
 
 .glass-card-insight {
@@ -216,7 +208,6 @@ button, a, [role="button"] {
   border-radius: 16px;
   overflow: hidden;
   box-shadow: var(--shadow-md), 0 0 20px rgba(139, 92, 246, 0.06);
-  contain: content;
   transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
@@ -408,19 +399,11 @@ button, a, [role="button"] {
   animation: slideInLeft 0.5s var(--ease-out-expo) forwards;
 }
 
-/* Performance: will-change ONLY on elements that actively animate */
+/* Performance: will-change ONLY during active animation */
 .animate-fadeUp, .animate-slideInRight, .animate-slideInLeft {
-  will-change: transform, opacity;
- animation-fill-mode: both;
+  animation-fill-mode: both;
 }
-/* Remove will-change after animation to free GPU and prevent scroll blocking on mobile */
-.animate-fadeUp[style*="animation"], .animate-slideInRight[style*="animation"], .animate-slideInLeft[style*="animation"] {
-  will-change: auto;
-}
-/* Remove will-change after animation to free GPU and prevent scroll blocking on mobile */
-.animate-fadeUp[style*="animation"], .animate-slideInRight[style*="animation"], .animate-slideInLeft[style*="animation"] {
-  will-change: auto;
-}
+/* will-change is managed via JS animationend listener to prevent scroll blocking on mobile */
 
 /* Press animation class */
 .animate-press {
@@ -668,7 +651,6 @@ textarea:focus {
   left: 0;
   right: 0;
   z-index: 9999;
-  transform: translateZ(0);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   touch-action: manipulation;
@@ -866,7 +848,7 @@ textarea:focus {
   border-radius: 20px;
   background-clip: padding-box;
   overflow: hidden;
-  contain: content;
+  isolation: isolate;
 }
 .glass-card-hero-glow::after {
   content: '';

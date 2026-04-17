@@ -300,9 +300,8 @@ export default React.memo(function BottomNav({
 
       {/* Bottom navigation bar */}
       <nav
-        className="fixed bottom-0 left-0 right-0 z-[9999] bg-[#0a0f1a]/95 backdrop-blur-xl border-t border-white/[0.08] will-change-transform"
+        className="fixed bottom-0 left-0 right-0 z-[9999] bg-[#0a0f1a]/95 backdrop-blur-xl border-t border-white/[0.08]"
         style={{
-          transform: 'translateZ(0)',
           backfaceVisibility: 'hidden',
           WebkitBackfaceVisibility: 'hidden',
           touchAction: 'manipulation',
