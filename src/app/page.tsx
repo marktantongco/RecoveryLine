@@ -11,14 +11,24 @@ import { ToastProvider } from '@/components/recovery/Toast';
 import { SectionName, CheckinType, MoodKey } from '@/lib/recovery-types';
 
 // Dynamic imports for code splitting — only load section when needed
-const Dashboard = lazy(() => import('@/components/recovery/Dashboard'));
-const Substances = lazy(() => import('@/components/recovery/Substances'));
-const BioTools = lazy(() => import('@/components/recovery/BioTools'));
-const RecoveryHub = lazy(() => import('@/components/recovery/RecoveryHub'));
-const NutritionJuices = lazy(() => import('@/components/recovery/NutritionJuices'));
-const MindPsychology = lazy(() => import('@/components/recovery/MindPsychology'));
-const RecoveryProtocol = lazy(() => import('@/components/recovery/RecoveryProtocol'));
-const PHGuide = lazy(() => import('@/components/recovery/PHGuide'));
+// Error logging wrapper for lazy imports to surface silent failures
+function lazyWithLog(factory: () => Promise<{ default: React.ComponentType }>, name: string) {
+  return lazy(() =>
+    factory().catch((err) => {
+      console.error(`[RecoveryLine] Failed to lazy-load "${name}":`, err);
+      throw err;
+    })
+  );
+}
+
+const Dashboard = lazyWithLog(() => import('@/components/recovery/Dashboard'), 'Dashboard');
+const Substances = lazyWithLog(() => import('@/components/recovery/Substances'), 'Substances');
+const BioTools = lazyWithLog(() => import('@/components/recovery/BioTools'), 'BioTools');
+const RecoveryHub = lazyWithLog(() => import('@/components/recovery/RecoveryHub'), 'RecoveryHub');
+const NutritionJuices = lazyWithLog(() => import('@/components/recovery/NutritionJuices'), 'NutritionJuices');
+const MindPsychology = lazyWithLog(() => import('@/components/recovery/MindPsychology'), 'MindPsychology');
+const RecoveryProtocol = lazyWithLog(() => import('@/components/recovery/RecoveryProtocol'), 'RecoveryProtocol');
+const PHGuide = lazyWithLog(() => import('@/components/recovery/PHGuide'), 'PHGuide');
 
 // Skeleton loader for lazy sections
 function SectionSkeleton() {

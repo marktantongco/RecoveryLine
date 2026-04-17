@@ -1,15 +1,13 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { JUICE_RECIPES, JUICE_CATEGORIES, type JuiceRecipe } from '@/lib/nutrition-data';
-import { NUTRITION_PROTOCOLS, type NutritionProtocol } from '@/lib/nutrition-data';
-import { NUTRIENT_GUIDES, type NutrientGuide } from '@/lib/nutrition-data';
+import { JUICE_RECIPES, JUICE_CATEGORIES, type JuiceRecipe, NUTRITION_PROTOCOLS, type NutritionProtocol, NUTRIENT_GUIDES, type NutrientGuide, HYDRATION_BEVERAGES, DAILY_HYDRATION_SCHEDULE, type BeverageEntry, type HydrationSchedule } from '@/lib/nutrition-data';
 import { copyToClipboard } from '@/lib/utils';
 import { useToast } from './Toast';
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
 
-type SubTab = 'juice-recipes' | 'nutrition-protocols' | 'nutrient-guides';
+type SubTab = 'juice-recipes' | 'nutrition-protocols' | 'nutrient-guides' | 'hydration-strategy';
 
 // ─── Inline SVG Icons ──────────────────────────────────────────────────────────
 
@@ -227,6 +225,7 @@ function SubTabNav({ active, onChange }: { active: SubTab; onChange: (tab: SubTa
     { id: 'juice-recipes', label: 'Juice Recipes', icon: <JuiceIcon className="w-4 h-4" /> },
     { id: 'nutrition-protocols', label: 'Nutrition Protocols', icon: <ClipboardIcon className="w-4 h-4" /> },
     { id: 'nutrient-guides', label: 'Nutrient Guides', icon: <BookIcon className="w-4 h-4" /> },
+    { id: 'hydration-strategy', label: 'Hydration', icon: <DropletIcon className="w-4 h-4" /> },
   ];
 
   return (
@@ -1082,6 +1081,270 @@ function NutrientGuidesTab() {
 
 // ─── Main Component ─────────────────────────────────────────────────────────────
 
+// ─── Hydration Strategy Tab ──────────────────────────────────────────────────
+
+function RatingStars({ rating }: { rating: number }) {
+  return (
+    <div className="flex gap-0.5">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <span key={i} className={`text-[10px] ${i < rating ? 'text-amber-400' : 'text-white/10'}`}>
+          ★
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function BeverageCard({ beverage, index }: { beverage: BeverageEntry; index: number }) {
+  const [expanded, setExpanded] = useState(false);
+  const staggerClass = index < 6 ? `stagger-${Math.min(index + 1, 6)}` : '';
+  const isRecommended = ['primary', 'supplementary', 'probiotic', 'juice-recommended'].includes(beverage.category);
+  const isCaution = beverage.category === 'juice-caution';
+  const isAvoid = beverage.category === 'juice-avoid';
+
+  return (
+    <div
+      className={`glass-card overflow-hidden animate-fadeUp ${staggerClass}`}
+      style={staggerClass ? { opacity: 0 } : undefined}
+    >
+      <div className="p-4">
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <div className="flex-1 min-w-0">
+            <h4 className="text-sm font-bold text-white leading-tight">{beverage.name}</h4>
+          </div>
+          {isRecommended ? (
+            <div className="w-7 h-7 rounded-lg bg-emerald-500/15 flex items-center justify-center flex-shrink-0">
+              <CheckCircleIcon className="w-4 h-4 text-emerald-400" />
+            </div>
+          ) : isAvoid ? (
+            <div className="w-7 h-7 rounded-lg bg-red-500/15 flex items-center justify-center flex-shrink-0">
+              <XCircleIcon className="w-4 h-4 text-red-400" />
+            </div>
+          ) : (
+            <div className="w-7 h-7 rounded-lg bg-amber-500/15 flex items-center justify-center flex-shrink-0">
+              <AlertTriangleIcon className="w-4 h-4 text-amber-400" />
+            </div>
+          )}
+        </div>
+
+        {/* Rating + Category Badge */}
+        <div className="flex items-center gap-2 mt-1 mb-2">
+          <RatingStars rating={beverage.rating} />
+          <span className={`text-[10px] px-2 py-0.5 rounded-full border font-medium ${
+            isRecommended
+              ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20'
+              : isAvoid
+              ? 'bg-red-500/15 text-red-400 border-red-500/20'
+              : 'bg-amber-500/15 text-amber-400 border-amber-500/20'
+          }`}>
+            {isRecommended ? 'Recommended' : isAvoid ? 'Avoid' : 'Caution'}
+          </span>
+        </div>
+
+        {/* Best For */
+        <div className="rounded-xl bg-white/[0.03] p-2.5 mb-2">
+          <p className="text-[10px] text-slate-500 mb-0.5">Best For</p>
+          <p className="text-[11px] text-sky-400 font-medium leading-relaxed">{beverage.bestFor}</p>
+        </div>
+
+        {/* Dosage & Frequency */}
+        <div className="flex gap-2 mb-2">
+          <div className="flex-1 rounded-xl bg-white/[0.03] p-2">
+            <p className="text-[10px] text-slate-500 mb-0.5">Dosage</p>
+            <p className="text-[11px] text-slate-300 leading-relaxed">{beverage.dosage}</p>
+          </div>
+          <div className="flex-1 rounded-xl bg-white/[0.03] p-2">
+            <p className="text-[10px] text-slate-500 mb-0.5">Frequency</p>
+            <p className="text-[11px] text-slate-300 leading-relaxed">{beverage.frequency}</p>
+          </div>
+        </div>
+
+        {/* Expand / Collapse */}
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="w-full flex items-center justify-center gap-1.5 py-2 border-t border-white/[0.05] text-[10px] text-slate-500 hover:text-slate-300 hover:bg-white/[0.02] transition-all"
+        >
+          {expanded ? 'Less Details' : 'More Details'}
+          <ChevronDownIcon className={`w-3 h-3 transition-transform ${expanded ? 'rotate-180' : ''}`} />
+        </button>
+
+        {expanded && (
+          <div className="pt-3 space-y-3">
+            {/* Benefits */}
+            <div>
+              <p className="text-[10px] font-semibold text-emerald-400 uppercase tracking-wide mb-1.5 flex items-center gap-1">
+                <CheckCircleIcon className="w-3 h-3" /> Benefits
+              </p>
+              <div className="space-y-1">
+                {beverage.benefits.map((b, i) => (
+                  <div key={i} className="flex items-start gap-1.5">
+                    <span className="w-1 h-1 rounded-full bg-emerald-500 flex-shrink-0 mt-1.5" />
+                    <p className="text-[11px] text-slate-400 leading-relaxed">{b}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Limitations */}
+            {beverage.limitations.length > 0 && (
+              <div>
+                <p className="text-[10px] font-semibold text-amber-400 uppercase tracking-wide mb-1.5 flex items-center gap-1">
+                  <AlertTriangleIcon className="w-3 h-3" /> Limitations
+                </p>
+                <div className="space-y-1">
+                  {beverage.limitations.map((l, i) => (
+                    <div key={i} className="flex items-start gap-1.5">
+                      <span className="w-1 h-1 rounded-full bg-amber-500 flex-shrink-0 mt-1.5" />
+                      <p className="text-[11px] text-slate-400 leading-relaxed">{l}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function HydrationStrategyTab() {
+  const beverages = HYDRATION_BEVERAGES ?? [];
+  const schedule = DAILY_HYDRATION_SCHEDULE ?? [];
+
+  const recommended = beverages.filter((b) => ['primary', 'supplementary', 'probiotic', 'juice-recommended'].includes(b.category));
+  const cautionAvoid = beverages.filter((b) => ['juice-caution', 'juice-avoid'].includes(b.category));
+
+  return (
+    <div className="space-y-4 pb-6">
+      {/* Hero Card */}
+      <div className="glass-card-hero p-5 animate-fadeUp" style={{ opacity: 0 }}>
+        <div className="flex items-center gap-3 mb-2">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-sky-500/15">
+            <DropletIcon className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-white">Hydration Strategy</h2>
+            <p className="text-xs text-slate-400">Structured hydration plan for recovery</p>
+          </div>
+        </div>
+        <p className="text-[11px] text-slate-400 leading-relaxed mt-2">
+          Proper hydration is one of the most impactful and immediately actionable things you can do for recovery. Chronic substance use causes severe dehydration, electrolyte imbalance, and cellular damage. The Philippines offers excellent natural hydration sources — fresh buko (coconut water) is the perfect electrolyte drink, and calamansi provides superior vitamin C. This strategy replaces harmful beverages with recovery-optimizing alternatives.
+        </p>
+      </div>
+
+      {/* Daily Hydration Schedule */}
+      <div className="glass-card p-4 animate-fadeUp stagger-1" style={{ opacity: 0 }}>
+        <SectionHeader icon={<ClockIcon className="w-3.5 h-3.5 text-sky-400" />} title="Daily Hydration Schedule" />
+        <div className="space-y-3">
+          {schedule.map((slot, i) => (
+            <div key={i} className="rounded-xl bg-white/[0.02] border border-white/[0.05] p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-sm">{slot.icon}</span>
+                <h5 className="text-xs font-bold text-white">{slot.timeSlot}</h5>
+              </div>
+              <div className="space-y-1.5">
+                {slot.beverages.map((bev, bi) => (
+                  <div key={bi} className="flex items-start gap-2.5 p-2 rounded-lg bg-white/[0.02]">
+                    <DropletIcon className="w-3 h-3 text-sky-400 flex-shrink-0 mt-0.5" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-[11px] text-slate-300 font-medium">{bev.name}</p>
+                        <span className="text-[10px] text-sky-400 font-medium flex-shrink-0">{bev.amount}</span>
+                      </div>
+                      <p className="text-[10px] text-slate-500 leading-relaxed mt-0.5">{bev.purpose}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Beverage Guide — Recommended */}
+      <div className="space-y-4 animate-fadeUp stagger-2" style={{ opacity: 0 }}>
+        <SectionHeader icon={<CheckCircleIcon className="w-3.5 h-3.5 text-emerald-400" />} title="Beverage Guide — Recommended" />
+        <div className="space-y-3">
+          {recommended.map((bev, idx) => (
+            <BeverageCard key={bev.id} beverage={bev} index={idx} />
+          ))}
+        </div>
+      </div>
+
+      {/* Beverage Guide — Caution & Avoid */}
+      {cautionAvoid.length > 0 && (
+        <div className="space-y-4 animate-fadeUp stagger-3" style={{ opacity: 0 }}>
+          <SectionHeader icon={<XCircleIcon className="w-3.5 h-3.5 text-red-400" />} title="Beverage Guide — Caution & Avoid" />
+          <div className="space-y-3">
+            {cautionAvoid.map((bev, idx) => (
+              <BeverageCard key={bev.id} beverage={bev} index={idx} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Key Principles */}
+      <div className="glass-card-insight p-4 animate-fadeUp stagger-4" style={{ opacity: 0 }}>
+        <SectionHeader icon={<LightbulbIcon className="w-3.5 h-3.5 text-purple-400" />} title="Key Principles" />
+        <div className="space-y-4">
+          <div>
+            <p className="text-[10px] font-semibold text-emerald-400 uppercase tracking-wide mb-2 flex items-center gap-1">
+              <CheckCircleIcon className="w-3 h-3" /> DO
+            </p>
+            <div className="space-y-1.5">
+              {[
+                'Drink a glass of water immediately upon waking — before anything else',
+                'Keep a water bottle with you at all times and sip every 30 minutes',
+                'Replace all soft drinks and energy drinks with coconut water or calamansi water',
+                'Drink coconut water (buko) at least 2x daily for electrolytes',
+                'Add a pinch of sea salt to your water for homemade electrolyte drinks',
+                'Drink herbal teas (chamomile, ginger) instead of coffee',
+                'Monitor urine color — pale yellow means well hydrated, dark means dehydrated',
+                'Eat water-rich fruits: watermelon, papaya, cucumber, coconut',
+              ].map((tip, i) => (
+                <div key={i} className="flex items-start gap-2 text-[11px] text-slate-400 leading-relaxed">
+                  <span className="text-emerald-400 mt-1 flex-shrink-0">✓</span>
+                  {tip}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="text-[10px] font-semibold text-red-400 uppercase tracking-wide mb-2 flex items-center gap-1">
+              <XCircleIcon className="w-3 h-3" /> DON&apos;T
+            </p>
+            <div className="space-y-1.5">
+              {[
+                'Don\'t wait until thirsty — thirst means you\'re already dehydrated',
+                'Don\'t drink coffee or energy drinks (trigger cravings and anxiety)',
+                'Don\'t drink tuba, beer, lambanog, or any alcohol (triggers relapse)',
+                'Don\'t chug large amounts at once — sip steadily throughout the day',
+                'Don\'t replace water with fruit juices (high sugar content)',
+                'Don\'t drink cold water with meals (slows digestion)',
+              ].map((tip, i) => (
+                <div key={i} className="flex items-start gap-2 text-[11px] text-slate-400 leading-relaxed">
+                  <span className="text-red-400 mt-1 flex-shrink-0">✗</span>
+                  {tip}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Disclaimer */}
+      <div className="glass-card p-3 animate-fadeUp stagger-5" style={{ opacity: 0 }}>
+        <p className="text-[10px] text-slate-500 leading-relaxed">
+          <strong className="text-slate-400">Disclaimer:</strong> This hydration guide provides general recommendations and is not medical advice. Individual hydration needs vary by body weight, activity level, and medications. Consult a healthcare provider for personalized hydration plans.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Component ─────────────────────────────────────────────────────────────
+
 export default function NutritionJuices() {
   const [activeTab, setActiveTab] = useState<SubTab>('juice-recipes');
 
@@ -1103,6 +1366,7 @@ export default function NutritionJuices() {
         {activeTab === 'juice-recipes' && <JuiceRecipesTab />}
         {activeTab === 'nutrition-protocols' && <NutritionProtocolsTab />}
         {activeTab === 'nutrient-guides' && <NutrientGuidesTab />}
+        {activeTab === 'hydration-strategy' && <HydrationStrategyTab />}
       </div>
     </div>
   );

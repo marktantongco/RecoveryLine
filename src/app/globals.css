@@ -59,6 +59,7 @@
     height: 100dvh;
     height: 100vh; /* fallback for older browsers */
     overflow: hidden;
+    overscroll-behavior: none;
   }
   body {
     @apply bg-background text-foreground;
@@ -66,11 +67,29 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
+    touch-action: manipulation;
   }
   html {
     scroll-behavior: smooth;
     -webkit-tap-highlight-color: transparent;
   }
+}
+
+/* Mobile touch scrolling — ensure smooth scrolling on all scrollable containers */
+.scroll-smooth {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Ensure touch scrollable containers work on mobile */
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+/* Prevent accidental scroll trapping on interactive elements */
+button, a, [role="button"] {
+  touch-action: manipulation;
 }
 
 /* Custom scrollbar */

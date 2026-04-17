@@ -118,3 +118,52 @@ Stage Summary:
 - The issue was a stale .next build cache, not missing code
 - Clean build completed successfully
 - Production build output: static route / and /_not-found
+
+---
+Task ID: 5
+Agent: Main Agent
+Task: Add missing supplement entries and new data structures from PDF document
+
+Work Log:
+- Read supplement-data.ts (679 lines → expanded to ~1020 lines)
+- Read nutrition-data.ts (376 lines → expanded to 521 lines)
+- Read page.tsx — verified nutrition section properly wired via lazy-loaded NutritionJuices component
+
+### Task 1: supplement-data.ts Updates
+- Added 'Protein' and 'Gut Healing' to SupplementCategory type union
+- Added 'Protein' and 'Gut Healing' to SUPPLEMENT_CATEGORIES array
+- Added 10 new supplement entries to SUPPLEMENTS_DB:
+  1. Tongkat Ali (Eurycoma Longifolia) — Adaptogens
+  2. Shilajit (Fulvic Acid) — Minerals
+  3. Whey Protein — Protein (new category)
+  4. Creatine Monohydrate — Protein
+  5. DGL (Deglycyrrhizinated Licorice) — Gut Healing (new category)
+  6. Aloe Vera (Leaf Extract) — Gut Healing
+  7. Zinc L-Carnosine — Minerals
+  8. Quercetin — Antioxidants
+  9. DLPA (D,L-Phenylalanine) — Amino Acids
+  10. Butyrate (Short-Chain Fatty Acid) — Gut Healing
+- Each entry follows exact same interface: id, name, shortName, tagline, category, dosage, timing, description, mechanism, benefits, cautions, forSubstances, stackNotes, philippinesAvailability, priceRange
+- Descriptions are 3-5 sentences with detailed mechanism explanations matching existing quality
+
+### Task 2: nutrition-data.ts Updates
+- Added SymptomSupplement interface and SYMPTOM_SUPPLEMENT_MAP constant (8 symptom categories mapping to supplements)
+- Added BeverageEntry interface and HYDRATION_BEVERAGES constant (11 beverages with ratings)
+- Added HydrationSchedule interface and DAILY_HYDRATION_SCHEDULE constant (5 time-of-day schedules)
+- Fixed duplicate BeverageEntry/HydrationSchedule definitions that existed from previous hydration data
+- Fixed duplicate `amount` key in Evening hydration schedule (user spec had duplicate, corrected to use `name` + `amount`)
+
+### Task 3: page.tsx Verification
+- Verified NutritionJuices component is properly lazy-loaded at line 18
+- Verified 'nutrition' case in renderSection switch at line 203
+- No changes needed — wiring is correct
+
+### Pre-existing Issue Noted
+- ESLint parsing error at NutritionJuices.tsx line 1150 — pre-existing, not caused by our changes
+
+Stage Summary:
+- 10 new supplements added across 2 new categories (Protein, Gut Healing)
+- 8 symptom-supplement mappings added
+- 11 hydration beverages with ratings added
+- 5 daily hydration schedules added
+- Total: 30+ new data entries added across 2 files

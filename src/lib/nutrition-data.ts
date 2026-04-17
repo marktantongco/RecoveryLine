@@ -373,3 +373,149 @@ export const NUTRIENT_GUIDES: NutrientGuide[] = [
 ];
 
 export const JUICE_CATEGORIES = ['All', 'Brain Repair', 'Gut Heal', 'Detox', 'Calm', 'Energy', 'Immunity'] as const;
+
+// ─── SYMPTOM-SUPPLEMENT MAPPING ──────────────────────────────────────────────
+
+export interface SymptomSupplement {
+  symptom: string;
+  supplements: { name: string; dosage: string; note: string }[];
+}
+
+export const SYMPTOM_SUPPLEMENT_MAP: SymptomSupplement[] = [
+  {
+    symptom: 'Low motivation, fatigue, mental fog',
+    supplements: [
+      { name: 'L-Tyrosine', dosage: '500-1000mg AM', note: 'Dopamine precursor for motivation and focus' },
+      { name: 'DLPA', dosage: '500-750mg AM', note: 'Endorphin + dopamine dual pathway support' },
+      { name: 'B-Complex', dosage: 'B-50 AM', note: 'Energy metabolism and nerve repair' },
+    ],
+  },
+  {
+    symptom: 'Emotional/physical pain, "blah" mood',
+    supplements: [
+      { name: 'DLPA', dosage: '500-750mg AM', note: 'Rebuilds endorphin production for pain management' },
+      { name: 'Omega-3 Fish Oil', dosage: '2000mg AM', note: 'Reduces neuroinflammation affecting pain perception' },
+      { name: 'Ashwagandha', dosage: '300-600mg PM', note: 'Reduces cortisol, improves stress resilience' },
+    ],
+  },
+  {
+    symptom: 'Anxiety, overstimulation, racing thoughts',
+    supplements: [
+      { name: 'L-Theanine', dosage: '200-400mg as needed', note: 'Calms without sedation, increases alpha brain waves' },
+      { name: 'GABA supplement', dosage: '100-300mg PM', note: 'Direct calming neurotransmitter support' },
+      { name: 'Magnesium Glycinate', dosage: '300-400mg PM', note: 'NMDA receptor modulation, natural calm' },
+      { name: 'Lemon Balm', dosage: '300-600mg PM', note: 'GABA transaminase inhibitor, mild calming' },
+    ],
+  },
+  {
+    symptom: 'Difficulty winding down at night',
+    supplements: [
+      { name: 'Magnesium Glycinate', dosage: '300-400mg PM', note: 'Primary sleep support, muscle relaxation' },
+      { name: '5-HTP', dosage: '50-100mg PM', note: 'Serotonin → melatonin pathway' },
+      { name: 'L-Theanine', dosage: '200mg PM', note: 'Reduces pre-sleep anxiety' },
+      { name: 'Melatonin', dosage: '0.3-1mg 30min before bed', note: 'Circadian rhythm reset' },
+    ],
+  },
+  {
+    symptom: 'Alcohol/sugar cravings, gut issues',
+    supplements: [
+      { name: 'L-Glutamine', dosage: '5-10g daily', note: 'Gut fuel + craving reduction via blood sugar regulation' },
+      { name: 'Probiotics', dosage: '10-25B CFU AM', note: 'Restores gut bacteria that produce neurotransmitters' },
+      { name: 'B-Complex', dosage: 'B-50 AM', note: 'Cofactors for neurotransmitter synthesis' },
+      { name: 'Chromium Picolinate', dosage: '200-400mcg AM', note: 'Blood sugar stabilization' },
+    ],
+  },
+  {
+    symptom: 'Mood instability, cravings',
+    supplements: [
+      { name: '5-HTP', dosage: '150-300mg PM', note: 'Restores serotonin for mood stability' },
+      { name: 'Omega-3 Fish Oil', dosage: '2000mg AM', note: 'Brain membrane repair, mood support' },
+      { name: 'Vitamin D3', dosage: '2000-5000 IU AM', note: 'Regulates serotonin and dopamine gene expression' },
+      { name: 'Mucuna Pruriens', dosage: '250-500mg AM', note: 'Dopamine restoration for motivation' },
+    ],
+  },
+  {
+    symptom: 'Low libido, low energy, hormonal issues',
+    supplements: [
+      { name: 'Tongkat Ali', dosage: '200-400mg AM', note: 'Boosts free testosterone naturally' },
+      { name: 'Zinc', dosage: '15-30mg PM', note: 'Essential for testosterone production' },
+      { name: 'Shilajit', dosage: '250-500mg AM', note: 'Enhances mitochondrial energy and T-levels' },
+      { name: 'Vitamin D3 + K2', dosage: '2000-5000 IU AM', note: 'Hormone regulation' },
+      { name: 'Ashwagandha', dosage: '300-600mg PM', note: 'Reduces cortisol which suppresses testosterone' },
+    ],
+  },
+  {
+    symptom: 'Gut issues: bloating, irregular digestion',
+    supplements: [
+      { name: 'L-Glutamine', dosage: '5-10g daily', note: 'Repairs intestinal lining, primary gut fuel' },
+      { name: 'Probiotics', dosage: '10-50B CFU AM', note: 'Restores gut bacteria diversity' },
+      { name: 'Prebiotics (Inulin/FOS)', dosage: '5-15g daily', note: 'Feeds beneficial bacteria' },
+      { name: 'DGL', dosage: '500mg before meals', note: 'Soothes and protects stomach lining' },
+      { name: 'Aloe Vera', dosage: '50-100mg daily', note: 'Reduces intestinal inflammation' },
+    ],
+  },
+];
+
+// ─── HYDRATION STRATEGY DATA ────────────────────────────────────────────────
+
+export interface BeverageEntry {
+  id: string;
+  name: string;
+  category: 'primary' | 'supplementary' | 'probiotic' | 'juice-recommended' | 'juice-caution' | 'juice-avoid';
+  benefits: string[];
+  dosage: string;
+  frequency: string;
+  limitations: string[];
+  bestFor: string;
+  rating: number; // 1-5
+}
+
+export const HYDRATION_BEVERAGES: BeverageEntry[] = [
+  { id: 'water', name: 'Water', category: 'primary', benefits: ['Primary hydration', 'Cellular function', 'Toxin elimination', 'Temperature regulation'], dosage: '11-16 cups daily', frequency: 'Throughout the day', limitations: ['Needs electrolyte support for full recovery', 'Can be boring alone'], bestFor: 'Primary hydration foundation', rating: 5 },
+  { id: 'buko-juice', name: 'Buko Juice (Coconut Water)', category: 'supplementary', benefits: ['Natural electrolyte replacement', 'Better hydration than plain water', 'Low calorie', 'Supports heart and kidney health', 'Aids muscle recovery', 'Reduces cramps'], dosage: '1 cup daily', frequency: 'Post-workout or afternoon', limitations: ['Low in sodium compared to sports drinks', 'Not a complete meal', 'Natural sugars 9-11g per cup', 'Variable nutrient content by brand'], bestFor: 'Electrolyte replenishment, post-workout rehydration', rating: 5 },
+  { id: 'green-juice', name: 'Green/Vegetable Juice', category: 'juice-recommended', benefits: ['Vitamins A, C, K for immune and tissue repair', 'Reduces inflammation', 'Supports detoxification', 'Aid nutrient absorption'], dosage: '1 small glass (8 oz)', frequency: 'Daily', limitations: ['Can be acidic', 'Not a meal replacement', 'Fiber removed during juicing'], bestFor: 'Antioxidant support, detox, reducing inflammation', rating: 5 },
+  { id: 'berry-juice', name: 'Berry Juice (Blueberry, Pomegranate)', category: 'juice-recommended', benefits: ['Rich antioxidants combat oxidative stress', 'Reduce inflammation', 'Support muscle recovery', 'Pomegranate has more antioxidants than green tea'], dosage: '1 small glass (4-6 oz)', frequency: '2-3x weekly', limitations: ['High natural sugars', 'Limit portions', 'Best fresh, not from concentrate'], bestFor: 'Antioxidant protection, muscle recovery', rating: 4 },
+  { id: 'probiotic-drinks', name: 'Probiotic Drinks', category: 'probiotic', benefits: ['Reduces cravings by up to 90%', 'Improves sleep quality', 'Increases appetite', 'Repairs gut damage', 'Supports dopamine/serotonin'], dosage: '1.8-30B CFU daily', frequency: 'Daily (with breakfast)', limitations: ['Takes weeks/months for effects', 'Individual variation', 'Not standalone treatment', 'Needs consistency', 'Quality varies'], bestFor: 'Cravings, mood, gut repair', rating: 5 },
+  { id: 'citrus-juice', name: 'Citrus Juice (Calamansi, Dalandan)', category: 'juice-recommended', benefits: ['High vitamin C for immune support', 'Folate, potassium, magnesium', 'Flavonoids for anti-inflammatory', 'Cardiovascular support'], dosage: '1 small glass', frequency: '2-3x weekly', limitations: ['Can be acidic', 'May irritate sensitive digestion', 'Citric acid can damage tooth enamel with frequent exposure'], bestFor: 'Immune support, vitamin C source', rating: 4 },
+  { id: 'herbal-tea', name: 'Herbal Tea (Green tea, Chamomile, Ginger)', category: 'supplementary', benefits: ['Green tea: L-Theanine + antioxidants', 'Chamomile: sleep and calm support', 'Ginger: anti-nausea and anti-inflammatory'], dosage: '2-3 cups daily', frequency: 'AM and PM', limitations: ['Caffeine in green tea (limit PM use)', 'Can interfere with iron absorption'], bestFor: 'Calm support, antioxidants, digestion', rating: 4 },
+  { id: 'high-sugar-juice', name: 'High-Sugar Juices & Soda', category: 'juice-avoid', benefits: [], dosage: 'Avoid', frequency: 'Never', limitations: ['Spikes blood sugar and worsens mood swings', 'May trigger cravings', 'Dehydrating', 'Feeds harmful gut bacteria', 'Empty calories with zero recovery value'], bestFor: 'AVOID during recovery', rating: 1 },
+  { id: 'carbonated', name: 'Carbonated Drinks', category: 'juice-avoid', benefits: [], dosage: 'Avoid', frequency: 'Never', limitations: ['Dehydrate the body', 'Interfere with nutrient absorption', 'Damage gut lining with chronic use', 'Feeds sugar cravings'], bestFor: 'AVOID during recovery', rating: 1 },
+  { id: 'caffeine-excess', name: 'Excessive Caffeine', category: 'juice-avoid', benefits: [], dosage: 'Limit to 1 cup AM', frequency: 'AM only (before noon)', limitations: ['Interferes with sleep', 'Increases anxiety and cortisol', 'Disrupts gut repair', 'Dehydrating'], bestFor: 'Limit to 1 cup before noon only', rating: 2 },
+  { id: 'alcohol', name: 'Alcoholic Beverages', category: 'juice-avoid', benefits: [], dosage: 'Avoid', frequency: 'Never during early recovery', limitations: ['Dehydrate and interfere with medications', 'Trigger relapse risk', 'Destroy gut bacteria', 'Damage sleep architecture', 'Suppress testosterone'], bestFor: 'AVOID completely during recovery (first 90 days minimum)', rating: 1 },
+];
+
+export interface HydrationSchedule {
+  timeOfDay: string;
+  beverages: { name: string; amount: string; purpose: string }[];
+}
+
+export const DAILY_HYDRATION_SCHEDULE: HydrationSchedule[] = [
+  { timeOfDay: 'Morning (AM)', beverages: [
+    { name: 'Water', amount: '1-2 cups', purpose: 'Rehydrate after sleep' },
+    { name: 'Probiotic', amount: 'As directed', purpose: 'Gut bacteria restoration (with breakfast)' },
+    { name: 'L-Glutamine', amount: '3-5g', purpose: 'Gut lining repair' },
+    { name: 'Calamansi water', amount: '1 glass with pinch of sea salt', purpose: 'Electrolytes + vitamin C' },
+  ]},
+  { timeOfDay: 'Midday', beverages: [
+    { name: 'Water', amount: '2-3 cups', purpose: 'Stay hydrated through the day' },
+    { name: 'Green tea or herbal tea', amount: '1 cup', purpose: 'L-theanine and antioxidants' },
+    { name: 'Fermented food', amount: '1 serving (yogurt, kimchi, atchara)', purpose: 'Natural probiotics + prebiotics' },
+    { name: 'High-fiber food', amount: '1 serving', purpose: 'Prebiotic fiber for gut bacteria' },
+    { name: 'Berry juice', amount: '4-6 oz (2-3x weekly)', purpose: 'Antioxidant support' },
+  ]},
+  { timeOfDay: 'Afternoon', beverages: [
+    { name: 'Buko juice (coconut water)', amount: '1 cup', purpose: 'Electrolyte replenishment' },
+    { name: 'Water', amount: '2 cups', purpose: 'Continue hydration' },
+    { name: 'Green/vegetable juice', amount: '8 oz', purpose: 'Antioxidant and detox support' },
+  ]},
+  { timeOfDay: 'Evening', beverages: [
+    { name: 'Water', amount: '1-2 cups', purpose: 'Evening hydration' },
+    { name: 'L-Glutamine', amount: '3-5g', purpose: 'Gut repair support' },
+    { name: 'DGL', amount: '500mg', purpose: 'Soothe intestinal lining' },
+    { name: 'Prebiotic fiber', amount: 'From food (garlic, onion, asparagus)', purpose: 'Feed beneficial bacteria overnight' },
+  ]},
+  { timeOfDay: 'Bedtime', beverages: [
+    { name: 'Magnesium Glycinate', amount: '300-400mg', purpose: 'Sleep support + gut healing' },
+    { name: 'Herbal tea', amount: '1 cup (chamomile or ginger)', purpose: 'Promotes sleep and reduces anxiety' },
+  ]},
+];
