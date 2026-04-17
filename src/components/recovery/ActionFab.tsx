@@ -339,7 +339,7 @@ export default React.memo(function ActionFab({ onNavigate, onLongPress }: Action
             strokeLinecap="round"
             strokeLinejoin="round"
             className="transition-transform duration-300"
-            style={{ transform: isOpen ? 'rotate(45deg)' : 'rotate(0deg)' }}
+            style={{ transform: isOpen ? 'rotate(45deg) scale(1.1)' : 'rotate(0deg) scale(1)', transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)' }}
           >
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />

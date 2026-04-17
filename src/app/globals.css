@@ -444,13 +444,13 @@ button, a, [role="button"] {
   animation: breathe 4s ease-in-out infinite;
 }
 
-/* Stagger timing — 40ms gaps for snappier feel */
-.stagger-1 { animation-delay: 0.04s; }
-.stagger-2 { animation-delay: 0.08s; }
-.stagger-3 { animation-delay: 0.12s; }
-.stagger-4 { animation-delay: 0.16s; }
-.stagger-5 { animation-delay: 0.2s; }
-.stagger-6 { animation-delay: 0.24s; }
+/* Stagger timing — 30ms gaps for snappier feel */
+.stagger-1 { animation-delay: 0.03s; }
+.stagger-2 { animation-delay: 0.06s; }
+.stagger-3 { animation-delay: 0.09s; }
+.stagger-4 { animation-delay: 0.12s; }
+.stagger-5 { animation-delay: 0.15s; }
+.stagger-6 { animation-delay: 0.18s; }
 
 /* ═══════════════════════════════════════════════════════════════
    CALCULATOR STYLES
@@ -839,7 +839,103 @@ textarea:focus {
 :focus-visible {
   outline: 2px solid #0ea5e9;
   outline-offset: 2px;
-  border-radius: 8px;
+  border-radius: 12px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATED GRADIENT BORDER PULSE — Hero cards
+   ═══════════════════════════════════════════════════════════════ */
+
+@property --border-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes border-glow-rotate {
+  0% { --border-angle: 0deg; }
+  100% { --border-angle: 360deg; }
+}
+
+.glass-card-hero-glow {
+  position: relative;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.08) 0%, rgba(30, 41, 59, 0.9) 50%, rgba(16, 185, 129, 0.06) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid transparent;
+  border-radius: 20px;
+  background-clip: padding-box;
+  overflow: hidden;
+  contain: content;
+}
+.glass-card-hero-glow::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--border-angle, 0deg), transparent 60%, rgba(14,165,233,0.4) 75%, rgba(16,185,129,0.4) 90%, transparent 100%);
+  z-index: -1;
+  animation: border-glow-rotate 4s linear infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SHIMMER LOADING SKELETON
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes skeleton-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton-shimmer {
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INTERACTIVE CARD DEPTH EFFECT (desktop hover)
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (hover: hover) {
+  .glass-card-interactive {
+    transition: transform 0.3s var(--ease-out-expo), box-shadow 0.3s ease, border-color 0.25s ease;
+  }
+  .glass-card-interactive:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(255, 255, 255, 0.18);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION DIVIDER — Gradient line
+   ═══════════════════════════════════════════════════════════════ */
+
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08) 30%, rgba(14,165,233,0.15) 50%, rgba(255,255,255,0.08) 70%, transparent);
+  margin: 1rem 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CHIP MICRO-INTERACTION — Scale bounce on toggle
+   ═══════════════════════════════════════════════════════════════ */
+
+.chip-enter {
+  animation: chip-pop 0.35s var(--ease-spring);
+}
+@keyframes chip-pop {
+  0% { transform: scale(0.8); opacity: 0; }
+  60% { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COUNTER/NUMBER ANIMATE UTILITY
+   ═══════════════════════════════════════════════════════════════ */
+
+.counter-animate {
+  transition: all 0.5s var(--ease-out-expo);
 }
 
 /* ═══════════════════════════════════════════════════════════════

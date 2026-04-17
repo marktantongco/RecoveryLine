@@ -342,7 +342,7 @@ export default React.memo(function BottomNav({
                   {item.label}
                 </span>
                 {isActive && (
-                  <div className="w-1 h-1 rounded-full bg-sky-400 mt-0.5 shadow-sm shadow-sky-400/50 animate-bounce-dot" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-sky-400 mt-0.5 shadow-sm shadow-sky-400/50 animate-bounce-dot" />
                 )}
               </button>
             );
@@ -390,7 +390,7 @@ export default React.memo(function BottomNav({
               More
             </span>
             {(isMoreActive || moreMenuOpen) && (
-              <div className="w-1 h-1 rounded-full bg-sky-400 mt-0.5 shadow-sm shadow-sky-400/50 animate-bounce-dot" />
+              <div className="w-1.5 h-1.5 rounded-full bg-sky-400 mt-0.5 shadow-sm shadow-sky-400/50 animate-bounce-dot" />
             )}
           </button>
         </div>

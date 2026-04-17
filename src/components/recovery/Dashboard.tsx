@@ -235,7 +235,7 @@ function MilestonesSection({ streak, soberDays, totalCheckins }: { streak: numbe
         </div>
         <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-amber-500 to-emerald-500 transition-all duration-1000"
+            className="h-full rounded-full bg-gradient-to-r from-amber-400 via-sky-400 to-emerald-400 transition-all duration-1000"
             style={{ width: `${(unlockedCount / MILESTONES.length) * 100}%` }}
           />
         </div>
@@ -463,7 +463,7 @@ export default React.memo(function Dashboard({ stats, insights, onNavigate }: Da
       {/* ═══════════════════════════════════════════════════════════════════════
           HERO: Greeting + Progress Ring + Enhanced Time Greeting
           ═══════════════════════════════════════════════════════════════════════ */}
-      <div className="glass-card-hero p-5 animate-fadeUp relative overflow-hidden">
+      <div className="glass-card-hero-glow p-5 animate-fadeUp relative overflow-hidden">
         <div className="absolute -top-20 -right-20 w-48 h-48 rounded-full bg-sky-500/5 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-16 -left-16 w-40 h-40 rounded-full bg-emerald-500/5 blur-3xl pointer-events-none" />
 
@@ -514,7 +514,7 @@ export default React.memo(function Dashboard({ stats, insights, onNavigate }: Da
       {/* ═══════════════════════════════════════════════════════════════════════
           BRAIN RECOVERY SCORE WIDGET
           ═══════════════════════════════════════════════════════════════════════ */}
-      <div className="glass-card-hero p-5 animate-fadeUp stagger-1 relative overflow-hidden" style={{ opacity: 0 }}>
+      <div className="glass-card-hero-glow p-5 animate-fadeUp stagger-1 relative overflow-hidden" style={{ opacity: 0 }}>
         {/* Subtle background glow */}
         <div
           className="absolute -top-12 -right-12 w-36 h-36 rounded-full blur-3xl pointer-events-none opacity-30"
@@ -692,7 +692,7 @@ export default React.memo(function Dashboard({ stats, insights, onNavigate }: Da
       <div className="grid grid-cols-2 gap-3 animate-fadeUp stagger-3" style={{ opacity: 0 }}>
         <button
           onClick={() => onNavigate('recovery')}
-          className="glass-card p-4 text-left hover:border-emerald-500/20 active:scale-[0.98] transition-all group"
+          className="glass-card glass-card-interactive p-4 text-left hover:border-emerald-500/20 active:scale-[0.98] transition-all group"
         >
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 rounded-lg bg-emerald-500/15 flex items-center justify-center text-sm group-hover:scale-110 transition-transform">{'\ud83d\udcb0'}</div>
@@ -703,7 +703,7 @@ export default React.memo(function Dashboard({ stats, insights, onNavigate }: Da
         </button>
         <button
           onClick={() => onNavigate('recovery')}
-          className="glass-card p-4 text-left hover:border-sky-500/20 active:scale-[0.98] transition-all group"
+          className="glass-card glass-card-interactive p-4 text-left hover:border-sky-500/20 active:scale-[0.98] transition-all group"
         >
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 rounded-lg bg-sky-500/15 flex items-center justify-center text-sm group-hover:scale-110 transition-transform">{'\u2705'}</div>
@@ -714,7 +714,7 @@ export default React.memo(function Dashboard({ stats, insights, onNavigate }: Da
         </button>
         <button
           onClick={() => onNavigate('recovery')}
-          className="glass-card p-4 text-left hover:border-amber-500/20 active:scale-[0.98] transition-all group"
+          className="glass-card glass-card-interactive p-4 text-left hover:border-amber-500/20 active:scale-[0.98] transition-all group"
         >
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 rounded-lg bg-amber-500/15 flex items-center justify-center text-sm group-hover:scale-110 transition-transform">{'\ud83d\udd25'}</div>
@@ -725,7 +725,7 @@ export default React.memo(function Dashboard({ stats, insights, onNavigate }: Da
         </button>
         <button
           onClick={() => onNavigate('recovery')}
-          className="glass-card p-4 text-left hover:border-purple-500/20 active:scale-[0.98] transition-all group"
+          className="glass-card glass-card-interactive p-4 text-left hover:border-purple-500/20 active:scale-[0.98] transition-all group"
         >
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 rounded-lg bg-purple-500/15 flex items-center justify-center text-sm group-hover:scale-110 transition-transform">{'\ud83d\udcc8'}</div>
@@ -746,7 +746,7 @@ export default React.memo(function Dashboard({ stats, insights, onNavigate }: Da
       {/* ═══════════════════════════════════════════════════════════════════════
           TODAY'S STATUS — Clickable
           ═══════════════════════════════════════════════════════════════════════ */}
-      <div className="glass-card p-4 animate-fadeUp stagger-4" style={{ opacity: 0 }}>
+      <div className="glass-card glass-card-interactive p-4 animate-fadeUp stagger-4" style={{ opacity: 0 }}>
         <div className="flex items-center justify-between">
           <div className="flex-1 min-w-0">
             <p className="text-xs text-slate-400 mb-1.5">Today&apos;s Status</p>

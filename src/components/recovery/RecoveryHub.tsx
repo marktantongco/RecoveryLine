@@ -148,7 +148,7 @@ export default function RecoveryHub({
   return (
     <div className="space-y-4 pb-6">
       {/* Header */}
-      <div className="glass-card-hero p-5 animate-fadeUp relative overflow-hidden">
+      <div className="glass-card-hero-glow p-5 animate-fadeUp relative overflow-hidden">
         <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full bg-emerald-500/5 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-12 -left-12 w-32 h-32 rounded-full bg-sky-500/5 blur-3xl pointer-events-none" />
         <div className="relative">
@@ -591,9 +591,9 @@ function DailyAffirmation() {
   );
 
   return (
-    <div className="glass-card p-4 animate-fadeUp" style={{ opacity: 0 }}>
+    <div className="glass-card glass-card-interactive p-4 animate-fadeUp" style={{ opacity: 0 }}>
       <div className="flex items-center gap-2.5 mb-3">
-        <div className="w-7 h-7 rounded-lg bg-violet-500/10 flex items-center justify-center flex-shrink-0">
+        <div className="w-7 h-7 rounded-lg bg-violet-500/10 flex items-center justify-center flex-shrink-0 animate-breathe">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" />
             <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z" />

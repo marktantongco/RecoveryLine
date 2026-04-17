@@ -186,7 +186,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
   return (
     <div className="space-y-4 pb-6">
       {/* --- Header Card with 3 Tabs --- */}
-      <div className="glass-card-hero p-5 animate-fadeUp relative overflow-hidden">
+      <div className="glass-card-hero-glow p-5 animate-fadeUp relative overflow-hidden">
         {/* Background danger accent */}
         <div className={`absolute top-0 right-0 w-32 h-32 rounded-full bg-gradient-to-br ${getDangerGradient(substance.dangerLevel)} opacity-[0.07] blur-2xl -translate-y-1/2 translate-x-1/2`} />
 

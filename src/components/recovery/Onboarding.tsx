@@ -73,7 +73,7 @@ function Screen1_Welcome({ onNext }: { onNext: () => void }) {
 
       <button
         onClick={onNext}
-        className="w-full max-w-xs py-3.5 rounded-xl bg-sky-500 text-white font-semibold text-sm shadow-lg shadow-sky-500/25 hover:bg-sky-400 active:scale-[0.98] transition-all"
+        className="w-full max-w-xs py-3.5 rounded-xl bg-sky-500 text-white font-semibold text-sm shadow-xl shadow-sky-500/30 hover:bg-sky-400 active:scale-[0.98] transition-all"
       >
         Get Started
       </button>
@@ -83,7 +83,7 @@ function Screen1_Welcome({ onNext }: { onNext: () => void }) {
         {[0, 1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${i === 0 ? 'bg-sky-400 w-6' : 'bg-white/15'}`}
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${i === 0 ? 'bg-sky-400 w-6 shadow-sm shadow-sky-400/50' : 'bg-white/15'}`}
           />
         ))}
       </div>
@@ -161,7 +161,7 @@ const Screen2_Substances = React.memo(function Screen2_Substances({ data, onChan
         <button
           onClick={onNext}
           disabled={data.substances.length === 0}
-          className="flex-1 py-3 rounded-xl bg-sky-500 text-white text-sm font-semibold shadow-lg shadow-sky-500/25 hover:bg-sky-400 active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+          className="flex-1 py-3 rounded-xl bg-sky-500 text-white text-sm font-semibold shadow-xl shadow-sky-500/30 hover:bg-sky-400 active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
         >
           Next
         </button>
@@ -172,7 +172,7 @@ const Screen2_Substances = React.memo(function Screen2_Substances({ data, onChan
         {[0, 1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${i === 1 ? 'bg-sky-400 w-6' : 'bg-white/15'}`}
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${i === 1 ? 'bg-sky-400 w-6 shadow-sm shadow-sky-400/50' : 'bg-white/15'}`}
           />
         ))}
       </div>
@@ -291,7 +291,7 @@ const Screen3_HealthProfile = React.memo(function Screen3_HealthProfile({ data, 
         </button>
         <button
           onClick={onNext}
-          className="flex-1 py-3 rounded-xl bg-sky-500 text-white text-sm font-semibold shadow-lg shadow-sky-500/25 hover:bg-sky-400 active:scale-[0.98] transition-all"
+          className="flex-1 py-3 rounded-xl bg-sky-500 text-white text-sm font-semibold shadow-xl shadow-sky-500/30 hover:bg-sky-400 active:scale-[0.98] transition-all"
         >
           Next
         </button>
@@ -302,7 +302,7 @@ const Screen3_HealthProfile = React.memo(function Screen3_HealthProfile({ data, 
         {[0, 1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${i === 2 ? 'bg-sky-400 w-6' : 'bg-white/15'}`}
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${i === 2 ? 'bg-sky-400 w-6 shadow-sm shadow-sky-400/50' : 'bg-white/15'}`}
           />
         ))}
       </div>
@@ -370,7 +370,7 @@ const Screen4_Contemplative = React.memo(function Screen4_Contemplative({ data, 
         </button>
         <button
           onClick={onNext}
-          className="flex-1 py-3 rounded-xl bg-sky-500 text-white text-sm font-semibold shadow-lg shadow-sky-500/25 hover:bg-sky-400 active:scale-[0.98] transition-all"
+          className="flex-1 py-3 rounded-xl bg-sky-500 text-white text-sm font-semibold shadow-xl shadow-sky-500/30 hover:bg-sky-400 active:scale-[0.98] transition-all"
         >
           Next
         </button>
@@ -381,7 +381,7 @@ const Screen4_Contemplative = React.memo(function Screen4_Contemplative({ data, 
         {[0, 1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${i === 3 ? 'bg-sky-400 w-6' : 'bg-white/15'}`}
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${i === 3 ? 'bg-sky-400 w-6 shadow-sm shadow-sky-400/50' : 'bg-white/15'}`}
           />
         ))}
       </div>
@@ -401,7 +401,7 @@ function Screen5_Completion({ onComplete }: { onComplete: () => void }) {
 
       <button
         onClick={onComplete}
-        className="w-full max-w-xs py-3.5 rounded-xl bg-sky-500 text-white font-semibold text-sm shadow-lg shadow-sky-500/25 hover:bg-sky-400 active:scale-[0.98] transition-all"
+        className="w-full max-w-xs py-3.5 rounded-xl bg-sky-500 text-white font-semibold text-sm shadow-xl shadow-sky-500/30 hover:bg-sky-400 active:scale-[0.98] transition-all"
       >
         Start Recovery
       </button>
@@ -411,7 +411,7 @@ function Screen5_Completion({ onComplete }: { onComplete: () => void }) {
         {[0, 1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${i === 4 ? 'bg-sky-400 w-6' : 'bg-white/15'}`}
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${i === 4 ? 'bg-sky-400 w-6 shadow-sm shadow-sky-400/50' : 'bg-white/15'}`}
           />
         ))}
       </div>

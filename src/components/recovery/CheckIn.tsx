@@ -180,7 +180,7 @@ export default function CheckIn({ onSubmit, dailyAvgSpending, preselect, onPrese
   if (showSuccess) {
     return (
       <div className="flex flex-col items-center justify-center py-20 animate-scaleIn">
-        <div className={`w-24 h-24 rounded-full flex items-center justify-center mb-6 ${
+        <div className={`w-24 h-24 rounded-full flex items-center justify-center mb-6 animate-float ${
           mode === 'sober'
             ? 'bg-emerald-500/20 shadow-xl shadow-emerald-500/20'
             : 'bg-amber-500/20 shadow-xl shadow-amber-500/20'

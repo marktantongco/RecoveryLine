@@ -162,10 +162,10 @@ function AppContent() {
           </div>
           <p className="text-sm text-slate-400 font-medium">Loading RecoveryLine...</p>
           <p className="text-[10px] text-slate-500 mt-1 text-label">Preparing your recovery space</p>
-          <div className="mt-3 flex items-center justify-center gap-1">
+          <div className="mt-3 flex items-center justify-center gap-1.5">
             <div className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-bounce" style={{ animationDelay: '0ms' }} />
-            <div className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-bounce" style={{ animationDelay: '150ms' }} />
-            <div className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-bounce" style={{ animationDelay: '300ms' }} />
+            <div className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-bounce" style={{ animationDelay: '100ms' }} />
+            <div className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-bounce" style={{ animationDelay: '200ms' }} />
           </div>
         </div>
       </div>
@@ -258,6 +258,7 @@ function AppContent() {
     <div className="app-shell bg-[#0a0f1a]">
       {/* Header */}
       <header className="sticky top-0 z-20 bg-[#0a0f1a]/92 backdrop-blur-xl border-b border-white/[0.08] flex-shrink-0" role="banner">
+        <div className="h-px bg-gradient-to-r from-transparent via-sky-500/20 to-transparent" />
         <div className="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-sky-500/15" aria-hidden="true">

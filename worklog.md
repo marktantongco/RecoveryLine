@@ -358,3 +358,35 @@ Stage Summary:
 - Enhanced glass card system with hover lift, pressed variant, inset highlights
 - Build passes clean: 5.3s compile, 0 errors
 - All changes are visual/CSS only — no component logic altered
+---
+Task ID: 11
+Agent: Main Agent
+Task: Comprehensive UI/UX upgrade - design system, animations, micro-interactions, transitions
+
+Work Log:
+- Added CSS design system refinements to globals.css:
+  - @property --border-angle for animated conic gradient border
+  - .glass-card-hero-glow with rotating conic gradient border animation (border-glow-rotate 4s)
+  - .skeleton-shimmer loading skeleton animation (1.5s shimmer)
+  - .glass-card-interactive desktop hover depth effect (translateY(-2px) + shadow-lg)
+  - .section-divider gradient line utility
+  - .chip-enter bounce pop micro-interaction (chip-pop 0.35s spring)
+  - .counter-animate transition utility
+  - Tightened stagger timing from 40ms to 30ms per step
+- Enhanced page.tsx: header gradient line, tighter loading dot delays (100ms)
+- Enhanced Dashboard.tsx: hero card + brain recovery card with glass-card-hero-glow, 4 stat cards with glass-card-interactive, milestone gradient (amber-400 via sky-400 to emerald-400), Today's Status interactive
+- Enhanced Substances.tsx: substance detail header with glass-card-hero-glow
+- Enhanced RecoveryHub.tsx: header with glass-card-hero-glow, affirmation card interactive + breathing icon
+- Enhanced CheckIn.tsx: success state emoji with animate-float
+- Enhanced ActionFab.tsx: FAB icon with spring rotation (cubic-bezier 0.34,1.56,0.64,1)
+- Enhanced BottomNav.tsx: active indicator dots enlarged to 1.5x with glow
+- Enhanced Onboarding.tsx: all progress dots with glow shadow, all CTA buttons shadow-xl
+- Clean build verified: 5.1s compile, 0 errors
+
+Stage Summary:
+- 10 files modified with visual/CSS-only enhancements
+- New animated gradient border hero card variant
+- Interactive card hover depth effect for desktop
+- Shimmer skeleton, chip micro-interaction, counter-animate utilities added
+- All existing functionality preserved — zero logic changes
+- Build passes clean: ✓ Compiled successfully
