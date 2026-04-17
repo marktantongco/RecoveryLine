@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import { Checkin, CheckinType, MoodKey } from '@/lib/recovery-types';
+import React, { useState, useMemo, useCallback } from 'react';
+import { Checkin, CheckinType, MoodKey, ClipboardItem } from '@/lib/recovery-types';
 import { MOODS, CURRENCY } from '@/lib/recovery-constants';
 import CheckIn from './CheckIn';
+import Clipboard from './Clipboard';
 import { useToast } from './Toast';
 
 type SubTab = 'checkin' | 'history' | 'analytics';
@@ -41,6 +42,9 @@ interface RecoveryHubProps {
   onDelete: (id: string) => void;
   onExport: () => void;
   onNavigate: (section: string) => void;
+  clipboard: ClipboardItem[];
+  onAddClipboard: (text: string) => void;
+  onDeleteClipboard: (id: string) => void;
 }
 
 export default function RecoveryHub({
@@ -54,6 +58,9 @@ export default function RecoveryHub({
   onDelete,
   onExport,
   onNavigate,
+  clipboard,
+  onAddClipboard,
+  onDeleteClipboard,
 }: RecoveryHubProps) {
   const [activeTab, setActiveTab] = useState<SubTab>('checkin');
   const [filter, setFilter] = useState<FilterType>('all');
@@ -174,6 +181,21 @@ export default function RecoveryHub({
             </span>
           </div>
         </div>
+      </div>
+
+      {/* ── Daily Affirmation ─────────────────────────────────── */}
+      <DailyAffirmation />
+
+      {/* ── Journal Prompt (copy-ready) ────────────────────────── */}
+      <JournalPrompt />
+
+      {/* ── Quick Notes ────────────────────────────────────────── */}
+      <div className="animate-fadeUp stagger-2" style={{ opacity: 0 }}>
+        <Clipboard
+          items={clipboard}
+          onAdd={onAddClipboard}
+          onDelete={onDeleteClipboard}
+        />
       </div>
 
       {/* Sub-navigation Tabs */}
@@ -544,6 +566,185 @@ export default function RecoveryHub({
           </button>
         </div>
       )}
+    </div>
+  );
+}
+
+// ─── Helpers & Data for Affirmation + Journal ────────────────────────────────
+
+function getDayOfYear(): number {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const diff = now.getTime() - start.getTime();
+  return Math.floor(diff / (1000 * 60 * 60 * 24));
+}
+
+const AFFIRMATIONS: string[] = [
+  'I am worthy of a healthy, vibrant life free from addiction.',
+  'Every day in recovery is a victory worth celebrating.',
+  'I have the strength to overcome any challenge that comes my way.',
+  'My past does not define my future — I am creating a new story.',
+  'I choose progress over perfection, one step at a time.',
+  'I am surrounded by people who support my healing journey.',
+  'My body is healing, my mind is clearing, and my spirit is growing.',
+  'I am not alone in this journey — help is always available.',
+  'Today, I choose self-compassion over self-criticism.',
+  'I am resilient, and setbacks are temporary, not permanent.',
+  'My recovery is a gift I give to myself and those who love me.',
+  'I trust the process and honor my commitment to change.',
+  'I deserve joy, peace, and fulfillment in my life.',
+  'Every breath I take is a reminder of my strength to keep going.',
+  'I am proud of how far I have come in my recovery journey.',
+  'I release guilt and shame — they do not serve me anymore.',
+  'New possibilities open for me as I continue to heal and grow.',
+];
+
+const JOURNAL_PROMPTS: string[] = [
+  'What triggered my desire to use today, and how did I respond?',
+  'What are three things I am grateful for in my recovery journey?',
+  'How has my body felt different since I started my recovery?',
+  'What coping strategies worked well for me this week?',
+  'Describe a moment this week when you felt proud of yourself.',
+  'What relationships in my life support my recovery, and how can I nurture them?',
+  'What emotions am I currently avoiding, and how can I face them safely?',
+  'Write a letter to your future self, one year from now in recovery.',
+  'What would I tell someone who is just starting their recovery journey?',
+  'Identify a negative thought pattern and write a healthier alternative.',
+  'What activities or hobbies bring me genuine joy without substances?',
+  'How do I define "recovery" for myself? Has this definition changed?',
+  'What boundaries do I need to set to protect my sobriety?',
+  'Describe your ideal sober day from morning to night.',
+  'What lessons has addiction taught me that I can use positively?',
+  'How can I be more patient and kind with myself during difficult moments?',
+  'What role does community or support groups play in my recovery?',
+  'What physical sensations in my body tell me I am stressed, and how can I respond?',
+  'Write about a person who has inspired your recovery. What qualities do they have?',
+  'What would my life look like in 5 years if I stay committed to recovery?',
+  'Reflect on a craving you experienced. What helped you get through it?',
+];
+
+// ─── Daily Affirmation Component ─────────────────────────────────────────────
+
+function DailyAffirmation() {
+  const affirmation = useMemo(() => {
+    const dayIndex = getDayOfYear() % AFFIRMATIONS.length;
+    return AFFIRMATIONS[dayIndex];
+  }, []);
+
+  const todayStr = useMemo(
+    () => new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' }),
+    [],
+  );
+
+  return (
+    <div className="glass-card p-4 animate-fadeUp" style={{ opacity: 0 }}>
+      <div className="flex items-center gap-2.5 mb-3">
+        <div className="w-7 h-7 rounded-lg bg-violet-500/10 flex items-center justify-center flex-shrink-0">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" />
+            <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z" />
+          </svg>
+        </div>
+        <div>
+          <h3 className="text-xs font-bold text-white uppercase tracking-wider">Daily Affirmation</h3>
+          <p className="text-[10px] text-slate-500 mt-0.5">{todayStr}</p>
+        </div>
+      </div>
+
+      <div className="rounded-xl bg-violet-500/[0.05] border border-violet-500/10 p-3.5">
+        <div className="flex items-start gap-3">
+          <svg className="w-5 h-5 text-violet-500/30 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" />
+          </svg>
+          <p className="text-[13px] text-slate-200 italic leading-relaxed font-light">{affirmation}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Journal Prompt Component (copy-ready) ─────────────────────────────────────
+
+function JournalPrompt() {
+  const { showToast } = useToast();
+  const [promptOffset, setPromptOffset] = useState(0);
+  const [copied, setCopied] = useState(false);
+
+  const todaysPrompt = useMemo(() => {
+    const dayIndex = getDayOfYear() % JOURNAL_PROMPTS.length;
+    return JOURNAL_PROMPTS[(dayIndex + promptOffset) % JOURNAL_PROMPTS.length];
+  }, [promptOffset]);
+
+  const nextPrompt = () => setPromptOffset((prev) => prev + 1);
+
+  const handleCopy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(todaysPrompt);
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = todaysPrompt;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+    setCopied(true);
+    showToast('Prompt copied to clipboard', 'success');
+    setTimeout(() => setCopied(false), 2000);
+  }, [todaysPrompt, showToast]);
+
+  return (
+    <div className="glass-card p-4 animate-fadeUp" style={{ opacity: 0 }}>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+            </svg>
+          </div>
+          <h3 className="text-xs font-bold text-white uppercase tracking-wider">Journal Prompt</h3>
+        </div>
+        <div className="flex gap-1.5">
+          <button
+            onClick={nextPrompt}
+            className="px-2.5 py-1.5 rounded-lg text-[10px] text-emerald-400 font-medium bg-emerald-500/10 border border-emerald-500/15 hover:bg-emerald-500/15 transition-all active:scale-[0.98]"
+          >
+            New Prompt
+          </button>
+          <button
+            onClick={handleCopy}
+            className={`p-1.5 rounded-lg transition-all active:scale-90 ${
+              copied
+                ? 'bg-emerald-500/20 text-emerald-400'
+                : 'bg-white/5 text-slate-500 hover:text-sky-400 hover:bg-white/10'
+            }`}
+            title="Copy prompt"
+          >
+            {copied ? (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+              </svg>
+            )}
+          </button>
+        </div>
+      </div>
+
+      <div className="rounded-xl bg-emerald-500/[0.05] border border-emerald-500/10 p-3.5">
+        <div className="flex items-start gap-3">
+          <span className="text-base flex-shrink-0 mt-0.5 text-emerald-400/60">?</span>
+          <p className="text-[13px] text-slate-200 leading-relaxed font-light">{todaysPrompt}</p>
+        </div>
+      </div>
+
+      <p className="text-[10px] text-slate-500 mt-2 text-center">
+        Take a few minutes to write your thoughts. There are no wrong answers.
+      </p>
     </div>
   );
 }

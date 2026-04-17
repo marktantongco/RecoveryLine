@@ -102,3 +102,26 @@ Stage Summary:
 - MindPsychology.tsx upgraded by subagent — breathing exercise widget (4-4-4), daily affirmation card (17 quotes), journal prompt of the day (21 prompts)
 - globals.css upgraded — breathing exercise animation, no-scrollbar utility, content-visibility optimization, prefers-reduced-motion accessibility, focus-visible keyboard nav, sr-only utility, gradient-border utility, tabular-nums
 - Build verified: 0 errors, 5.3s compile time
+---
+Task ID: 2
+Agent: Main Agent
+Task: Move Daily Affirmation + Journal Prompt to Recovery above Note; make Journal Prompt copy-ready; add day+time to Note save
+
+Work Log:
+- Read MindPsychology.tsx (AFFIRMATIONS, JOURNAL_PROMPTS, DailyAffirmation, JournalPrompt components)
+- Read Clipboard.tsx (Quick Notes CRUD)
+- Read RecoveryHub.tsx (Recovery section with Check-In/History/Analytics tabs)
+- Read page.tsx (main assembly, clipboard state wiring)
+- Modified page.tsx: passed clipboard, onAddClipboard, onDeleteClipboard to RecoveryHub
+- Modified RecoveryHub.tsx: added Clipboard import, clipboard props, DailyAffirmation + JournalPrompt + Clipboard rendered above sub-nav tabs
+- Created local DailyAffirmation component in RecoveryHub with violet theme
+- Created local JournalPrompt component with copy button (clipboard API + fallback), visual feedback, toast
+- Modified Clipboard.tsx handleAdd: prepends `[Mon, Apr 18, 2:30 PM]` timestamp to note text on save
+- Modified Clipboard.tsx formatTime: added weekday: 'short' to displayed timestamps
+- Build passes: 0 errors, 5.4s compile
+
+Stage Summary:
+- Recovery section order: Header → Daily Affirmation → Journal Prompt (copy-ready) → Quick Notes → Tabs (Check-In / History / Analytics)
+- Journal Prompt has "New Prompt" button + clipboard copy button with checkmark feedback
+- Note saves include day+time prefix: `[Fri, Apr 18, 3:45 PM] User's note text`
+- Files modified: page.tsx, RecoveryHub.tsx, Clipboard.tsx

@@ -194,6 +194,9 @@ function AppContent() {
             onDelete={deleteCheckin}
             onExport={exportData}
             onNavigate={handleNavigate}
+            clipboard={state.clipboard}
+            onAddClipboard={addClipboardItem}
+            onDeleteClipboard={deleteClipboardItem}
           />
         );
       case 'nutrition':

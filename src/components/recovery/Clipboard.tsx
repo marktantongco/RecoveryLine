@@ -19,7 +19,18 @@ export default function Clipboard({ items, onAdd, onDelete }: ClipboardProps) {
 
   const handleAdd = () => {
     if (!text.trim()) return;
-    onAdd(text.trim());
+    // Prepend day and time to the note text
+    const now = new Date();
+    const dayTime = now.toLocaleString('en-US', {
+      weekday: 'short',
+      month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
+    const noteWithTimestamp = `[${dayTime}] ${text.trim()}`;
+    onAdd(noteWithTimestamp);
     setText('');
     showToast('Note saved', 'success');
   };
@@ -49,6 +60,7 @@ export default function Clipboard({ items, onAdd, onDelete }: ClipboardProps) {
   const formatTime = (timestamp: number) => {
     const d = new Date(timestamp);
     return d.toLocaleString('en-US', {
+      weekday: 'short',
       month: 'short',
       day: 'numeric',
       hour: 'numeric',
