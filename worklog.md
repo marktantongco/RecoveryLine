@@ -168,3 +168,34 @@ Stage Summary:
 - ✅ Typed error handling with StorageQuotaError detection
 - ✅ Form validation on Check-In with inline feedback
 - ✅ 3 duplicate utility patterns consolidated into shared utils
+---
+Task ID: 4
+Agent: Main Agent
+Task: Convert 3 persistent tabs to auto-reverting dropdown behavior for all 11 drugs
+
+Work Log:
+- Browsed live reference site (recovery-line.vercel.app) — 5 substances, linear layout, no 3-tab dropdowns
+- Identified discrepancy: current code had persistent tab state (stays open), user wants auto-revert after 4 seconds
+- Read current Substances.tsx (657 lines) — confirmed 3 tabs existed but were persistent toggle-style
+- Replaced `headerTab` state with `expandedDropdown` state (null | HeaderTabId)
+- Added `useRef` timer + `useCallback` handlers for auto-close logic:
+  - `handleTabClick(tabId)`: same tab → collapse immediately; different tab → expand + start 4s timer
+  - `scheduleAutoClose()`: clears previous timer, sets new 4s timeout
+  - `clearAutoClose()`: cancels pending timer
+  - `useEffect` cleanup on unmount
+- Changed tab labels to include count: "10 Damages", "10 Reductions", "10 Withdrawals"
+- Added color-coded dropdown panels: red (damages), sky blue (reductions), amber (withdrawals)
+- Added smooth CSS transitions (max-h + opacity, 300ms ease-in-out)
+- Added numbered items (1-10) in each dropdown with color-matched badges
+- No independent withdrawal card exists (already removed in previous round)
+- Withdrawal info only lives inside the 3rd dropdown (includes timeline, severity badge, 10 symptoms, PAWS)
+- Behavior applies to ALL 11 drugs via data-driven SubstanceDetail component
+
+Stage Summary:
+- ✅ Build: 0 errors, 0 warnings, 5.5s compile
+- ✅ ESLint: 0 errors, 0 warnings
+- ✅ 3 dropdown tabs with 4-second auto-revert for all 11 substances
+- ✅ Same-tab click → immediate collapse
+- ✅ Different-tab click → expand + reset 4s timer
+- ✅ Timer cleanup on unmount (no memory leaks)
+- ✅ No independent withdrawal card

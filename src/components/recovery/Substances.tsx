@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { SUBSTANCES, SUBSTANCE_LIST } from '@/lib/substance-data';
 import type { SubstanceData } from '@/lib/substance-data';
 import { SYMBIOTIC_PROTOCOL } from '@/lib/recovery-protocol-data';
@@ -130,20 +130,55 @@ const Icons = {
 
 // --- Header Card Tab Config ---
 type HeaderTabId = 'damage' | 'reduction' | 'withdrawal';
-const HEADER_TABS: { id: HeaderTabId; label: string; icon: string }[] = [
-  { id: 'damage', label: 'Damages', icon: '⚡' },
-  { id: 'reduction', label: 'Reductions', icon: '🛡' },
-  { id: 'withdrawal', label: 'Withdrawals', icon: '☀' },
+const HEADER_TABS: { id: HeaderTabId; label: string; icon: string; count: string }[] = [
+  { id: 'damage', label: '10 Damages', icon: '⚡', count: '10' },
+  { id: 'reduction', label: '10 Reductions', icon: '🛡', count: '10' },
+  { id: 'withdrawal', label: '10 Withdrawals', icon: '☀', count: '10' },
 ];
+const DROPDOWN_AUTO_CLOSE_MS = 4000;
 
 // --- Substance Detail View ---
 
 const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { substance: SubstanceData }) {
-  const [headerTab, setHeaderTab] = useState<HeaderTabId>('damage');
+  const [expandedDropdown, setExpandedDropdown] = useState<HeaderTabId | null>(null);
   const [supplementsExpanded, setSupplementsExpanded] = useState(false);
   const [protocolExpanded, setProtocolExpanded] = useState<string | null>(null);
+  const autoCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const sev = getSeverityConfig(substance.withdrawal.severity);
+
+  // Auto-close dropdown after DROPDOWN_AUTO_CLOSE_MS
+  const clearAutoClose = useCallback(() => {
+    if (autoCloseTimer.current) {
+      clearTimeout(autoCloseTimer.current);
+      autoCloseTimer.current = null;
+    }
+  }, []);
+
+  const scheduleAutoClose = useCallback(() => {
+    clearAutoClose();
+    autoCloseTimer.current = setTimeout(() => {
+      setExpandedDropdown(null);
+      autoCloseTimer.current = null;
+    }, DROPDOWN_AUTO_CLOSE_MS);
+  }, [clearAutoClose]);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => clearAutoClose();
+  }, [clearAutoClose]);
+
+  const handleTabClick = useCallback((tabId: HeaderTabId) => {
+    if (expandedDropdown === tabId) {
+      // Same tab → collapse immediately
+      clearAutoClose();
+      setExpandedDropdown(null);
+    } else {
+      // Different tab → expand and start auto-close timer
+      setExpandedDropdown(tabId);
+      scheduleAutoClose();
+    }
+  }, [expandedDropdown, clearAutoClose, scheduleAutoClose]);
 
   return (
     <div className="space-y-4 pb-6">
@@ -192,36 +227,46 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
             ))}
           </div>
 
-          {/* 3 Tabs: Damages, Reductions, Withdrawals */}
-          <div className="flex mt-4 p-1 rounded-xl bg-white/[0.04]">
+          {/* 3 Dropdown Tabs: Damages, Reductions, Withdrawals */}
+          <div className="flex mt-4 gap-1.5">
             {HEADER_TABS.map((tab) => {
-              const isActive = headerTab === tab.id;
+              const isOpen = expandedDropdown === tab.id;
+              const tabColor = tab.id === 'damage'
+                ? (isOpen ? 'bg-red-500/10 border-red-500/25 text-red-300' : 'bg-white/[0.04] border-white/[0.06] text-slate-400')
+                : tab.id === 'reduction'
+                ? (isOpen ? 'bg-sky-500/10 border-sky-500/25 text-sky-300' : 'bg-white/[0.04] border-white/[0.06] text-slate-400')
+                : (isOpen ? 'bg-amber-500/10 border-amber-500/25 text-amber-300' : 'bg-white/[0.04] border-white/[0.06] text-slate-400');
               return (
                 <button
                   key={tab.id}
-                  onClick={() => setHeaderTab(tab.id)}
-                  className={`flex-1 py-2 rounded-lg text-[10px] font-medium transition-all flex items-center justify-center gap-1 ${
-                    isActive
-                      ? 'bg-white/[0.08] text-white border border-white/15 shadow-sm'
-                      : 'text-slate-500 hover:text-slate-300 border border-transparent'
-                  }`}
+                  onClick={() => handleTabClick(tab.id)}
+                  className={`flex-1 py-2 px-2 rounded-xl text-[10px] font-medium transition-all border flex items-center justify-center gap-1 active:scale-[0.98] ${tabColor}`}
                 >
-                  <span>{tab.icon}</span>
-                  <span>{tab.label}</span>
+                  <span className="text-xs">{tab.icon}</span>
+                  <span className="leading-tight text-center">{tab.label}</span>
                 </button>
               );
             })}
           </div>
 
-          {/* Tab Content */}
-          <div className="mt-3">
-            {/* Damages Tab */}
-            {headerTab === 'damage' && (
-              <div className="max-h-48 overflow-y-auto custom-scrollbar space-y-1.5 mb-3">
+          {/* Dropdown Content — auto-reverts after 4s */}
+          <div className="mt-3 relative overflow-hidden">
+            {/* Damages Dropdown */}
+            <div
+              className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                expandedDropdown === 'damage'
+                  ? 'max-h-[400px] opacity-100'
+                  : 'max-h-0 opacity-0'
+              }`}
+            >
+              <div className="max-h-48 overflow-y-auto custom-scrollbar space-y-1.5 mb-1">
+                <p className="text-[10px] font-semibold text-red-400 uppercase tracking-wide mb-2">10 Damage Areas</p>
                 {substance.primaryDamage.items.map((item, i) => (
-                  <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-white/[0.02]">
-                    <span className="w-1.5 h-1.5 rounded-full bg-red-500/60 flex-shrink-0 mt-1.5" />
-                    <span className="text-[11px] text-slate-400 leading-relaxed">{item}</span>
+                  <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-red-500/[0.04]">
+                    <span className="w-5 h-5 rounded-md bg-red-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-[10px] font-bold text-red-400">{i + 1}</span>
+                    </span>
+                    <span className="text-[11px] text-slate-300 leading-relaxed">{item}</span>
                   </div>
                 ))}
                 <div className="rounded-xl bg-red-500/5 border border-red-500/10 p-3 mt-2">
@@ -229,25 +274,39 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
                   <p className="text-[11px] text-slate-400 leading-relaxed">{substance.primaryDamage.summary}</p>
                 </div>
               </div>
-            )}
+            </div>
 
-            {/* Reductions (Harm Reduction) Tab */}
-            {headerTab === 'reduction' && (
-              <div className="max-h-48 overflow-y-auto custom-scrollbar space-y-1.5 mb-3">
+            {/* Reductions Dropdown */}
+            <div
+              className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                expandedDropdown === 'reduction'
+                  ? 'max-h-[400px] opacity-100'
+                  : 'max-h-0 opacity-0'
+              }`}
+            >
+              <div className="max-h-48 overflow-y-auto custom-scrollbar space-y-1.5 mb-1">
+                <p className="text-[10px] font-semibold text-sky-400 uppercase tracking-wide mb-2">10 Harm Reductions</p>
                 {substance.harmReduction.map((tip, i) => (
-                  <div key={i} className="flex items-start gap-2.5 p-2 rounded-lg bg-white/[0.02]">
+                  <div key={i} className="flex items-start gap-2.5 p-2 rounded-lg bg-sky-500/[0.04]">
                     <span className="w-5 h-5 rounded-md bg-sky-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
                       <span className="text-[10px] font-bold text-sky-400">{i + 1}</span>
                     </span>
-                    <p className="text-[11px] text-slate-400 leading-relaxed">{tip}</p>
+                    <p className="text-[11px] text-slate-300 leading-relaxed">{tip}</p>
                   </div>
                 ))}
               </div>
-            )}
+            </div>
 
-            {/* Withdrawals Tab */}
-            {headerTab === 'withdrawal' && (
-              <div className="max-h-48 overflow-y-auto custom-scrollbar mb-3">
+            {/* Withdrawals Dropdown */}
+            <div
+              className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                expandedDropdown === 'withdrawal'
+                  ? 'max-h-[500px] opacity-100'
+                  : 'max-h-0 opacity-0'
+              }`}
+            >
+              <div className="max-h-56 overflow-y-auto custom-scrollbar mb-1">
+                <p className="text-[10px] font-semibold text-amber-400 uppercase tracking-wide mb-2">10 Withdrawal Symptoms</p>
                 {/* Timeline + Severity */}
                 <div className="flex items-center gap-3 mb-2">
                   <div className="flex-1">
@@ -258,24 +317,24 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
                     {sev.label}
                   </span>
                 </div>
-
                 {/* Symptoms */}
                 <div className="space-y-1.5 mb-3">
                   {substance.withdrawal.symptoms.map((symptom, i) => (
-                    <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-white/[0.02]">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500/60 flex-shrink-0 mt-1.5" />
-                      <span className="text-[11px] text-slate-400 leading-relaxed">{symptom}</span>
+                    <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-amber-500/[0.04]">
+                      <span className="w-5 h-5 rounded-md bg-amber-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="text-[10px] font-bold text-amber-400">{i + 1}</span>
+                      </span>
+                      <span className="text-[11px] text-slate-300 leading-relaxed">{symptom}</span>
                     </div>
                   ))}
                 </div>
-
                 {/* PAWS */}
                 <div className="rounded-xl bg-amber-500/5 border border-amber-500/10 p-3">
                   <p className="text-[10px] font-semibold text-amber-400 uppercase tracking-wide mb-1">Post-Acute Withdrawal (PAWS)</p>
                   <p className="text-[11px] text-slate-400 leading-relaxed">{substance.withdrawal.paws}</p>
                 </div>
               </div>
-            )}
+            </div>
           </div>
 
           {/* Description */}
