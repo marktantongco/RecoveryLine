@@ -143,42 +143,42 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
   const [expandedDropdown, setExpandedDropdown] = useState<HeaderTabId | null>(null);
   const [supplementsExpanded, setSupplementsExpanded] = useState(false);
   const [protocolExpanded, setProtocolExpanded] = useState<string | null>(null);
+
+  // Simple timer ref — no complex useCallback chain
   const autoCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const sev = getSeverityConfig(substance.withdrawal.severity);
 
-  // Auto-close dropdown after DROPDOWN_AUTO_CLOSE_MS
-  const clearAutoClose = useCallback(() => {
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (autoCloseTimer.current) {
+        clearTimeout(autoCloseTimer.current);
+        autoCloseTimer.current = null;
+      }
+    };
+  }, []);
+
+  const handleTabClick = useCallback((tabId: HeaderTabId) => {
+    // Always clear any existing timer first
     if (autoCloseTimer.current) {
       clearTimeout(autoCloseTimer.current);
       autoCloseTimer.current = null;
     }
+
+    setExpandedDropdown((prev) => {
+      if (prev === tabId) {
+        // Same tab → collapse immediately, no new timer
+        return null;
+      }
+      // Different tab (or null) → expand and start 4s auto-close timer
+      autoCloseTimer.current = setTimeout(() => {
+        setExpandedDropdown(null);
+        autoCloseTimer.current = null;
+      }, DROPDOWN_AUTO_CLOSE_MS);
+      return tabId;
+    });
   }, []);
-
-  const scheduleAutoClose = useCallback(() => {
-    clearAutoClose();
-    autoCloseTimer.current = setTimeout(() => {
-      setExpandedDropdown(null);
-      autoCloseTimer.current = null;
-    }, DROPDOWN_AUTO_CLOSE_MS);
-  }, [clearAutoClose]);
-
-  // Cleanup timer on unmount
-  useEffect(() => {
-    return () => clearAutoClose();
-  }, [clearAutoClose]);
-
-  const handleTabClick = useCallback((tabId: HeaderTabId) => {
-    if (expandedDropdown === tabId) {
-      // Same tab → collapse immediately
-      clearAutoClose();
-      setExpandedDropdown(null);
-    } else {
-      // Different tab → expand and start auto-close timer
-      setExpandedDropdown(tabId);
-      scheduleAutoClose();
-    }
-  }, [expandedDropdown, clearAutoClose, scheduleAutoClose]);
 
   return (
     <div className="space-y-4 pb-6">
@@ -249,89 +249,89 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
             })}
           </div>
 
-          {/* Dropdown Content — auto-reverts after 4s */}
-          <div className="mt-3 relative overflow-hidden">
+          {/* Dropdown Content — auto-reverts after 4s using CSS grid animation */}
+          <div className="mt-3">
             {/* Damages Dropdown */}
             <div
-              className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                expandedDropdown === 'damage'
-                  ? 'max-h-[400px] opacity-100'
-                  : 'max-h-0 opacity-0'
+              className={`transition-[grid-template-rows] duration-300 ease-in-out ${
+                expandedDropdown === 'damage' ? 'grid grid-rows-[1fr]' : 'grid grid-rows-[0fr]'
               }`}
             >
-              <div className="max-h-48 overflow-y-auto custom-scrollbar space-y-1.5 mb-1">
-                <p className="text-[10px] font-semibold text-red-400 uppercase tracking-wide mb-2">10 Damage Areas</p>
-                {substance.primaryDamage.items.map((item, i) => (
-                  <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-red-500/[0.04]">
-                    <span className="w-5 h-5 rounded-md bg-red-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <span className="text-[10px] font-bold text-red-400">{i + 1}</span>
-                    </span>
-                    <span className="text-[11px] text-slate-300 leading-relaxed">{item}</span>
+              <div className="overflow-hidden">
+                <div className="max-h-48 overflow-y-auto custom-scrollbar space-y-1.5 mb-1">
+                  <p className="text-[10px] font-semibold text-red-400 uppercase tracking-wide mb-2">10 Damage Areas</p>
+                  {substance.primaryDamage.items.map((item, i) => (
+                    <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-red-500/[0.04]">
+                      <span className="w-5 h-5 rounded-md bg-red-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="text-[10px] font-bold text-red-400">{i + 1}</span>
+                      </span>
+                      <span className="text-[11px] text-slate-300 leading-relaxed">{item}</span>
+                    </div>
+                  ))}
+                  <div className="rounded-xl bg-red-500/5 border border-red-500/10 p-3 mt-2">
+                    <p className="text-[10px] font-semibold text-red-400 uppercase tracking-wide mb-1">Summary</p>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">{substance.primaryDamage.summary}</p>
                   </div>
-                ))}
-                <div className="rounded-xl bg-red-500/5 border border-red-500/10 p-3 mt-2">
-                  <p className="text-[10px] font-semibold text-red-400 uppercase tracking-wide mb-1">Summary</p>
-                  <p className="text-[11px] text-slate-400 leading-relaxed">{substance.primaryDamage.summary}</p>
                 </div>
               </div>
             </div>
 
             {/* Reductions Dropdown */}
             <div
-              className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                expandedDropdown === 'reduction'
-                  ? 'max-h-[400px] opacity-100'
-                  : 'max-h-0 opacity-0'
+              className={`transition-[grid-template-rows] duration-300 ease-in-out ${
+                expandedDropdown === 'reduction' ? 'grid grid-rows-[1fr]' : 'grid grid-rows-[0fr]'
               }`}
             >
-              <div className="max-h-48 overflow-y-auto custom-scrollbar space-y-1.5 mb-1">
-                <p className="text-[10px] font-semibold text-sky-400 uppercase tracking-wide mb-2">10 Harm Reductions</p>
-                {substance.harmReduction.map((tip, i) => (
-                  <div key={i} className="flex items-start gap-2.5 p-2 rounded-lg bg-sky-500/[0.04]">
-                    <span className="w-5 h-5 rounded-md bg-sky-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <span className="text-[10px] font-bold text-sky-400">{i + 1}</span>
-                    </span>
-                    <p className="text-[11px] text-slate-300 leading-relaxed">{tip}</p>
-                  </div>
-                ))}
+              <div className="overflow-hidden">
+                <div className="max-h-48 overflow-y-auto custom-scrollbar space-y-1.5 mb-1">
+                  <p className="text-[10px] font-semibold text-sky-400 uppercase tracking-wide mb-2">10 Harm Reductions</p>
+                  {substance.harmReduction.map((tip, i) => (
+                    <div key={i} className="flex items-start gap-2.5 p-2 rounded-lg bg-sky-500/[0.04]">
+                      <span className="w-5 h-5 rounded-md bg-sky-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="text-[10px] font-bold text-sky-400">{i + 1}</span>
+                      </span>
+                      <p className="text-[11px] text-slate-300 leading-relaxed">{tip}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
             {/* Withdrawals Dropdown */}
             <div
-              className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                expandedDropdown === 'withdrawal'
-                  ? 'max-h-[500px] opacity-100'
-                  : 'max-h-0 opacity-0'
+              className={`transition-[grid-template-rows] duration-300 ease-in-out ${
+                expandedDropdown === 'withdrawal' ? 'grid grid-rows-[1fr]' : 'grid grid-rows-[0fr]'
               }`}
             >
-              <div className="max-h-56 overflow-y-auto custom-scrollbar mb-1">
-                <p className="text-[10px] font-semibold text-amber-400 uppercase tracking-wide mb-2">10 Withdrawal Symptoms</p>
-                {/* Timeline + Severity */}
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="flex-1">
-                    <p className="text-[10px] text-slate-500 uppercase tracking-wide mb-0.5">Timeline</p>
-                    <p className="text-xs text-slate-300">{substance.withdrawal.timeline}</p>
-                  </div>
-                  <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border ${sev.bg} ${sev.color}`}>
-                    {sev.label}
-                  </span>
-                </div>
-                {/* Symptoms */}
-                <div className="space-y-1.5 mb-3">
-                  {substance.withdrawal.symptoms.map((symptom, i) => (
-                    <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-amber-500/[0.04]">
-                      <span className="w-5 h-5 rounded-md bg-amber-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <span className="text-[10px] font-bold text-amber-400">{i + 1}</span>
-                      </span>
-                      <span className="text-[11px] text-slate-300 leading-relaxed">{symptom}</span>
+              <div className="overflow-hidden">
+                <div className="max-h-56 overflow-y-auto custom-scrollbar mb-1">
+                  <p className="text-[10px] font-semibold text-amber-400 uppercase tracking-wide mb-2">10 Withdrawal Symptoms</p>
+                  {/* Timeline + Severity */}
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="flex-1">
+                      <p className="text-[10px] text-slate-500 uppercase tracking-wide mb-0.5">Timeline</p>
+                      <p className="text-xs text-slate-300">{substance.withdrawal.timeline}</p>
                     </div>
-                  ))}
-                </div>
-                {/* PAWS */}
-                <div className="rounded-xl bg-amber-500/5 border border-amber-500/10 p-3">
-                  <p className="text-[10px] font-semibold text-amber-400 uppercase tracking-wide mb-1">Post-Acute Withdrawal (PAWS)</p>
-                  <p className="text-[11px] text-slate-400 leading-relaxed">{substance.withdrawal.paws}</p>
+                    <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border ${sev.bg} ${sev.color}`}>
+                      {sev.label}
+                    </span>
+                  </div>
+                  {/* Symptoms */}
+                  <div className="space-y-1.5 mb-3">
+                    {substance.withdrawal.symptoms.map((symptom, i) => (
+                      <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-amber-500/[0.04]">
+                        <span className="w-5 h-5 rounded-md bg-amber-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <span className="text-[10px] font-bold text-amber-400">{i + 1}</span>
+                        </span>
+                        <span className="text-[11px] text-slate-300 leading-relaxed">{symptom}</span>
+                      </div>
+                    ))}
+                  </div>
+                  {/* PAWS */}
+                  <div className="rounded-xl bg-amber-500/5 border border-amber-500/10 p-3">
+                    <p className="text-[10px] font-semibold text-amber-400 uppercase tracking-wide mb-1">Post-Acute Withdrawal (PAWS)</p>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">{substance.withdrawal.paws}</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -581,6 +581,11 @@ const Substances = React.memo(function Substances() {
   const [activeTab, setActiveTab] = useState(TAB_CONFIG[0]?.id ?? '');
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Ref for the scrollable drug tab container
+  const tabContainerRef = useRef<HTMLDivElement>(null);
+  // Map of tab id → button element ref
+  const tabButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+
   const activeSubstance = SUBSTANCES[activeTab];
 
   const searchResults = useMemo(() => {
@@ -595,6 +600,14 @@ const Substances = React.memo(function Substances() {
   }, [searchQuery]);
 
   const isSearching = searchQuery.trim().length > 0;
+
+  // When active tab changes, scroll it into view
+  useEffect(() => {
+    const btn = tabButtonRefs.current[activeTab];
+    if (btn) {
+      btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+    }
+  }, [activeTab]);
 
   return (
     <div className="space-y-4 pb-6">
@@ -626,17 +639,22 @@ const Substances = React.memo(function Substances() {
         )}
       </div>
 
-      {/* Tab Navigation (hidden when searching) */}
+      {/* Tab Navigation (hidden when searching) — horizontally scrollable */}
       {!isSearching && (
-        <div className="glass-card p-1.5 flex animate-fadeUp stagger-1" style={{ opacity: 0 }}>
+        <div
+          ref={tabContainerRef}
+          className="glass-card p-1.5 flex overflow-x-auto scroll-smooth animate-fadeUp stagger-1"
+          style={{ opacity: 0 }}
+        >
           {TAB_CONFIG.map((tab) => {
             const isActive = activeTab === tab.id;
             const dotColor = getDangerDotColor(tab.dangerLevel);
             return (
               <button
                 key={tab.id}
+                ref={(el) => { tabButtonRefs.current[tab.id] = el; }}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 py-2.5 rounded-xl text-xs font-medium transition-all flex items-center justify-center gap-1.5 ${
+                className={`flex-shrink-0 py-2.5 px-3 rounded-xl text-xs font-medium transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${
                   isActive
                     ? 'bg-white/[0.08] text-white border border-white/15 shadow-sm'
                     : 'text-slate-400 hover:text-slate-300 border border-transparent'

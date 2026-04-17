@@ -198,4 +198,32 @@ Stage Summary:
 - ✅ Same-tab click → immediate collapse
 - ✅ Different-tab click → expand + reset 4s timer
 - ✅ Timer cleanup on unmount (no memory leaks)
+---
+Task ID: 1
+Agent: Main Agent
+Task: Comprehensive audit — identify all gaps and fix broken features
+
+Work Log:
+- Launched parallel audit agents to read ALL 19 component files and 16 lib/data files
+- Identified 7,273+ lines across component files, 5,174+ lines across lib/data files
+- Verified RecoveryHub.tsx: Daily Affirmation ✅ above Note, Journal Prompt ✅ above Note, copy-ready ✅, timestamp ✅
+- Verified Clipboard.tsx: day+time prepended on save ✅ (e.g., [Tue, Jan 14, 2:30 PM])
+- Verified CheckIn.tsx: universal moods, validation, preselect handling, success animation ✅
+- Verified Dashboard.tsx: brain recovery score, 7-day mood trend, weekly summary, quick actions ✅
+- Identified CRITICAL BUG in Substances.tsx: handleTabClick had stale closure issue due to `expandedDropdown` in useCallback dependency array + conflicting max-h CSS transitions
+- Rewrote Substances.tsx with 2 critical fixes:
+  1. Timer: Simplified to useRef + functional setState(prev => ...) with [] deps — eliminates stale closure
+  2. Animation: Changed from max-h-[Npx]/max-h-0 to CSS grid-rows-[1fr]/grid-rows-[0fr] — smooth height animation without nested max-h conflicts
+  3. Tab navigation: Added overflow-x-auto scroll-smooth + scrollIntoView for selected drug tab
+- Verified error handling infrastructure: typed errors (AppError/StorageError/StorageQuotaError), safe localStorage wrappers, ErrorBoundary component, clipboard fallback
+
+Stage Summary:
+- ✅ Build: 0 errors, 5.1s compile
+- ✅ ESLint: 0 errors, 0 warnings (entire src/)
+- ✅ Auto-revert bug FIXED: 3 dropdown tabs now reliably collapse after 4 seconds
+- ✅ CSS animation FIXED: grid-rows approach eliminates nested max-h conflicts
+- ✅ Drug tab scrolling FIXED: selected drug scrolls to leftmost visible position
+- ✅ RecoveryHub verified: all 4 requirements met (affirmation + journal above note, copy-ready, timestamp)
+- ✅ CheckIn verified: universal moods, validation, preselect, non-judgmental messaging
+- ✅ Error handling verified: typed errors, safe storage, ErrorBoundary, clipboard fallback
 - ✅ No independent withdrawal card
