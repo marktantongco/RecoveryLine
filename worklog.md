@@ -412,3 +412,24 @@ Stage Summary:
 - Build passes cleanly with no errors
 - Key fix: CSS `contain` + `transform: translateZ(0)` created GPU layers that trapped touch events on iOS Safari
 - Key fix: `will-change` was never cleaned up, keeping persistent GPU layers that blocked scrolling
+---
+Task ID: 2
+Agent: Main Agent
+Task: Remove splash screen, fix PWA install, fix mobile scroll root cause
+
+Work Log:
+- Removed AppContent splash screen (lines 168-187) — was showing "Loading RecoveryLine..." + 4s timeout
+- Removed Home splash screen (lines 439-453) — was showing loading while checking localStorage
+- Removed 4s loading timeout and forceLoad state — loadState() is synchronous, splash was unnecessary
+- Changed Home isOnboarded from `null` initial state (requiring splash) to `true` (instant render)
+- Fixed PWA manifest: added `id: "/"` field (Chrome 93+ requirement), added `prefer_related_applications: false`
+- Bumped service worker cache from v3 to v4, added manifest.json and sw.js to pre-cache list
+- **CRITICAL SCROLL FIX**: Added `height: 100%` to body — body had NO height constraint, breaking the entire flex scroll chain
+- Changed `.app-shell` from `min-height: 100dvh` to `height: 100dvh` — min-height lets flex container grow with content, preventing overflow-y:auto from ever activating on .app-shell-main
+- Moved safe-area-inset-top from body padding to header padding — body padding with height:100% causes height overflow on notched devices
+- Cleaned .next cache and rebuilt — 0 errors
+
+Stage Summary:
+- Splash screen fully removed — app renders instantly on first frame
+- PWA install fixed — manifest has required id field, SW cache bumped
+- **Mobile scroll ROOT CAUSE fixed**: The flex chain html → body → .app-shell → .app-shell-main was broken because body had no height and .app-shell used min-height. Now body=100%, app-shell=height:100dvh, so .app-shell-main with flex:1 gets a constrained height and overflow-y:auto activates properly.

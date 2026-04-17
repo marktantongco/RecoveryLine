@@ -1,13 +1,14 @@
 {
   "name": "RecoveryLine",
   "short_name": "RecoveryLine",
+  "id": "/",
   "description": "Biochemical Recovery Tracker - Your private companion for tracking sobriety and recovery.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#0a0f1a",
   "theme_color": "#0ea5e9",
   "orientation": "portrait-primary",
-  "scope": "/",
   "icons": [
     {
       "src": "/icon-192.png",
@@ -24,5 +25,6 @@
   ],
   "categories": ["health", "lifestyle", "medical"],
   "lang": "en",
-  "dir": "ltr"
+  "dir": "ltr",
+  "prefer_related_applications": false
 }

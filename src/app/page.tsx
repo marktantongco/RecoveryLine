@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useState, lazy, Suspense, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useState, lazy, Suspense, useRef } from 'react';
 import { useRecoveryState } from '@/hooks/use-recovery-state';
 import BottomNav from '@/components/recovery/BottomNav';
 import ActionFab from '@/components/recovery/ActionFab';
@@ -101,24 +101,6 @@ function AppContent() {
   const prevSectionRef = useRef(state.currentSection);
   const [slideDirection, setSlideDirection] = useState<'right' | 'left'>('right');
 
-  // Loading timeout — if state doesn't load in 4s, force show
-  const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [forceLoad, setForceLoad] = useState(false);
-
-  useEffect(() => {
-    loadTimeoutRef.current = setTimeout(() => {
-      if (!isLoaded) {
-        console.warn('[RecoveryLine] State loading timed out, forcing render');
-        setForceLoad(true);
-      }
-    }, 4000);
-    return () => {
-      if (loadTimeoutRef.current) clearTimeout(loadTimeoutRef.current);
-    };
-  }, []);
-
-  const shouldShow = isLoaded || forceLoad;
-
   // Scroll to top + animate on section change
   useEffect(() => {
     const mainEl = document.getElementById('app-shell-main');
@@ -164,27 +146,6 @@ function AppContent() {
   const handlePreselectConsumed = useCallback(() => {
     setPreselect(null);
   }, [setPreselect]);
-
-  if (!shouldShow) {
-    return (
-      <div className="min-h-screen bg-[#0a0f1a] flex items-center justify-center">
-        <div className="text-center animate-fadeUp">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center shadow-2xl shadow-sky-500/20 mx-auto mb-4 animate-pulse-glow">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-            </svg>
-          </div>
-          <p className="text-sm text-slate-400 font-medium">Loading RecoveryLine...</p>
-          <p className="text-[10px] text-slate-500 mt-1 text-label">Preparing your recovery space</p>
-          <div className="mt-3 flex items-center justify-center gap-1.5">
-            <div className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-bounce" style={{ animationDelay: '0ms' }} />
-            <div className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-bounce" style={{ animationDelay: '100ms' }} />
-            <div className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-bounce" style={{ animationDelay: '200ms' }} />
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   // Calculator camouflage mode
   if (state.calcMode) {
@@ -271,7 +232,7 @@ function AppContent() {
   return (
     <div className="app-shell bg-[#0a0f1a]">
       {/* Header */}
-      <header className="sticky top-0 z-20 bg-[#0a0f1a]/92 backdrop-blur-xl border-b border-white/[0.08] flex-shrink-0" role="banner">
+      <header className="sticky top-0 z-20 bg-[#0a0f1a]/92 backdrop-blur-xl border-b border-white/[0.08] flex-shrink-0 pt-[env(safe-area-inset-top,0px)]" role="banner">
         <div className="h-px bg-gradient-to-r from-transparent via-sky-500/20 to-transparent" />
         <div className="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -424,33 +385,16 @@ function AppContent() {
 }
 
 export default function Home() {
-  const [isOnboarded, setIsOnboarded] = useState<boolean | null>(null);
+  const [isOnboarded, setIsOnboarded] = useState<boolean>(true);
 
   useEffect(() => {
     try {
       const onboarded = localStorage.getItem('recoveryline_onboarded') === 'true';
       setIsOnboarded(onboarded);
     } catch {
-      setIsOnboarded(true);
+      // Default to onboarded
     }
   }, []);
-
-  // Show loading while checking localStorage
-  if (isOnboarded === null) {
-    return (
-      <div className="min-h-screen bg-[#0a0f1a] flex items-center justify-center">
-        <div className="text-center animate-fadeUp">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center shadow-2xl shadow-sky-500/20 mx-auto mb-4 animate-pulse-glow">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-            </svg>
-          </div>
-          <p className="text-sm text-slate-400 font-medium">Loading RecoveryLine...</p>
-          <p className="text-[10px] text-slate-500 mt-1 text-label">Preparing your recovery space</p>
-        </div>
-      </div>
-    );
-  }
 
   if (!isOnboarded) {
     return (
