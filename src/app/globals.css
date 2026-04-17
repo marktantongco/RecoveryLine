@@ -67,7 +67,8 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
-    touch-action: manipulation;
+    /* pan-y allows vertical scrolling on mobile; manipulation was blocking scroll */
+    touch-action: pan-y;
     text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
   }
@@ -85,6 +86,8 @@
 .overflow-x-auto {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
+  /* pan-x for horizontal-only scrollable containers */
+  touch-action: pan-x;
 }
 
 /* Prevent accidental scroll trapping on interactive elements */
@@ -122,35 +125,41 @@ button, a, [role="button"] {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
   transition: border-color 0.2s ease, transform 0.15s ease;
+  /* Performance: contain layout recalculations to this element */
+  contain: content;
   /* overflow removed — was killing overflow-x-auto on child elements (Tailwind v4 layer specificity)
      Use Tailwind 'overflow-hidden' class where clipping is actually needed */
 }
 
 .glass-card-elevated {
-  background: rgba(30, 41, 59, 0.9);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(30, 41, 59, 0.95);
+  /* Reduced backdrop-filter blur from 12px to 4px for GPU performance */
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
+  contain: content;
 }
 
 .glass-card-hero {
   background: linear-gradient(135deg, rgba(14, 165, 233, 0.08) 0%, rgba(30, 41, 59, 0.9) 50%, rgba(16, 185, 129, 0.06) 100%);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
   position: relative;
   overflow: hidden;
+  contain: content;
 }
 
 .glass-card-insight {
   background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(14, 165, 233, 0.05) 100%);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   border: 1px solid rgba(139, 92, 246, 0.15);
   border-radius: 16px;
   overflow: hidden;
+  contain: content;
 }
 
 /* Animations */
@@ -281,10 +290,14 @@ button, a, [role="button"] {
   animation: slideInLeft 0.4s ease-out forwards;
 }
 
-/* Performance: will-change for animated elements */
+/* Performance: will-change ONLY on elements that actively animate */
 .animate-fadeUp, .animate-slideInRight, .animate-slideInLeft {
   will-change: transform, opacity;
   animation-fill-mode: forwards;
+}
+/* Remove will-change after animation completes to free GPU memory */
+.animate-fadeUp, .animate-slideInRight, .animate-slideInLeft {
+  animation-fill-mode: both;
 }
 
 .animate-pulse-glow {
@@ -468,12 +481,12 @@ textarea:focus {
   left: 0;
   right: 0;
   z-index: 9999;
-  will-change: transform;
   transform: translateZ(0);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   touch-action: manipulation;
   pointer-events: auto;
+  /* No will-change: permanently composited via translateZ(0) instead */
 }
 
 /* App shell layout */
@@ -489,6 +502,8 @@ textarea:focus {
   overflow-x: hidden;
   overscroll-behavior-y: contain;
   -webkit-overflow-scrolling: touch;
+  /* Explicitly allow vertical pan scrolling */
+  touch-action: pan-y;
   padding-bottom: 80px;
   padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
 }

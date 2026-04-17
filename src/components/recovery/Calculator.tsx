@@ -113,7 +113,7 @@ export default function Calculator({ onExit }: CalculatorProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-[60] bg-[#0a0f1a] flex flex-col">
+    <div className="fixed inset-0 z-[60] bg-[#0a0f1a] flex flex-col" role="dialog" aria-label="Calculator" aria-modal="true">
       {/* Status bar area */}
       <div className="flex-shrink-0 pt-12 pb-2 px-6 max-w-md mx-auto w-full">
         <div className="flex items-center justify-between">
@@ -147,6 +147,7 @@ export default function Calculator({ onExit }: CalculatorProps) {
                 onClick={() => handleCalcButton(btn.label)}
                 className={`flex-1 rounded-2xl text-2xl font-medium flex items-center justify-center cursor-pointer transition-all duration-100 active:scale-95 border border-white/5 min-h-[60px] ${getButtonStyle(btn.type)}`}
                 style={btn.span === 2 ? { gridColumn: 'span 1', maxWidth: 'calc(50% - 6px)' } : {}}
+                aria-label={btn.label === '\u00f7' ? 'Divide' : btn.label === '\u00d7' ? 'Multiply' : btn.label === '+-' ? 'Negate' : btn.label === '%' ? 'Percent' : btn.label === 'C' ? 'Clear' : btn.label}
               >
                 {btn.label}
               </button>
@@ -156,7 +157,7 @@ export default function Calculator({ onExit }: CalculatorProps) {
       </div>
 
       {/* Subtle hint at bottom */}
-      <div className="text-center pb-4">
+      <div className="text-center pb-4 pointer-events-none">
         <p className="text-[10px] text-slate-700 tracking-wide">
           Standard Calculator
         </p>

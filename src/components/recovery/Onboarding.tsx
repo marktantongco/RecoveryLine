@@ -449,11 +449,18 @@ export default function Onboarding() {
   }, [data]);
 
   const renderScreen = () => {
-    const animClass = slideDir === 'right' ? 'animate-slideInRight' : 'animate-slideInLeft';
+    // Screen 0 uses fadeUp on initial mount, directional slides when navigating back
+    const animClass = screen === 0 && slideDir === 'right'
+      ? 'animate-fadeUp'
+      : slideDir === 'right' ? 'animate-slideInRight' : 'animate-slideInLeft';
 
     switch (screen) {
       case 0:
-        return <Screen1_Welcome onNext={goNext} />;
+        return (
+          <div className={animClass}>
+            <Screen1_Welcome onNext={goNext} />
+          </div>
+        );
       case 1:
         return (
           <div className={animClass}>
@@ -479,19 +486,23 @@ export default function Onboarding() {
           </div>
         );
       default:
-        return <Screen1_Welcome onNext={goNext} />;
+        return (
+          <div className="animate-fadeUp">
+            <Screen1_Welcome onNext={goNext} />
+          </div>
+        );
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0f1a] flex items-center justify-center p-6">
+    <div className="min-h-[100dvh] min-h-screen bg-[#0a0f1a] flex items-center justify-center p-6 overflow-y-auto">
       {/* Background decorative elements */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute -top-32 -right-32 w-64 h-64 rounded-full bg-sky-500/5 blur-3xl" />
         <div className="absolute -bottom-32 -left-32 w-64 h-64 rounded-full bg-emerald-500/5 blur-3xl" />
       </div>
 
-      <div className="w-full max-w-sm glass-card-hero p-6 relative overflow-hidden">
+      <div className="w-full max-w-sm glass-card-hero p-6 relative overflow-hidden" role="dialog" aria-label="Onboarding" aria-modal="true">
         <div className="relative">
           <div key={screen}>
             {renderScreen()}

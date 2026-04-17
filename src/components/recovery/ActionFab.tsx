@@ -307,7 +307,10 @@ export default React.memo(function ActionFab({ onNavigate, onLongPress }: Action
               ? 'bg-gradient-to-br from-slate-600 to-slate-700 shadow-slate-500/20 scale-95'
               : 'bg-gradient-to-br from-sky-500 to-blue-600 shadow-sky-500/30 hover:shadow-sky-500/40 hover:scale-105 active:scale-95'
         }`}
-        style={!isOpen && !crisisMode ? { animation: 'glow-pulse 3s infinite' } : undefined}
+        style={{
+          ...((!isOpen && !crisisMode) ? { animation: 'glow-pulse 3s infinite' } : {}),
+          willChange: 'transform',
+        }}
         aria-label={crisisMode ? 'Emergency crisis' : isOpen ? 'Close actions' : 'Quick actions menu'}
       >
         {crisisMode ? (
@@ -345,7 +348,7 @@ export default React.memo(function ActionFab({ onNavigate, onLongPress }: Action
 
         {/* Subtle ripple ring when idle */}
         {!isOpen && !crisisMode && (
-          <div className="absolute inset-0 rounded-full border border-sky-400/20 animate-ping" style={{ animationDuration: '3s' }} />
+          <div className="absolute inset-0 rounded-full border border-sky-400/20 animate-ping pointer-events-none" style={{ animationDuration: '3s' }} />
         )}
       </button>
     </div>

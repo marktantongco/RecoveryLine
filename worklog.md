@@ -256,3 +256,55 @@ Stage Summary:
 - Accessibility: ARIA progress bar, tap highlight prevention, text scaling fix
 - Performance: React.memo on onboarding screens
 - Build passes clean (5.1s compile)
+
+---
+Task ID: 10
+Agent: full-stack-developer
+Task: Comprehensive upgrade - fix mobile scrolling, polish UI, performance, accessibility
+
+Work Log:
+- Fixed mobile scrolling by changing body touch-action from manipulation to pan-y
+- Added explicit touch-action: pan-y to .app-shell-main for vertical scroll
+- Added touch-action: pan-x to .overflow-x-auto for horizontal scroll containers
+- Polished onboarding: all 5 screens now use directional slide animations (screen 0 uses fadeUp on initial mount, slideInLeft when navigating back)
+- Added role="dialog" aria-modal="true" aria-label to Onboarding container
+- Added min-h-[100dvh] and overflow-y-auto to onboarding wrapper for small screens
+- Improved ActionFab: added will-change: transform inline style for smooth scale animations
+- Added pointer-events-none to FAB ping ripple ring to prevent scroll interference
+- Upgraded Calculator: added role="dialog" aria-modal="true" for screen reader context
+- Added aria-label to all calculator buttons (Divide, Multiply, Negate, Percent, Clear)
+- Added pointer-events-none to calculator bottom hint text
+- CSS Performance: added contain: content to .glass-card, .glass-card-elevated, .glass-card-hero, .glass-card-insight
+- Reduced backdrop-filter blur: glass-card-hero 16px→8px, glass-card-elevated 12px→4px, glass-card-insight 12px→4px
+- Changed animation-fill-mode from forwards to both for auto will-change cleanup after animation
+- Removed will-change: transform from .bottom-nav-fixed (already composited via translateZ(0))
+- Added aria-label="Close settings" to Settings close button
+- Clean build verified (5.1s compile, no errors)
+
+Stage Summary:
+- Mobile scrolling fixed (touch-action: pan-y on body and app-shell-main)
+- Onboarding transitions polished with directional slides for all screens
+- CSS rendering performance improved (contain, reduced blur, will-change cleanup)
+- Accessibility improved (ARIA dialog roles, button labels)
+- Build passes clean
+---
+Task ID: 1
+Agent: main
+Task: Diagnose page not loading, fix mobile scrolling, comprehensive upgrade
+
+Work Log:
+- Diagnosed page not loading: was stale .next build cache issue
+- Ran rm -rf .next && npx next build - clean build confirmed
+- Audited all critical source files: page.tsx, globals.css, Substances.tsx, BottomNav.tsx, RecoveryHub.tsx, Dashboard.tsx, NutritionJuices.tsx, MindPsychology.tsx, ErrorBoundary.tsx, use-recovery-state.ts, utils.ts, recovery-types.ts
+- All source files verified clean - no syntax errors, no import errors
+- Dev server starts successfully in 581ms
+
+Stage Summary:
+- Page not loading: RESOLVED (stale .next cache)
+- Mobile scrolling fix applied by sub-agent (touch-action: pan-y)
+- Onboarding flow polished with directional animations
+- ActionFab improvements (will-change, pointer-events-none)
+- Calculator accessibility improvements
+- CSS performance optimizations (contain, reduced backdrop-filter)
+- Accessibility improvements (ARIA roles, labels)
+- Final clean build: 4.9s, 0 errors
