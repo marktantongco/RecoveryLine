@@ -273,7 +273,7 @@ export default React.memo(function BottomNav({
                 })}
 
                 {/* Divider */}
-                <div className="mx-4 my-1 border-t border-white/5" />
+                <div className="mx-4 my-1 border-t border-white/[0.06]" />
 
                 {/* Settings */}
                 <button
@@ -300,7 +300,7 @@ export default React.memo(function BottomNav({
 
       {/* Bottom navigation bar */}
       <nav
-        className="fixed bottom-0 left-0 right-0 z-[9999] bg-[#0a0f1a]/95 backdrop-blur-xl border-t border-white/5 will-change-transform"
+        className="fixed bottom-0 left-0 right-0 z-[9999] bg-[#0a0f1a]/95 backdrop-blur-xl border-t border-white/[0.08] will-change-transform"
         style={{
           transform: 'translateZ(0)',
           backfaceVisibility: 'hidden',
@@ -322,7 +322,7 @@ export default React.memo(function BottomNav({
                 className={`flex flex-col items-center gap-0.5 px-2.5 py-1.5 rounded-xl transition-all duration-200 active:scale-90 flex-shrink-0 ${
                   isActive
                     ? 'text-sky-400'
-                    : 'text-slate-500 hover:text-slate-400'
+                    : 'text-slate-400 hover:text-slate-300'
                 }`}
                 aria-label={item.label}
                 aria-current={isActive ? 'page' : undefined}
@@ -336,13 +336,13 @@ export default React.memo(function BottomNav({
                 </span>
                 <span
                   className={`text-[9px] font-medium ${
-                    isActive ? 'text-sky-400' : 'text-slate-500'
+                    isActive ? 'text-sky-400' : 'text-slate-400'
                   }`}
                 >
                   {item.label}
                 </span>
                 {isActive && (
-                  <div className="w-1 h-1 rounded-full bg-sky-400 mt-0.5 shadow-sm shadow-sky-400/50" />
+                  <div className="w-1 h-1 rounded-full bg-sky-400 mt-0.5 shadow-sm shadow-sky-400/50 animate-bounce-dot" />
                 )}
               </button>
             );
@@ -354,7 +354,7 @@ export default React.memo(function BottomNav({
             className={`flex flex-col items-center gap-0.5 px-2.5 py-1.5 rounded-xl transition-all duration-200 active:scale-90 flex-shrink-0 ${
               isMoreActive || moreMenuOpen
                 ? 'text-sky-400'
-                : 'text-slate-500 hover:text-slate-400'
+                : 'text-slate-400 hover:text-slate-300'
             }`}
             aria-label="More options"
             aria-expanded={moreMenuOpen}
@@ -384,13 +384,13 @@ export default React.memo(function BottomNav({
             </span>
             <span
               className={`text-[9px] font-medium ${
-                isMoreActive || moreMenuOpen ? 'text-sky-400' : 'text-slate-500'
+                isMoreActive || moreMenuOpen ? 'text-sky-400' : 'text-slate-400'
               }`}
             >
               More
             </span>
             {(isMoreActive || moreMenuOpen) && (
-              <div className="w-1 h-1 rounded-full bg-sky-400 mt-0.5 shadow-sm shadow-sky-400/50" />
+              <div className="w-1 h-1 rounded-full bg-sky-400 mt-0.5 shadow-sm shadow-sky-400/50 animate-bounce-dot" />
             )}
           </button>
         </div>

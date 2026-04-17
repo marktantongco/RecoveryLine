@@ -208,7 +208,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
                       }`}
                     />
                   ))}
-                  <span className="text-[10px] text-slate-500 ml-1">Danger {substance.dangerLevel}/5</span>
+                  <span className="text-[10px] text-slate-400 ml-1">Danger {substance.dangerLevel}/5</span>
                 </div>
               </div>
             </div>
@@ -259,7 +259,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
               style={{
                 display: 'grid',
                 gridTemplateRows: expandedDropdown === 'damage' ? '1fr' : '0fr',
-                transition: 'grid-template-rows 0.3s ease-in-out',
+                transition: 'grid-template-rows 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
               }}
             >
               <div style={{ overflow: 'hidden', minHeight: 0 }}>
@@ -286,7 +286,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
               style={{
                 display: 'grid',
                 gridTemplateRows: expandedDropdown === 'reduction' ? '1fr' : '0fr',
-                transition: 'grid-template-rows 0.3s ease-in-out',
+                transition: 'grid-template-rows 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
               }}
             >
               <div style={{ overflow: 'hidden', minHeight: 0 }}>
@@ -309,7 +309,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
               style={{
                 display: 'grid',
                 gridTemplateRows: expandedDropdown === 'withdrawal' ? '1fr' : '0fr',
-                transition: 'grid-template-rows 0.3s ease-in-out',
+                transition: 'grid-template-rows 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
               }}
             >
               <div style={{ overflow: 'hidden', minHeight: 0 }}>
@@ -318,7 +318,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
                   {/* Timeline + Severity */}
                   <div className="flex items-center gap-3 mb-2">
                     <div className="flex-1">
-                      <p className="text-[10px] text-slate-500 uppercase tracking-wide mb-0.5">Timeline</p>
+                      <p className="text-[10px] text-slate-400 uppercase tracking-wide mb-0.5">Timeline</p>
                       <p className="text-xs text-slate-300">{substance.withdrawal.timeline}</p>
                     </div>
                     <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border ${sev.bg} ${sev.color}`}>
@@ -357,7 +357,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
 
         {/* Neurotransmitters */}
         <div className="mb-3">
-          <p className="text-[10px] text-slate-500 uppercase tracking-wide mb-1.5 flex items-center gap-1.5">
+          <p className="text-[10px] text-slate-400 uppercase tracking-wide mb-1.5 flex items-center gap-1.5">
             {React.cloneElement(Icons.brain as React.ReactElement, { width: 11, height: 11 })}
             Neurotransmitters
           </p>
@@ -372,7 +372,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
 
         {/* Organs */}
         <div className="mb-3">
-          <p className="text-[10px] text-slate-500 uppercase tracking-wide mb-1.5">Organs & Systems</p>
+          <p className="text-[10px] text-slate-400 uppercase tracking-wide mb-1.5">Organs & Systems</p>
           <div className="space-y-1">
             {substance.recoveryFocus.organs.map((organ, i) => (
               <div key={i} className="flex items-center gap-2">
@@ -389,7 +389,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
             onClick={() => setSupplementsExpanded(!supplementsExpanded)}
             className="flex items-center justify-between w-full mb-1.5"
           >
-            <p className="text-[10px] text-slate-500 uppercase tracking-wide">
+            <p className="text-[10px] text-slate-400 uppercase tracking-wide">
               Priority Supplements ({substance.recoveryFocus.prioritySupplements.length})
             </p>
             <span className={`text-slate-500 transition-transform ${supplementsExpanded ? 'rotate-180' : ''}`}>
@@ -449,12 +449,12 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-semibold text-white">{section.name}</p>
-                      <p className="text-[10px] text-slate-500 mt-0.5">{section.subtitle}</p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">{section.subtitle}</p>
                       <div className="flex items-center gap-2 mt-1.5">
                         <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/15 font-medium">
                           {section.phases.length} {section.phases.length === 1 ? 'phase' : 'phases'}
                         </span>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.04] text-slate-500 border border-white/[0.06] font-medium">
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.06] text-slate-400 border border-white/[0.08] font-medium">
                           {section.principles.length} principles
                         </span>
                       </div>
@@ -473,7 +473,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
 
                     {/* Principles (show first 3) */}
                     <div>
-                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-1.5">Core Principles</p>
+                      <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">Core Principles</p>
                       <div className="space-y-1">
                         {section.principles.slice(0, 3).map((principle, i) => (
                           <div key={i} className="flex items-start gap-1.5">
@@ -489,7 +489,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
 
                     {/* Phases (collapsed) */}
                     <div>
-                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-1.5">Recovery Phases</p>
+                      <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">Recovery Phases</p>
                       <div className="space-y-1.5">
                         {section.phases.map((phase, idx) => (
                           <div key={idx} className="p-2.5 rounded-lg bg-white/[0.02] border border-white/[0.04]">
@@ -564,8 +564,8 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
 
       {/* --- Disclaimer --- */}
       <div className="glass-card p-3 animate-fadeUp stagger-6" style={{ opacity: 0 }}>
-        <p className="text-[10px] text-slate-500 leading-relaxed">
-          <strong className="text-slate-400">Disclaimer:</strong> This information is for educational purposes only and is not medical advice. Always consult a healthcare professional for substance-related concerns.
+        <p className="text-[10px] text-slate-400 leading-relaxed">
+          <strong className="text-slate-300">Disclaimer:</strong> This information is for educational purposes only and is not medical advice. Always consult a healthcare professional for substance-related concerns.
         </p>
       </div>
     </div>
@@ -576,8 +576,8 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
 
 function PharmRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="p-2.5 rounded-xl bg-white/[0.03]">
-      <p className="text-[10px] text-slate-500 uppercase tracking-wide mb-0.5">{label}</p>
+    <div className="p-2.5 rounded-xl bg-white/[0.04]">
+      <p className="text-[10px] text-slate-400 uppercase tracking-wide mb-0.5">{label}</p>
       <p className="text-[11px] text-slate-300 leading-relaxed">{value}</p>
     </div>
   );
@@ -585,8 +585,8 @@ function PharmRow({ label, value }: { label: string; value: string }) {
 
 function InfoRow({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
-    <div className="p-2.5 rounded-xl bg-white/[0.03]">
-      <p className="text-[10px] text-slate-500 uppercase tracking-wide mb-0.5">{label}</p>
+    <div className="p-2.5 rounded-xl bg-white/[0.04]">
+      <p className="text-[10px] text-slate-400 uppercase tracking-wide mb-0.5">{label}</p>
       <p className={`text-[11px] leading-relaxed ${highlight ? 'text-slate-200 font-medium' : 'text-slate-300'}`}>
         {value}
       </p>

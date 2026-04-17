@@ -49,6 +49,30 @@
   --border: rgba(255, 255, 255, 0.08);
   --input: rgba(255, 255, 255, 0.08);
   --ring: #0ea5e9;
+
+  /* ── Multi-layered shadow system ─────────────────────────── */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.15);
+  --shadow-md: 0 2px 4px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.15);
+  --shadow-lg: 0 4px 8px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.2);
+  --shadow-xl: 0 8px 16px rgba(0,0,0,0.3), 0 16px 48px rgba(0,0,0,0.25);
+  --shadow-glow-sky: 0 0 20px rgba(14,165,233,0.15), 0 0 40px rgba(14,165,233,0.05);
+  --shadow-glow-emerald: 0 0 20px rgba(16,185,129,0.15), 0 0 40px rgba(16,185,129,0.05);
+  --shadow-glow-amber: 0 0 20px rgba(245,158,11,0.15), 0 0 40px rgba(245,158,11,0.05);
+  --shadow-glow-purple: 0 0 20px rgba(139,92,246,0.15), 0 0 40px rgba(139,92,246,0.05);
+  --shadow-glow-red: 0 0 20px rgba(239,68,68,0.15), 0 0 40px rgba(239,68,68,0.05);
+
+  /* ── Spring-like easing curves ───────────────────────────── */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-smooth: cubic-bezier(0.45, 0, 0.55, 1);
+
+  /* ── Typography scale ────────────────────────────────────── */
+  --font-weight-heading: 700;
+  --font-weight-hero: 800;
+  --letter-spacing-label: 0.025em;
+  --letter-spacing-heading: -0.025em;
+  --line-height-heading: 1.15;
+  --line-height-hero: 1.1;
 }
 
 @layer base {
@@ -57,7 +81,7 @@
   }
   html, body {
     height: 100dvh;
-    height: 100vh; /* fallback for older browsers */
+    height: 100vh;
     overflow: hidden;
     overscroll-behavior: none;
   }
@@ -67,7 +91,6 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
-    /* pan-y allows vertical scrolling on mobile; manipulation was blocking scroll */
     touch-action: pan-y;
     text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
@@ -77,16 +100,14 @@
   }
 }
 
-/* Mobile touch scrolling — ensure smooth scrolling on all scrollable containers */
+/* Mobile touch scrolling */
 .scroll-smooth {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Ensure touch scrollable containers work on mobile */
 .overflow-x-auto {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
-  /* pan-x for horizontal-only scrollable containers */
   touch-action: pan-x;
 }
 
@@ -109,47 +130,82 @@ button, a, [role="button"] {
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 2px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.22);
 }
 
-/* Glass card system */
+/* ═══════════════════════════════════════════════════════════════
+   GLASS CARD SYSTEM — Enhanced with layered shadows
+   ═══════════════════════════════════════════════════════════════ */
+
 .glass-card {
   position: relative;
   background: rgba(17, 24, 39, 0.8);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.25s ease, transform 0.2s var(--ease-out-expo), box-shadow 0.25s ease;
+  contain: content;
+  /* Prevent GPU layer from blocking mobile touch scroll */
+ -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+/* Card hover lift — disabled on touch devices to prevent scroll interference */
+@media (hover: hover) {
+  .glass-card:hover {
+    border-color: rgba(255, 255, 255, 0.16);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+  }
+}
+
+/* Pressed card variant */
+.glass-card-pressed {
+  position: relative;
+  background: rgba(17, 24, 39, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
-  transition: border-color 0.2s ease, transform 0.15s ease;
-  /* Performance: contain layout recalculations to this element */
-  contain: content;
-  /* overflow removed — was killing overflow-x-auto on child elements (Tailwind v4 layer specificity)
-     Use Tailwind 'overflow-hidden' class where clipping is actually needed */
+  transform: scale(0.98);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: transform 0.15s var(--ease-spring), box-shadow 0.15s ease;
 }
 
 .glass-card-elevated {
   background: rgba(30, 41, 59, 0.95);
-  /* Reduced backdrop-filter blur from 12px to 4px for GPU performance */
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 16px;
+  box-shadow: var(--shadow-md);
   contain: content;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 .glass-card-hero {
   background: linear-gradient(135deg, rgba(14, 165, 233, 0.08) 0%, rgba(30, 41, 59, 0.9) 50%, rgba(16, 185, 129, 0.06) 100%);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.04);
   contain: content;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 .glass-card-insight {
@@ -159,10 +215,35 @@ button, a, [role="button"] {
   border: 1px solid rgba(139, 92, 246, 0.15);
   border-radius: 16px;
   overflow: hidden;
+  box-shadow: var(--shadow-md), 0 0 20px rgba(139, 92, 246, 0.06);
   contain: content;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
-/* Animations */
+/* ═══════════════════════════════════════════════════════════════
+   TYPOGRAPHY UPGRADE
+   ═══════════════════════════════════════════════════════════════ */
+
+.text-hero {
+  font-weight: var(--font-weight-hero);
+  letter-spacing: var(--letter-spacing-heading);
+  line-height: var(--line-height-hero);
+}
+
+.text-label {
+  letter-spacing: var(--letter-spacing-label);
+  font-weight: 500;
+}
+
+/* Improve readability of tiny labels */
+.text-\[10px\] {
+  letter-spacing: 0.025em;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATIONS — Refined timing with spring/expo curves
+   ═══════════════════════════════════════════════════════════════ */
+
 @keyframes fadeUp {
   from {
     opacity: 0;
@@ -274,30 +355,81 @@ button, a, [role="button"] {
   }
 }
 
+@keyframes press-pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.96);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes bounce-dot {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-4px);
+  }
+  60% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes active-glow {
+  0% {
+    box-shadow: 0 0 0 0 currentColor;
+  }
+  50% {
+    box-shadow: 0 0 8px 2px currentColor;
+  }
+  100% {
+    box-shadow: 0 0 0 0 currentColor;
+  }
+}
+
+/* Animation classes with refined curves */
 .animate-fadeUp {
-  animation: fadeUp 0.5s ease-out forwards;
+  animation: fadeUp 0.6s var(--ease-out-expo) forwards;
 }
 
 .animate-scaleIn {
-  animation: scaleIn 0.3s ease-out forwards;
+  animation: scaleIn 0.3s var(--ease-spring) forwards;
 }
 
 .animate-slideInRight {
-  animation: slideInRight 0.4s ease-out forwards;
+  animation: slideInRight 0.5s var(--ease-out-expo) forwards;
 }
 
 .animate-slideInLeft {
-  animation: slideInLeft 0.4s ease-out forwards;
+  animation: slideInLeft 0.5s var(--ease-out-expo) forwards;
 }
 
 /* Performance: will-change ONLY on elements that actively animate */
 .animate-fadeUp, .animate-slideInRight, .animate-slideInLeft {
   will-change: transform, opacity;
-  animation-fill-mode: forwards;
+ animation-fill-mode: both;
 }
-/* Remove will-change after animation completes to free GPU memory */
-.animate-fadeUp, .animate-slideInRight, .animate-slideInLeft {
-  animation-fill-mode: both;
+/* Remove will-change after animation to free GPU and prevent scroll blocking on mobile */
+.animate-fadeUp[style*="animation"], .animate-slideInRight[style*="animation"], .animate-slideInLeft[style*="animation"] {
+  will-change: auto;
+}
+/* Remove will-change after animation to free GPU and prevent scroll blocking on mobile */
+.animate-fadeUp[style*="animation"], .animate-slideInRight[style*="animation"], .animate-slideInLeft[style*="animation"] {
+  will-change: auto;
+}
+
+/* Press animation class */
+.animate-press {
+  animation: press-pop 0.35s var(--ease-spring);
+}
+
+/* Bounce dot for active nav indicators */
+.animate-bounce-dot {
+  animation: bounce-dot 0.5s var(--ease-spring);
 }
 
 .animate-pulse-glow {
@@ -312,14 +444,18 @@ button, a, [role="button"] {
   animation: breathe 4s ease-in-out infinite;
 }
 
-.stagger-1 { animation-delay: 0.05s; }
-.stagger-2 { animation-delay: 0.1s; }
-.stagger-3 { animation-delay: 0.15s; }
-.stagger-4 { animation-delay: 0.2s; }
-.stagger-5 { animation-delay: 0.25s; }
-.stagger-6 { animation-delay: 0.3s; }
+/* Stagger timing — 40ms gaps for snappier feel */
+.stagger-1 { animation-delay: 0.04s; }
+.stagger-2 { animation-delay: 0.08s; }
+.stagger-3 { animation-delay: 0.12s; }
+.stagger-4 { animation-delay: 0.16s; }
+.stagger-5 { animation-delay: 0.2s; }
+.stagger-6 { animation-delay: 0.24s; }
 
-/* Calculator styles */
+/* ═══════════════════════════════════════════════════════════════
+   CALCULATOR STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
 .calc-btn {
   display: flex;
   align-items: center;
@@ -329,14 +465,16 @@ button, a, [role="button"] {
   font-weight: 500;
   color: #f1f5f9;
   background: #1e293b;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: var(--shadow-sm);
   min-height: 56px;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.15s var(--ease-spring);
   user-select: none;
 }
 .calc-btn:hover {
   background: #334155;
+  box-shadow: var(--shadow-md);
 }
 .calc-btn:active {
   background: #475569;
@@ -346,14 +484,17 @@ button, a, [role="button"] {
   background: #0ea5e9;
   color: white;
   font-weight: 700;
+  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.2);
 }
 .calc-btn-op:hover {
   background: #0284c7;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
 }
 .calc-btn-clear {
   background: #ef4444;
   color: white;
   font-weight: 700;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
 }
 .calc-btn-clear:hover {
   background: #dc2626;
@@ -362,39 +503,53 @@ button, a, [role="button"] {
   background: #10b981;
   color: white;
   font-weight: 700;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
 }
 .calc-btn-eq:hover {
   background: #059669;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
 }
 
-/* Mood button glow */
+/* ═══════════════════════════════════════════════════════════════
+   MOOD BUTTON GLOW — Enhanced
+   ═══════════════════════════════════════════════════════════════ */
+
 .mood-btn-selected {
-  box-shadow: 0 0 12px 2px rgba(14, 165, 233, 0.4);
+  box-shadow: 0 0 12px 2px rgba(14, 165, 233, 0.4), 0 0 24px rgba(14, 165, 233, 0.1);
 }
 
-/* Bottom nav safe area */
+/* ═══════════════════════════════════════════════════════════════
+   BOTTOM NAV SAFE AREA
+   ═══════════════════════════════════════════════════════════════ */
+
 .pb-safe {
   padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
 }
 
-/* Timeline dot */
+/* ═══════════════════════════════════════════════════════════════
+   TIMELINE DOTS
+   ═══════════════════════════════════════════════════════════════ */
+
 .timeline-dot {
   width: 12px;
   height: 12px;
   border-radius: 50%;
   flex-shrink: 0;
-  transition: transform 0.2s;
+  transition: transform 0.2s var(--ease-spring);
 }
 .timeline-dot-sober {
   background: linear-gradient(135deg, #10b981, #059669);
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
 }
 .timeline-dot-use {
   background: linear-gradient(135deg, #f59e0b, #d97706);
-  box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
 }
 
-/* Toggle chip */
+/* ═══════════════════════════════════════════════════════════════
+   TOGGLE CHIP — Enhanced animation
+   ═══════════════════════════════════════════════════════════════ */
+
 .toggle-chip {
   display: inline-flex;
   align-items: center;
@@ -402,64 +557,90 @@ button, a, [role="button"] {
   border-radius: 9999px;
   font-size: 0.8rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.25s var(--ease-spring);
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(30, 41, 59, 0.5);
   color: #94a3b8;
   user-select: none;
 }
-.toggle-chip:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  background: rgba(30, 41, 59, 0.8);
+@media (hover: hover) {
+  .toggle-chip:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(30, 41, 59, 0.8);
+    transform: translateY(-1px);
+  }
 }
 .toggle-chip-active {
   background: rgba(14, 165, 233, 0.15);
   border-color: #0ea5e9;
   color: #0ea5e9;
-  box-shadow: 0 0 12px rgba(14, 165, 233, 0.15);
+  box-shadow: 0 0 0 1px #0ea5e9, 0 2px 8px rgba(14, 165, 233, 0.15);
+  transition: all 0.25s var(--ease-spring);
 }
 
-/* Smooth page transitions — only on initial mount */
+/* ═══════════════════════════════════════════════════════════════
+   SECTION TRANSITIONS — Smoother with longer duration
+   ═══════════════════════════════════════════════════════════════ */
+
 .section-enter {
-  animation: fadeUp 0.4s ease-out;
+  animation: fadeUp 0.5s var(--ease-out-expo);
 }
 
-/* Active press feedback */
-button:active {
-  transition: transform 0.1s ease;
+/* ═══════════════════════════════════════════════════════════════
+   ACTIVE PRESS FEEDBACK — Enhanced with spring
+   ═══════════════════════════════════════════════════════════════ */
+
+button:active:not(:disabled) {
+  transform: scale(0.96);
+  transition: transform 0.1s var(--ease-spring);
 }
 
-/* Selection color */
+/* ═══════════════════════════════════════════════════════════════
+   SELECTION COLOR
+   ═══════════════════════════════════════════════════════════════ */
+
 ::selection {
   background: rgba(14, 165, 233, 0.3);
   color: white;
 }
 
-/* Subtle noise overlay for glass effect */
+/* ═══════════════════════════════════════════════════════════════
+   NOISE OVERLAY FOR GLASS EFFECT
+   ═══════════════════════════════════════════════════════════════ */
+
 .glass-card::before,
 .glass-card-hero::before {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, transparent 50%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 50%);
   pointer-events: none;
 }
 
-/* Input focus enhancement */
+/* ═══════════════════════════════════════════════════════════════
+   INPUT FOCUS ENHANCEMENT — Better glow
+   ═══════════════════════════════════════════════════════════════ */
+
 input:focus,
 textarea:focus {
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s ease, box-shadow 0.25s ease;
 }
 
-/* Progress bar animation */
+/* ═══════════════════════════════════════════════════════════════
+   PROGRESS BAR ANIMATION
+   ═══════════════════════════════════════════════════════════════ */
+
 @keyframes progress-fill {
   from {
     width: 0%;
   }
 }
 
-/* Gradient text utility */
+/* ═══════════════════════════════════════════════════════════════
+   GRADIENT TEXT UTILITY
+   ═══════════════════════════════════════════════════════════════ */
+
 .text-gradient {
   background: linear-gradient(135deg, #0ea5e9, #10b981);
   -webkit-background-clip: text;
@@ -467,14 +648,20 @@ textarea:focus {
   background-clip: text;
 }
 
-/* Safe area for notch devices */
+/* ═══════════════════════════════════════════════════════════════
+   SAFE AREA FOR NOTCH DEVICES
+   ═══════════════════════════════════════════════════════════════ */
+
 @supports (padding-top: env(safe-area-inset-top)) {
   body {
     padding-top: env(safe-area-inset-top);
   }
 }
 
-/* Bottom nav permanent fixed */
+/* ═══════════════════════════════════════════════════════════════
+   BOTTOM NAV — Permanent fixed
+   ═══════════════════════════════════════════════════════════════ */
+
 .bottom-nav-fixed {
   position: fixed;
   bottom: 0;
@@ -486,10 +673,12 @@ textarea:focus {
   -webkit-backface-visibility: hidden;
   touch-action: manipulation;
   pointer-events: auto;
-  /* No will-change: permanently composited via translateZ(0) instead */
 }
 
-/* App shell layout */
+/* ═══════════════════════════════════════════════════════════════
+   APP SHELL LAYOUT
+   ═══════════════════════════════════════════════════════════════ */
+
 .app-shell {
   display: flex;
   flex-direction: column;
@@ -502,13 +691,15 @@ textarea:focus {
   overflow-x: hidden;
   overscroll-behavior-y: contain;
   -webkit-overflow-scrolling: touch;
-  /* Explicitly allow vertical pan scrolling */
   touch-action: pan-y;
   padding-bottom: 80px;
   padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
 }
 
-/* Toast animation */
+/* ═══════════════════════════════════════════════════════════════
+   TOAST ANIMATION — Refined
+   ═══════════════════════════════════════════════════════════════ */
+
 @keyframes toast-in {
   from {
     opacity: 0;
@@ -531,14 +722,20 @@ textarea:focus {
   }
 }
 
-/* Haptic-like feedback on mobile */
+/* ═══════════════════════════════════════════════════════════════
+   HAPTIC-LIKE FEEDBACK ON MOBILE
+   ═══════════════════════════════════════════════════════════════ */
+
 @media (hover: none) {
   button:active {
     opacity: 0.85;
   }
 }
 
-/* Breathing exercise animation */
+/* ═══════════════════════════════════════════════════════════════
+   BREATHING EXERCISE ANIMATION
+   ═══════════════════════════════════════════════════════════════ */
+
 @keyframes breathe-expand {
   0%, 100% {
     transform: scale(0.6);
@@ -564,7 +761,10 @@ textarea:focus {
   opacity: 0.3;
 }
 
-/* No-scrollbar utility */
+/* ═══════════════════════════════════════════════════════════════
+   SCROLLBAR UTILITIES
+   ═══════════════════════════════════════════════════════════════ */
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -573,7 +773,6 @@ textarea:focus {
   scrollbar-width: none;
 }
 
-/* Hide horizontal scrollbar for drug tabs */
 .hide-scrollbar-x::-webkit-scrollbar {
   display: none;
 }
@@ -582,13 +781,14 @@ textarea:focus {
   scrollbar-width: none;
 }
 
-/* Duplicate section-enter removed (see line ~363) */
+/* ═══════════════════════════════════════════════════════════════
+   MORE MENU SLIDE-UP ANIMATION — Refined
+   ═══════════════════════════════════════════════════════════════ */
 
-/* More menu slide-up animation */
 @keyframes slideUpMenu {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
@@ -597,10 +797,13 @@ textarea:focus {
 }
 
 .animate-slideUpMenu {
-  animation: slideUpMenu 0.2s ease-out forwards;
+  animation: slideUpMenu 0.3s var(--ease-out-expo) forwards;
 }
 
-/* Crisis pulse animation */
+/* ═══════════════════════════════════════════════════════════════
+   CRISIS PULSE ANIMATION
+   ═══════════════════════════════════════════════════════════════ */
+
 @keyframes pulse-crisis {
   0%, 100% { box-shadow: 0 0 0 0 rgba(204, 0, 0, 0.5); }
   50% { box-shadow: 0 0 0 12px rgba(204, 0, 0, 0); }
@@ -609,7 +812,10 @@ textarea:focus {
   animation: pulse-crisis 2s infinite;
 }
 
-/* Reduced motion — accessibility */
+/* ═══════════════════════════════════════════════════════════════
+   REDUCED MOTION — Accessibility
+   ═══════════════════════════════════════════════════════════════ */
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -626,14 +832,20 @@ textarea:focus {
   }
 }
 
-/* Focus visible for keyboard nav — accessibility */
+/* ═══════════════════════════════════════════════════════════════
+   FOCUS VISIBLE — Keyboard nav accessibility
+   ═══════════════════════════════════════════════════════════════ */
+
 :focus-visible {
   outline: 2px solid #0ea5e9;
   outline-offset: 2px;
   border-radius: 8px;
 }
 
-/* Screen reader only utility */
+/* ═══════════════════════════════════════════════════════════════
+   SCREEN READER ONLY
+   ═══════════════════════════════════════════════════════════════ */
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -646,12 +858,18 @@ textarea:focus {
   border-width: 0;
 }
 
-/* Smooth number transitions */
+/* ═══════════════════════════════════════════════════════════════
+   SMOOTH NUMBER TRANSITIONS
+   ═══════════════════════════════════════════════════════════════ */
+
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }
 
-/* Gradient border utility */
+/* ═══════════════════════════════════════════════════════════════
+   GRADIENT BORDER UTILITY — Enhanced with color variants
+   ═══════════════════════════════════════════════════════════════ */
+
 .gradient-border {
   position: relative;
 }
@@ -660,10 +878,101 @@ textarea:focus {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(135deg, rgba(14, 165, 233, 0.3), rgba(16, 185, 129, 0.3));
+  padding: 1.5px;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.4), rgba(16, 185, 129, 0.4));
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
+}
+
+.gradient-border-sky::after {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.5), rgba(56, 189, 248, 0.3));
+}
+
+.gradient-border-emerald::after {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.5), rgba(52, 211, 153, 0.3));
+}
+
+.gradient-border-amber::after {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.5), rgba(251, 191, 36, 0.3));
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RIPPLE MICRO-INTERACTION
+   ═══════════════════════════════════════════════════════════════ */
+
+.ripple-container {
+  position: relative;
+  overflow: hidden;
+}
+.ripple-effect {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ICON HOVER SCALE — Subtle enhancement
+   ═══════════════════════════════════════════════════════════════ */
+
+.icon-hover-scale {
+  transition: transform 0.2s var(--ease-spring);
+}
+.icon-hover-scale:hover {
+  transform: scale(1.1);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CONTRAST IMPROVEMENTS
+   ═══════════════════════════════════════════════════════════════ */
+
+/* bg-white/5 upgraded to bg-white/[0.06] for subtle differentiation */
+/* Applied via component classes — no global override to avoid breaking layouts */
+
+/* Disabled state should still be readable */
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+button:disabled:active {
+  transform: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CARD INNER SPACING — Consistent gap between direct children
+   ═══════════════════════════════════════════════════════════════ */
+
+.glass-card > * + * {
+  margin-top: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DROPDOWN TRANSITION — 0.35s with ease-out-expo
+   ═══════════════════════════════════════════════════════════════ */
+
+.dropdown-expand {
+  transition: grid-template-rows 0.35s var(--ease-out-expo);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TAB SWITCH — Fade + slide combo
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes tab-switch-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-tab-switch {
+  animation: tab-switch-in 0.3s var(--ease-out-expo) forwards;
 }

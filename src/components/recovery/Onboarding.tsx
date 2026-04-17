@@ -65,7 +65,7 @@ function Screen1_Welcome({ onNext }: { onNext: () => void }) {
         </svg>
       </div>
 
-      <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">RecoveryLine</h1>
+      <h1 className="text-3xl font-bold text-white mb-2 tracking-tight text-hero">RecoveryLine</h1>
       <p className="text-base text-emerald-400 font-medium mb-4">Your brain needs food, not judgment.</p>
       <p className="text-sm text-slate-400 leading-relaxed max-w-xs mb-8">
         Nutritional reconstruction for substance recovery. Evidence-based. Privacy-first. Made for the Philippines.
@@ -106,8 +106,8 @@ const Screen2_Substances = React.memo(function Screen2_Substances({ data, onChan
 
   return (
     <div className="animate-fadeUp">
-      <h2 className="text-xl font-bold text-white mb-1">What are you recovering from?</h2>
-      <p className="text-xs text-slate-500 mb-5">Select all that apply. You can always update this later.</p>
+      <h2 className="text-xl font-bold text-white mb-1 text-hero">What are you recovering from?</h2>
+      <p className="text-xs text-slate-400 mb-5">Select all that apply. You can always update this later.</p>
 
       <div className="space-y-2 max-h-72 overflow-y-auto custom-scrollbar mb-5">
         {SUBSTANCES.map((sub) => {
@@ -202,8 +202,8 @@ const Screen3_HealthProfile = React.memo(function Screen3_HealthProfile({ data, 
 
   return (
     <div className="animate-fadeUp">
-      <h2 className="text-xl font-bold text-white mb-1">Health Profile</h2>
-      <p className="text-xs text-slate-500 mb-5">Helps us tailor safe nutritional recommendations.</p>
+      <h2 className="text-xl font-bold text-white mb-1 text-hero">Health Profile</h2>
+      <p className="text-xs text-slate-400 mb-5">Helps us tailor safe nutritional recommendations.</p>
 
       {/* Body Weight */}
       <div className="mb-5">
@@ -318,8 +318,8 @@ const Screen4_Contemplative = React.memo(function Screen4_Contemplative({ data, 
 }) {
   return (
     <div className="animate-fadeUp">
-      <h2 className="text-xl font-bold text-white mb-1">Contemplative Track</h2>
-      <p className="text-xs text-slate-500 mb-5">Optional. Enable secular mindfulness and reflection exercises.</p>
+      <h2 className="text-xl font-bold text-white mb-1 text-hero">Contemplative Track</h2>
+      <p className="text-xs text-slate-400 mb-5">Optional. Enable secular mindfulness and reflection exercises.</p>
 
       <div className="glass-card-hero p-4 mb-5">
         <div className="flex items-start gap-3">
@@ -341,7 +341,7 @@ const Screen4_Contemplative = React.memo(function Screen4_Contemplative({ data, 
       <div className="flex items-center justify-between p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] mb-5">
         <div>
           <p className="text-sm font-medium text-slate-300">Enable Contemplative Content</p>
-          <p className="text-[10px] text-slate-500 mt-0.5">CBT grounding, meditation, journal prompts</p>
+          <p className="text-[10px] text-slate-400 mt-0.5">CBT grounding, meditation, journal prompts</p>
         </div>
         <button
           onClick={() => onChange({ ...data, contemplativeEnabled: !data.contemplativeEnabled })}
@@ -394,7 +394,7 @@ function Screen5_Completion({ onComplete }: { onComplete: () => void }) {
     <div className="flex flex-col items-center text-center animate-fadeUp">
       <div className="text-6xl mb-5">{'\ud83c\udf31'}</div>
 
-      <h2 className="text-2xl font-bold text-white mb-2">You&apos;re all set</h2>
+      <h2 className="text-2xl font-bold text-white mb-2 text-hero">You&apos;re all set</h2>
       <p className="text-sm text-slate-400 leading-relaxed max-w-xs mb-8">
         Your personalized recovery protocol is ready. We&apos;ve tailored nutritional guidance, wellness tools, and tracking based on your profile.
       </p>

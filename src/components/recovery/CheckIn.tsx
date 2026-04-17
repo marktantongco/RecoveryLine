@@ -272,8 +272,8 @@ export default function CheckIn({ onSubmit, dailyAvgSpending, preselect, onPrese
                   isSelected
                     ? 'bg-sky-500/15 border-2 border-sky-500/60 mood-btn-selected shadow-lg shadow-sky-500/10'
                     : touched.mood && !selectedMood
-                      ? 'border-2 border-red-500/30 hover:bg-white/5'
-                      : 'border border-transparent hover:bg-white/5'
+                      ? 'border-2 border-red-500/30 hover:bg-white/[0.06]'
+                      : 'border border-transparent hover:bg-white/[0.06]'
                 }`}
               >
                 <span className="text-2xl transition-transform duration-200" style={{ transform: isSelected ? 'scale(1.15)' : 'scale(1)' }}>{mood.emoji}</span>
@@ -306,7 +306,7 @@ export default function CheckIn({ onSubmit, dailyAvgSpending, preselect, onPrese
             onChange={(e) => { setMoney(e.target.value); markTouched('spending'); }}
             onBlur={() => markTouched('spending')}
             placeholder={mode === 'sober' ? 'e.g., 500' : String(dailyAvgSpending)}
-            className={`w-full bg-white/5 border rounded-xl px-3 pl-8 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-1 transition-colors ${
+            className={`w-full bg-white/[0.06] border rounded-xl px-3 pl-8 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:shadow-[var(--shadow-glow-sky)] transition-all ${
               errors.spending
                 ? 'border-red-500/50 focus:border-red-500/50 focus:ring-red-500/25'
                 : 'border-white/10 focus:border-sky-500/50 focus:ring-sky-500/25'
@@ -336,7 +336,7 @@ export default function CheckIn({ onSubmit, dailyAvgSpending, preselect, onPrese
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
             placeholder="e.g., 0.5g, 2 pills, 1 sachet"
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-sky-500/50 focus:ring-1 focus:ring-sky-500/25 transition-colors"
+            className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-3 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-sky-500/50 focus:ring-1 focus:ring-sky-500/25 focus:shadow-[var(--shadow-glow-sky)] transition-all"
           />
         </div>
       )}
@@ -358,7 +358,7 @@ export default function CheckIn({ onSubmit, dailyAvgSpending, preselect, onPrese
           placeholder="How's your day going? Any triggers or wins?"
           rows={3}
           maxLength={MAX_NOTES_LENGTH + 50}
-          className={`w-full bg-white/5 border rounded-xl px-3 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-1 transition-colors resize-none ${
+          className={`w-full bg-white/[0.06] border rounded-xl px-3 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:shadow-[var(--shadow-glow-sky)] transition-all resize-none ${
             errors.notes
               ? 'border-red-500/50 focus:border-red-500/50 focus:ring-red-500/25'
               : 'border-white/10 focus:border-sky-500/50 focus:ring-sky-500/25'

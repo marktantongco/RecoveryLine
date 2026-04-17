@@ -111,7 +111,7 @@ export default React.memo(function ActionFab({ onNavigate, onLongPress }: Action
       {/* Crisis Dialog Modal */}
       {showCrisisDialog && (
         <div className="absolute bottom-[72px] right-0 w-72 animate-scaleIn z-20">
-          <div className="glass-card-hero p-5 border border-red-500/20 shadow-2xl shadow-red-500/10">
+          <div className="glass-card-hero p-5 border border-red-500/20 shadow-2xl shadow-red-500/10" style={{ boxShadow: '0 8px 32px rgba(239, 68, 68, 0.15), 0 0 20px rgba(239, 68, 68, 0.08)' }}>
             {/* Dialog header */}
             <div className="flex items-center gap-2.5 mb-4">
               <div className="w-10 h-10 rounded-xl bg-red-500/15 flex items-center justify-center flex-shrink-0">
@@ -196,7 +196,7 @@ export default React.memo(function ActionFab({ onNavigate, onLongPress }: Action
               onClick={() => handleAction('recovery', 'use')}
               className="group flex flex-col items-center gap-1.5"
             >
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 shadow-lg shadow-amber-500/30 flex items-center justify-center text-white group-hover:scale-110 group-active:scale-95 transition-all duration-200 ring-2 ring-amber-400/20">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 shadow-lg shadow-amber-500/30 flex items-center justify-center text-white group-hover:scale-110 group-active:scale-95 transition-all duration-200 ring-2 ring-amber-400/25" style={{ boxShadow: '0 4px 16px rgba(245, 158, 11, 0.35)' }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
                   <path d="M12 6v6l4 2" />
@@ -223,7 +223,7 @@ export default React.memo(function ActionFab({ onNavigate, onLongPress }: Action
               onClick={() => handleAction('recovery', 'mood')}
               className="group flex flex-col items-center gap-1.5"
             >
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-violet-500 shadow-lg shadow-purple-500/30 flex items-center justify-center text-white group-hover:scale-110 group-active:scale-95 transition-all duration-200 ring-2 ring-purple-400/20">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-violet-500 shadow-lg shadow-purple-500/30 flex items-center justify-center text-white group-hover:scale-110 group-active:scale-95 transition-all duration-200 ring-2 ring-purple-400/25" style={{ boxShadow: '0 4px 16px rgba(139, 92, 246, 0.35)' }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="10" />
                   <path d="M8 14s1.5 2 4 2 4-2 4-2" />
@@ -252,7 +252,7 @@ export default React.memo(function ActionFab({ onNavigate, onLongPress }: Action
               onClick={() => handleAction('recovery', 'sober')}
               className="group flex flex-col items-center gap-1.5"
             >
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/30 flex items-center justify-center text-white group-hover:scale-110 group-active:scale-95 transition-all duration-200 ring-2 ring-emerald-400/20">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/30 flex items-center justify-center text-white group-hover:scale-110 group-active:scale-95 transition-all duration-200 ring-2 ring-emerald-400/25" style={{ boxShadow: '0 4px 16px rgba(16, 185, 129, 0.35)' }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                   <path d="m9 11 3 3L22 4" />
@@ -281,7 +281,7 @@ export default React.memo(function ActionFab({ onNavigate, onLongPress }: Action
                 }}
                 className="group flex flex-col items-center gap-1.5"
               >
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-red-600 shadow-lg shadow-red-500/30 flex items-center justify-center text-white group-hover:scale-110 group-active:scale-95 transition-all duration-200 ring-2 ring-red-400/20 animate-pulse-crisis">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-red-600 shadow-lg shadow-red-500/30 flex items-center justify-center text-white group-hover:scale-110 group-active:scale-95 transition-all duration-200 ring-2 ring-red-400/25 animate-pulse-crisis" style={{ boxShadow: '0 4px 16px rgba(239, 68, 68, 0.35)' }}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 9v4" />
                     <path d="M12 17h.01" />

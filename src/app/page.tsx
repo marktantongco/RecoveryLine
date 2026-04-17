@@ -161,7 +161,7 @@ function AppContent() {
             </svg>
           </div>
           <p className="text-sm text-slate-400 font-medium">Loading RecoveryLine...</p>
-          <p className="text-[10px] text-slate-600 mt-1">Preparing your recovery space</p>
+          <p className="text-[10px] text-slate-500 mt-1 text-label">Preparing your recovery space</p>
           <div className="mt-3 flex items-center justify-center gap-1">
             <div className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-bounce" style={{ animationDelay: '0ms' }} />
             <div className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -257,7 +257,7 @@ function AppContent() {
   return (
     <div className="app-shell bg-[#0a0f1a]">
       {/* Header */}
-      <header className="sticky top-0 z-20 bg-[#0a0f1a]/90 backdrop-blur-xl border-b border-white/5 flex-shrink-0" role="banner">
+      <header className="sticky top-0 z-20 bg-[#0a0f1a]/92 backdrop-blur-xl border-b border-white/[0.08] flex-shrink-0" role="banner">
         <div className="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-sky-500/15" aria-hidden="true">
@@ -266,8 +266,8 @@ function AppContent() {
               </svg>
             </div>
             <div>
-              <h1 className="text-sm font-bold text-white leading-none tracking-tight">RecoveryLine</h1>
-              <p className="text-[10px] text-slate-500 mt-0.5">Biochemical Recovery</p>
+              <h1 className="text-sm font-bold text-white leading-none tracking-tight text-hero">RecoveryLine</h1>
+              <p className="text-[10px] text-slate-400 mt-0.5 text-label">Biochemical Recovery</p>
             </div>
           </div>
           <nav className="flex items-center gap-1" aria-label="Quick navigation">
@@ -276,7 +276,7 @@ function AppContent() {
               className={`p-2 rounded-lg transition-all active:scale-90 ${
                 state.currentSection === 'substances'
                   ? 'text-amber-400 bg-amber-500/10'
-                  : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                  : 'text-slate-400 hover:text-slate-300 hover:bg-white/[0.06]'
               }`}
               title="Substances"
               aria-label="Go to Substances"
@@ -291,7 +291,7 @@ function AppContent() {
               className={`p-2 rounded-lg transition-all active:scale-90 ${
                 state.currentSection === 'biotools'
                   ? 'text-purple-400 bg-purple-500/10'
-                  : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                  : 'text-slate-400 hover:text-slate-300 hover:bg-white/[0.06]'
               }`}
               title="Bio Tools"
               aria-label="Go to Bio Tools"
@@ -306,7 +306,7 @@ function AppContent() {
               className={`p-2 rounded-lg transition-all active:scale-90 ${
                 state.currentSection === 'nutrition'
                   ? 'text-lime-400 bg-lime-500/10'
-                  : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                  : 'text-slate-400 hover:text-slate-300 hover:bg-white/[0.06]'
               }`}
               title="Nutrition"
               aria-label="Go to Nutrition"
@@ -321,7 +321,7 @@ function AppContent() {
               className={`p-2 rounded-lg transition-all active:scale-90 ${
                 state.currentSection === 'mindpsych'
                   ? 'text-purple-400 bg-purple-500/10'
-                  : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                  : 'text-slate-400 hover:text-slate-300 hover:bg-white/[0.06]'
               }`}
               title="Mind & Psych"
               aria-label="Go to Mind and Psychology"
@@ -336,7 +336,7 @@ function AppContent() {
               className={`p-2 rounded-lg transition-all active:scale-90 ${
                 state.currentSection === 'protocol'
                   ? 'text-emerald-400 bg-emerald-500/10'
-                  : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                  : 'text-slate-400 hover:text-slate-300 hover:bg-white/[0.06]'
               }`}
               title="Protocol"
               aria-label="Go to Recovery Protocol"
@@ -351,7 +351,7 @@ function AppContent() {
               className={`p-2 rounded-lg transition-all active:scale-90 ${
                 state.currentSection === 'phguide'
                   ? 'text-emerald-400 bg-emerald-500/10'
-                  : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                  : 'text-slate-400 hover:text-slate-300 hover:bg-white/[0.06]'
               }`}
               title="PH Guide"
               aria-label="Go to Philippines Guide"
@@ -431,6 +431,7 @@ export default function Home() {
             </svg>
           </div>
           <p className="text-sm text-slate-400 font-medium">Loading RecoveryLine...</p>
+          <p className="text-[10px] text-slate-500 mt-1 text-label">Preparing your recovery space</p>
         </div>
       </div>
     );

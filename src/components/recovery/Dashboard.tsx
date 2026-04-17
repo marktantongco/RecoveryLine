@@ -191,7 +191,7 @@ function MilestonesSection({ streak, soberDays, totalCheckins }: { streak: numbe
             <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
             <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
           </svg>
-          <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">Recovery Milestones</span>
+          <span className="text-xs font-bold text-slate-300 uppercase tracking-wider text-label">Recovery Milestones</span>
         </div>
         <span className="text-[10px] text-amber-400 font-semibold">
           {unlockedCount}/{MILESTONES.length} unlocked
@@ -230,7 +230,7 @@ function MilestonesSection({ streak, soberDays, totalCheckins }: { streak: numbe
       {/* Milestone progress bar */}
       <div className="mb-3">
         <div className="flex items-center justify-between mb-1">
-          <span className="text-[10px] text-slate-500">Progress</span>
+          <span className="text-[10px] text-slate-400">Progress</span>
           <span className="text-[10px] text-amber-400 font-medium">{Math.round((unlockedCount / MILESTONES.length) * 100)}%</span>
         </div>
         <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
@@ -281,7 +281,7 @@ function MilestonesSection({ streak, soberDays, totalCheckins }: { streak: numbe
 
       {/* Inspirational quote */}
       {unlockedCount > 0 && (
-        <p className="text-[10px] text-slate-500 italic mt-3 text-center">
+        <p className="text-[10px] text-slate-400 italic mt-3 text-center">
           Every milestone you unlock is proof that your brain is healing. Keep going.
         </p>
       )}
@@ -497,8 +497,8 @@ export default React.memo(function Dashboard({ stats, insights, onNavigate }: Da
               )}
               {greeting.text}
             </p>
-            <h2 className="text-2xl font-bold text-white leading-tight">Day {stats.daysSinceStart || 1}</h2>
-            <p className="text-xs text-slate-500 mt-1">Your Recovery Journey</p>
+            <h2 className="text-2xl font-bold text-white leading-tight text-hero">Day {stats.daysSinceStart || 1}</h2>
+            <p className="text-xs text-slate-400 mt-1">Your Recovery Journey</p>
             <div className="flex items-center gap-2 mt-3 flex-wrap">
               <span className="text-[11px] px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 font-medium">
                 {stats.sobrietyRate}% sober
@@ -528,7 +528,7 @@ export default React.memo(function Dashboard({ stats, insights, onNavigate }: Da
                 className="w-2 h-2 rounded-full"
                 style={{ backgroundColor: brainPhase.color, boxShadow: `0 0 8px ${brainPhase.glowColor}` }}
               />
-              <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">Brain Recovery Score</span>
+              <span className="text-xs font-bold text-slate-300 uppercase tracking-wider text-label">Brain Recovery Score</span>
             </div>
             <span
               className="text-[10px] font-semibold px-2 py-0.5 rounded-full border"
@@ -559,7 +559,7 @@ export default React.memo(function Dashboard({ stats, insights, onNavigate }: Da
                 >
                   {brainPhase.pct}%
                 </span>
-                <span className="text-[10px] text-slate-500 font-medium">estimated recovery</span>
+                <span className="text-[10px] text-slate-400 font-medium">estimated recovery</span>
               </div>
 
               {/* Phase description */}
@@ -600,7 +600,7 @@ export default React.memo(function Dashboard({ stats, insights, onNavigate }: Da
       <div className="glass-card p-4 animate-fadeUp stagger-2" style={{ opacity: 0 }}>
         <div className="flex items-center justify-between mb-3">
           <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">7-Day Mood Trend</span>
-          <span className="text-[10px] text-slate-500 font-medium">Last 7 days</span>
+          <span className="text-[10px] text-slate-400 font-medium">Last 7 days</span>
         </div>
 
         {/* SVG mood timeline */}
@@ -765,7 +765,7 @@ export default React.memo(function Dashboard({ stats, insights, onNavigate }: Da
                 </div>
               </div>
             ) : (
-              <p className="text-sm text-slate-500">No check-in yet today</p>
+              <p className="text-sm text-slate-400">No check-in yet today</p>
             )}
           </div>
           {!stats.todayCheckin ? (
@@ -808,7 +808,7 @@ export default React.memo(function Dashboard({ stats, insights, onNavigate }: Da
             </div>
             <div className="min-w-0">
               <p className="text-base font-bold text-white tabular-nums">{weeklyStats.checkinCount}</p>
-              <p className="text-[10px] text-slate-500 font-medium">Check-ins</p>
+              <p className="text-[10px] text-slate-400 font-medium">Check-ins</p>
             </div>
           </div>
 
@@ -821,7 +821,7 @@ export default React.memo(function Dashboard({ stats, insights, onNavigate }: Da
               <p className="text-sm font-bold text-white truncate">
                 {weeklyStats.bestMood ? MOODS[weeklyStats.bestMood]?.label : 'No data'}
               </p>
-              <p className="text-[10px] text-slate-500 font-medium">Best Mood</p>
+              <p className="text-[10px] text-slate-400 font-medium">Best Mood</p>
             </div>
           </div>
 
@@ -832,7 +832,7 @@ export default React.memo(function Dashboard({ stats, insights, onNavigate }: Da
             </div>
             <div className="min-w-0">
               <p className="text-base font-bold text-emerald-400 tabular-nums">{CURRENCY}{weeklyStats.moneySaved.toLocaleString()}</p>
-              <p className="text-[10px] text-slate-500 font-medium">Saved</p>
+              <p className="text-[10px] text-slate-400 font-medium">Saved</p>
             </div>
           </div>
 

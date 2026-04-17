@@ -402,7 +402,7 @@ export default function RecoveryHub({
 
           {/* Sobriety Rate */}
           <div className="glass-card p-4 animate-fadeUp stagger-2" style={{ opacity: 0 }}>
-            <p className="text-xs font-semibold text-slate-400 mb-3">Sober / Use Ratio</p>
+            <p className="text-xs font-semibold text-slate-300 mb-3">Sober / Use Ratio</p>
             <div className="flex items-center gap-3">
               <div className="flex-1 h-5 rounded-full bg-white/5 overflow-hidden">
                 <div
@@ -426,7 +426,7 @@ export default function RecoveryHub({
 
           {/* Money Saved vs Spent */}
           <div className="glass-card p-4 animate-fadeUp stagger-3" style={{ opacity: 0 }}>
-            <p className="text-xs font-semibold text-slate-400 mb-3">Financial Summary</p>
+            <p className="text-xs font-semibold text-slate-300 mb-3">Financial Summary</p>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-slate-400 flex items-center gap-2">
@@ -459,7 +459,7 @@ export default function RecoveryHub({
 
           {/* Streak Chart */}
           <div className="glass-card p-4 animate-fadeUp stagger-4" style={{ opacity: 0 }}>
-            <p className="text-xs font-semibold text-slate-400 mb-3">Streak Progress</p>
+            <p className="text-xs font-semibold text-slate-300 mb-3">Streak Progress</p>
             <div className="flex items-center gap-4">
               <div className="flex-1">
                 <div className="flex items-end gap-1 h-20">
@@ -486,7 +486,7 @@ export default function RecoveryHub({
               </div>
               <div className="text-center flex-shrink-0">
                 <p className="text-3xl font-bold text-amber-400">{stats.streak}</p>
-                <p className="text-[10px] text-slate-500 mt-0.5">day streak</p>
+                <p className="text-[10px] text-slate-400 mt-0.5">day streak</p>
                 <p className="text-[10px] text-amber-500/60 mt-1">
                   {stats.streak >= 30 ? 'Champion!' : stats.streak >= 14 ? 'Two weeks!' : stats.streak >= 7 ? 'One week!' : 'Keep going!'}
                 </p>
@@ -496,7 +496,7 @@ export default function RecoveryHub({
 
           {/* Mood Distribution */}
           <div className="glass-card p-4 animate-fadeUp stagger-5" style={{ opacity: 0 }}>
-            <p className="text-xs font-semibold text-slate-400 mb-3">Mood Distribution</p>
+            <p className="text-xs font-semibold text-slate-300 mb-3">Mood Distribution</p>
             {sortedMoods.length > 0 ? (
               <div className="space-y-2.5 max-h-64 overflow-y-auto custom-scrollbar">
                 {sortedMoods.map(([mood, count]) => {
@@ -510,7 +510,7 @@ export default function RecoveryHub({
                       <div className="flex-1">
                         <div className="flex justify-between mb-0.5">
                           <span className="text-xs text-slate-300">{info.label}</span>
-                          <span className="text-xs text-slate-500">{count}x</span>
+                          <span className="text-xs text-slate-400">{count}x</span>
                         </div>
                         <div className="h-2 rounded-full bg-white/5 overflow-hidden">
                           <div
@@ -601,7 +601,7 @@ function DailyAffirmation() {
         </div>
         <div>
           <h3 className="text-xs font-bold text-white uppercase tracking-wider">Daily Affirmation</h3>
-          <p className="text-[10px] text-slate-500 mt-0.5">{todayStr}</p>
+          <p className="text-[10px] text-slate-400 mt-0.5">{todayStr}</p>
         </div>
       </div>
 

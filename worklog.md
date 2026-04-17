@@ -308,3 +308,53 @@ Stage Summary:
 - CSS performance optimizations (contain, reduced backdrop-filter)
 - Accessibility improvements (ARIA roles, labels)
 - Final clean build: 4.9s, 0 errors
+---
+Task ID: 4
+Agent: main
+Task: Comprehensive UI design system upgrade across entire design system and all components
+
+Work Log:
+- Read worklog.md and all 10 component files to understand previous context
+- Implemented MAJOR globals.css design system overhaul:
+  - Multi-layered shadow system (--shadow-sm through --shadow-xl, 5 color glow shadows)
+  - Spring-like easing curves (--ease-spring, --ease-out-expo, --ease-in-out-smooth)
+  - Typography scale custom properties (--font-weight-hero, --letter-spacing-label, --line-height-hero)
+  - .text-hero and .text-label utility classes
+  - Enhanced glass-card border opacity (0.08 -> 0.12), added top-edge highlight
+  - Glass card hover lift (translateY(-1px), border-color change, shadow upgrade)
+  - New .glass-card-pressed variant with inset shadow
+  - Enhanced glass-card-hero with inset highlight and layered shadow
+  - Enhanced glass-card-insight with purple glow shadow
+  - Refined animation timing: fadeUp 0.6s ease-out-expo, scaleIn spring, slideIn 0.5s
+  - Stagger timing reduced to 40ms for snappier feel
+  - New .animate-press, .animate-bounce-dot, .animate-tab-switch classes
+  - Enhanced mood-btn-selected with double-layer glow
+  - Enhanced toggle-chip-active with spring transition and outline glow
+  - Active press feedback with spring curve
+  - Ripple micro-interaction CSS classes
+  - Icon hover scale utility (.icon-hover-scale)
+  - Improved button:disabled contrast (opacity 0.45)
+  - Dropdown expand transition: 0.35s ease-out-expo
+  - Enhanced calc-btn shadows and hover states
+  - Gradient border color variants (.gradient-border-sky, .gradient-border-emerald, .gradient-border-amber)
+  - Improved scrollbar thumb contrast (0.1 -> 0.12)
+  - More menu slideUpMenu refined to 0.3s ease-out-expo
+- Updated page.tsx: header border opacity, text-hero/text-label on logo, improved nav contrast (slate-400), loading screen label improvement
+- Updated BottomNav.tsx: nav border opacity, active dot bounce animation, divider opacity
+- Updated Dashboard.tsx: improved label contrast (slate-500 -> slate-400) for Recovery Journey, estimated recovery, Last 7 days, Check-ins, Best Mood, Saved, No check-in, milestone quote
+- Updated Substances.tsx: dropdown transition curve (0.3s -> 0.35s ease-out-expo), improved label contrast across Pharmacology, Recovery Focus, Protocol, Info rows, Disclaimer
+- Updated RecoveryHub.tsx: improved contrast on day streak, today date, mood count labels
+- Updated CheckIn.tsx: enhanced form inputs (bg-white/[0.06], focus glow shadow), improved mood button hover states
+- Updated ActionFab.tsx: enhanced radial button shadows (inline box-shadow with deeper glows), improved ring opacity (0.20 -> 0.25), crisis dialog red glow
+- Updated Toast.tsx: layered box-shadow (was shadow-2xl), improved border opacity (0.30 -> 0.35)
+- Updated Onboarding.tsx: text-hero class on all headings, improved subtitle contrast
+
+Stage Summary:
+- Comprehensive design system upgrade applied across 10 files
+- New shadow system with 11 shadow tokens (5 structural + 5 glow + 1 pressed)
+- 3 new easing curve custom properties for natural motion
+- 5+ new animation/micro-interaction classes
+- Consistent contrast improvements (text-slate-500 -> text-slate-400) across all labels
+- Enhanced glass card system with hover lift, pressed variant, inset highlights
+- Build passes clean: 5.3s compile, 0 errors
+- All changes are visual/CSS only — no component logic altered

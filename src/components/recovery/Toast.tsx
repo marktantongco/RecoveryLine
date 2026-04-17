@@ -89,10 +89,10 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) =
   };
 
   const borderColors = {
-    success: 'border-emerald-500/30',
-    error: 'border-red-500/30',
-    info: 'border-sky-500/30',
-    warning: 'border-amber-500/30',
+    success: 'border-emerald-500/35',
+    error: 'border-red-500/35',
+    info: 'border-sky-500/35',
+    warning: 'border-amber-500/35',
   };
 
   return (
@@ -103,7 +103,7 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) =
           : 'opacity-0 -translate-y-4 scale-95'
       }`}
     >
-      <div className={`flex items-center gap-3 px-4 py-3 rounded-2xl bg-[#111827]/95 backdrop-blur-xl border ${borderColors[toast.type]} shadow-2xl shadow-black/40`}>
+      <div className={`flex items-center gap-3 px-4 py-3 rounded-2xl bg-[#111827]/95 backdrop-blur-xl border ${borderColors[toast.type]}`} style={{ boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.2)' }}>
         {icons[toast.type]}
         <p className="text-sm text-slate-200 flex-1 leading-snug">{toast.message}</p>
         <button
