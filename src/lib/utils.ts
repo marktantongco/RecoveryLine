@@ -127,3 +127,56 @@ export function safeRemoveItem(key: string): void {
     throw new StorageError('Failed to clear storage', e);
   }
 }
+
+// ─── Haptic Feedback ──────────────────────────────────────────────────────────
+
+/**
+ * Trigger haptic feedback on mobile devices.
+ * Falls back silently on devices that don't support vibration.
+ */
+export function haptic(style: 'light' | 'medium' | 'heavy' = 'light'): void {
+  try {
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      const patterns = { light: 10, medium: 25, heavy: 50 };
+      navigator.vibrate(patterns[style]);
+    }
+  } catch {
+    // Silently fail — vibration not supported
+  }
+}
+
+// ─── Data Validation ──────────────────────────────────────────────────────────
+
+/**
+ * Validate check-in data before saving.
+ * Returns an error message if invalid, or null if valid.
+ */
+export function validateCheckin(data: {
+  type: string;
+  mood: string;
+  date: string;
+  notes?: string;
+  saved?: number;
+  spent?: number;
+  quantity?: number;
+}): string | null {
+  if (!data.type || !['sober', 'use'].includes(data.type)) {
+    return 'Invalid check-in type';
+  }
+  if (!data.mood || typeof data.mood !== 'string') {
+    return 'Mood is required';
+  }
+  if (!data.date || !/^\d{4}-\d{2}-\d{2}$/.test(data.date)) {
+    return 'Invalid date format';
+  }
+  if (data.saved !== undefined && (typeof data.saved !== 'number' || data.saved < 0)) {
+    return 'Saved amount must be a positive number';
+  }
+  if (data.spent !== undefined && (typeof data.spent !== 'number' || data.spent < 0)) {
+    return 'Spent amount must be a positive number';
+  }
+  if (data.notes && data.notes.length > 500) {
+    return 'Notes must be under 500 characters';
+  }
+  return null;
+}

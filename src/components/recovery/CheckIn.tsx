@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { MOODS, UNIVERSAL_MOODS, CURRENCY } from '@/lib/recovery-constants';
 import { MoodKey, CheckinType } from '@/lib/recovery-types';
-import { getLocalDateString } from '@/lib/utils';
+import { getLocalDateString, haptic, validateCheckin } from '@/lib/utils';
 import { useToast } from './Toast';
 
 interface CheckInProps {
@@ -148,6 +148,16 @@ export default function CheckIn({ onSubmit, dailyAvgSpending, preselect, onPrese
       if (money) data.spent = parseInt(money) || 0;
       if (quantity) data.quantity = parseInt(quantity) || 0;
     }
+
+    // Validate before submitting
+    const validationError = validateCheckin(data as Parameters<typeof validateCheckin>[0]);
+    if (validationError) {
+      showToast(validationError, 'warning');
+      setIsSubmitting(false);
+      return;
+    }
+
+    haptic('medium');
 
     setShowSuccess(true);
     const message = mode === 'sober'

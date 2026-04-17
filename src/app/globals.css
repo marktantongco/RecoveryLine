@@ -509,11 +509,36 @@ textarea:focus {
   scrollbar-width: none;
 }
 
+/* Hide horizontal scrollbar for drug tabs */
+.hide-scrollbar-x::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar-x {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* Content visibility for offscreen sections */
 .section-enter {
   animation: fadeUp 0.4s ease-out;
   content-visibility: auto;
   contain-intrinsic-size: 0 800px;
+}
+
+/* More menu slide-up animation */
+@keyframes slideUpMenu {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slideUpMenu {
+  animation: slideUpMenu 0.2s ease-out forwards;
 }
 
 /* Reduced motion — accessibility */

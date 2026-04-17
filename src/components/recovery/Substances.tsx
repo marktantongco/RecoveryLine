@@ -166,19 +166,22 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
       autoCloseTimer.current = null;
     }
 
-    setExpandedDropdown((prev) => {
-      if (prev === tabId) {
-        // Same tab → collapse immediately, no new timer
-        return null;
-      }
-      // Different tab (or null) → expand and start 4s auto-close timer
-      autoCloseTimer.current = setTimeout(() => {
-        setExpandedDropdown(null);
-        autoCloseTimer.current = null;
-      }, DROPDOWN_AUTO_CLOSE_MS);
-      return tabId;
-    });
-  }, []);
+    // Toggle or switch
+    if (expandedDropdown === tabId) {
+      // Same tab → collapse immediately
+      setExpandedDropdown(null);
+      return;
+    }
+
+    // Different tab → expand
+    setExpandedDropdown(tabId);
+
+    // Start auto-close timer (side effect outside state updater)
+    autoCloseTimer.current = setTimeout(() => {
+      setExpandedDropdown(null);
+      autoCloseTimer.current = null;
+    }, DROPDOWN_AUTO_CLOSE_MS);
+  }, [expandedDropdown]);
 
   return (
     <div className="space-y-4 pb-6">
@@ -524,6 +527,23 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
         </div>
       </div>
 
+      {/* --- RECOVERY TIPS --- */}
+      {substance.recoveryTips && substance.recoveryTips.length > 0 && (
+        <div className="glass-card p-4 animate-fadeUp stagger-5" style={{ opacity: 0 }}>
+          <SectionHeader icon={Icons.harm} title="Recovery Tips" />
+          <div className="space-y-1.5">
+            {substance.recoveryTips.map((tip, i) => (
+              <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-sky-500/[0.04]">
+                <span className="w-5 h-5 rounded-md bg-sky-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-[10px] font-bold text-sky-400">{i + 1}</span>
+                </span>
+                <span className="text-[11px] text-slate-300 leading-relaxed">{tip}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* --- PHILIPPINES --- */}
       <div className="glass-card p-4 animate-fadeUp stagger-4" style={{ opacity: 0 }}>
         <SectionHeader icon={Icons.philippines} title="Philippines" />
@@ -581,6 +601,10 @@ const Substances = React.memo(function Substances() {
   const [activeTab, setActiveTab] = useState(TAB_CONFIG[0]?.id ?? '');
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Scroll indicator state
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
   // Ref for the scrollable drug tab container
   const tabContainerRef = useRef<HTMLDivElement>(null);
   // Map of tab id → button element ref
@@ -600,6 +624,37 @@ const Substances = React.memo(function Substances() {
   }, [searchQuery]);
 
   const isSearching = searchQuery.trim().length > 0;
+
+  // Compute scroll indicator visibility
+  const updateScrollIndicators = useCallback(() => {
+    const container = tabContainerRef.current;
+    if (!container) return;
+    const { scrollLeft, scrollWidth, clientWidth } = container;
+    setCanScrollLeft(scrollLeft > 2);
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 2);
+  }, []);
+
+  // Update indicators on scroll and when active tab changes
+  useEffect(() => {
+    // Slight delay to let scroll-into-view complete
+    const frame = requestAnimationFrame(() => {
+      updateScrollIndicators();
+    });
+    const container = tabContainerRef.current;
+    if (!container) return () => cancelAnimationFrame(frame);
+    container.addEventListener('scroll', updateScrollIndicators, { passive: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      container.removeEventListener('scroll', updateScrollIndicators);
+    };
+  }, [activeTab, updateScrollIndicators]);
+
+  // Also update on resize
+  useEffect(() => {
+    updateScrollIndicators();
+    window.addEventListener('resize', updateScrollIndicators);
+    return () => window.removeEventListener('resize', updateScrollIndicators);
+  }, [updateScrollIndicators]);
 
   // When active tab changes, scroll it into view
   useEffect(() => {
@@ -641,30 +696,55 @@ const Substances = React.memo(function Substances() {
 
       {/* Tab Navigation (hidden when searching) — horizontally scrollable */}
       {!isSearching && (
-        <div
-          ref={tabContainerRef}
-          className="glass-card p-1.5 flex overflow-x-auto scroll-smooth animate-fadeUp stagger-1"
-          style={{ opacity: 0 }}
-        >
-          {TAB_CONFIG.map((tab) => {
-            const isActive = activeTab === tab.id;
-            const dotColor = getDangerDotColor(tab.dangerLevel);
-            return (
+        <div className="relative animate-fadeUp stagger-1" style={{ opacity: 0 }}>
+          {/* Left scroll indicator */}
+          {canScrollLeft && (
+            <div className="absolute left-0 top-0 bottom-0 w-10 bg-gradient-to-r from-[#0a0f1a] via-[#0a0f1a]/80 to-transparent z-10 flex items-center justify-start pointer-events-none rounded-l-2xl">
               <button
-                key={tab.id}
-                ref={(el) => { tabButtonRefs.current[tab.id] = el; }}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex-shrink-0 py-2.5 px-3 rounded-xl text-xs font-medium transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${
-                  isActive
-                    ? 'bg-white/[0.08] text-white border border-white/15 shadow-sm'
-                    : 'text-slate-400 hover:text-slate-300 border border-transparent'
-                }`}
+                onClick={() => tabContainerRef.current?.scrollBy({ left: -140, behavior: 'smooth' })}
+                className="pointer-events-auto w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/60 hover:text-white/90 transition-colors active:scale-90 ml-1"
+                aria-label="Scroll drugs left"
               >
-                <span className={`w-1.5 h-1.5 rounded-full ${isActive ? dotColor : 'bg-slate-600'}`} />
-                {tab.label}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
               </button>
-            );
-          })}
+            </div>
+          )}
+          {/* Right scroll indicator */}
+          {canScrollRight && (
+            <div className="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-[#0a0f1a] via-[#0a0f1a]/80 to-transparent z-10 flex items-center justify-end pointer-events-none rounded-r-2xl">
+              <button
+                onClick={() => tabContainerRef.current?.scrollBy({ left: 140, behavior: 'smooth' })}
+                className="pointer-events-auto w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/60 hover:text-white/90 transition-colors active:scale-90 mr-1"
+                aria-label="Scroll drugs right"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              </button>
+            </div>
+          )}
+          <div
+            ref={tabContainerRef}
+            className="glass-card p-1.5 flex overflow-x-auto scroll-smooth hide-scrollbar-x"
+          >
+            {TAB_CONFIG.map((tab) => {
+              const isActive = activeTab === tab.id;
+              const dotColor = getDangerDotColor(tab.dangerLevel);
+              return (
+                <button
+                  key={tab.id}
+                  ref={(el) => { tabButtonRefs.current[tab.id] = el; }}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex-shrink-0 py-2.5 px-3 rounded-xl text-xs font-medium transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${
+                    isActive
+                      ? 'bg-white/[0.08] text-white border border-white/15 shadow-sm'
+                      : 'text-slate-400 hover:text-slate-300 border border-transparent'
+                  }`}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${isActive ? dotColor : 'bg-slate-600'}`} />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
 

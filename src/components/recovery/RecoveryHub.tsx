@@ -4,7 +4,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { Checkin, CheckinType, MoodKey, ClipboardItem } from '@/lib/recovery-types';
 import { MOODS, CURRENCY } from '@/lib/recovery-constants';
 import { AFFIRMATIONS, JOURNAL_PROMPTS } from '@/lib/recovery-content';
-import { getLocalDateString, copyToClipboard } from '@/lib/utils';
+import { getLocalDateString, copyToClipboard, haptic } from '@/lib/utils';
 import CheckIn from './CheckIn';
 import Clipboard from './Clipboard';
 import { useToast } from './Toast';
@@ -103,12 +103,14 @@ export default function RecoveryHub({
   };
 
   const handleDelete = (id: string) => {
+    haptic('light');
     onDelete(id);
     setConfirmDeleteId(null);
     showToast('Entry deleted', 'info');
   };
 
   const handleExport = () => {
+    haptic('medium');
     onExport();
     showToast('Data exported as JSON', 'success');
   };

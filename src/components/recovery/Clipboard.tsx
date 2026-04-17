@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { ClipboardItem } from '@/lib/recovery-types';
-import { copyToClipboard } from '@/lib/utils';
+import { copyToClipboard, haptic } from '@/lib/utils';
 import { useToast } from './Toast';
 
 interface ClipboardProps {
@@ -20,6 +20,7 @@ export default function Clipboard({ items, onAdd, onDelete }: ClipboardProps) {
 
   const handleAdd = () => {
     if (!text.trim()) return;
+    haptic('light');
     // Prepend day and time to the note text
     const now = new Date();
     const dayTime = now.toLocaleString('en-US', {
@@ -48,6 +49,7 @@ export default function Clipboard({ items, onAdd, onDelete }: ClipboardProps) {
   };
 
   const handleDelete = (id: string) => {
+    haptic('light');
     onDelete(id);
     setConfirmDeleteId(null);
     showToast('Note deleted', 'info');

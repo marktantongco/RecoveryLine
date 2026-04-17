@@ -38,6 +38,7 @@ export interface SubstanceData {
     streetPrice: string;
   };
   harmReduction: string[];
+  recoveryTips?: string[];
 }
 
 export const SUBSTANCES: Record<string, SubstanceData> = {
@@ -130,6 +131,13 @@ export const SUBSTANCES: Record<string, SubstanceData> = {
       'Allow minimum 48-72 hours between uses to allow dopamine and serotonin partial recovery',
       'Know the signs of cocaine-induced heart attack: chest pain, shortness of breath, left arm pain — call emergency services immediately',
     ],
+    recoveryTips: [
+      'Exercise daily — even 30 minutes of walking dramatically accelerates dopamine receptor recovery',
+      'Take L-tyrosine on an empty stomach in the morning to support natural dopamine production',
+      'Avoid sugar and processed foods during early recovery — they can trigger cravings by artificially stimulating reward pathways',
+      'Cold showers can help reduce cravings and improve mood through endorphin release',
+      'Track your triggers in a journal — awareness of patterns is your strongest defense against relapse',
+    ],
   },
 
   heroin: {
@@ -220,6 +228,13 @@ export const SUBSTANCES: Record<string, SubstanceData> = {
       'Consider medication-assisted treatment (MAT) with buprenorphine or methadone — the gold standard for opioid recovery',
       'Stay hydrated and maintain nutrition — chronic opioid use causes severe constipation and malnutrition',
       'If someone overdoses: administer naloxone, perform rescue breathing, place in recovery position, call emergency services immediately',
+    ],
+    recoveryTips: [
+      'DLPA (D,L-Phenylalanine) helps rebuild natural endorphin production — take on empty stomach',
+      'Gentle exercise like yoga or swimming supports endorphin recovery without physical strain',
+      'Consider MAT (buprenorphine/methadone) — it is not weakness, it is evidence-based medicine',
+      'Hot baths with Epsom salts can ease muscle aches and promote relaxation during withdrawal',
+      'Keep naloxone accessible at all times and ensure loved ones know how to administer it',
     ],
   },
 
@@ -312,6 +327,13 @@ export const SUBSTANCES: Record<string, SubstanceData> = {
       'If dependent, NEVER stop abruptly — seek medical detox to prevent potentially fatal withdrawal seizures and DTs',
       'Seek help if you find yourself unable to control consumption despite wanting to stop',
     ],
+    recoveryTips: [
+      'Thiamine (B1) supplementation is essential — alcohol depletion causes irreversible brain damage if not addressed',
+      'Milk thistle (silymarin) supports liver regeneration — take 200-400mg standardized extract daily',
+      'Medical detox is non-negotiable for heavy drinkers — alcohol withdrawal can be fatal',
+      'Replace drinking rituals with healthy routines: herbal tea at the usual drinking time, exercise after work',
+      'Join a support group — AA, SMART Recovery, or online communities provide accountability and shared experience',
+    ],
   },
 
   benzodiazepines: {
@@ -402,6 +424,13 @@ export const SUBSTANCES: Record<string, SubstanceData> = {
       'Store medications securely to prevent misuse by others, especially youth',
       'Seek cognitive behavioral therapy (CBT) — it has proven efficacy for anxiety and can reduce benzo dependence',
       'Join a support group — benzo withdrawal can be isolating and understanding from peers is invaluable',
+    ],
+    recoveryTips: [
+      'Follow the Ashton Manual taper protocol — slow is safe, 10% reductions every 1-4 weeks',
+      'L-theanine (200-400mg) can help manage anxiety naturally during the taper process',
+      'Magnesium glycinate supports GABA receptor function — take 400mg before bed',
+      'Cognitive behavioral therapy (CBT) addresses the underlying anxiety that benzos were masking',
+      'Expect setbacks — benzo withdrawal is non-linear. A bad day does not erase progress.',
     ],
   },
 
@@ -494,6 +523,13 @@ export const SUBSTANCES: Record<string, SubstanceData> = {
       'Watch your drink in social settings — GHB has been used as a predatory drug',
       'If dependent, seek medically supervised detox — GHB withdrawal can be fatal without medical management',
     ],
+    recoveryTips: [
+      'Medical detox is essential — GHB withdrawal carries risk of delirium and cardiovascular collapse',
+      'GABA-B receptor recovery is gradual — be patient with sleep disturbances and anxiety',
+      'Structured sleep hygiene (consistent bedtime, no screens) helps normalize circadian rhythm disrupted by GHB',
+      'Regular meals with complex carbohydrates stabilize blood sugar and reduce mood swings',
+      'Build a sober support network — isolation is the primary predictor of GHB relapse',
+    ],
   },
 
   ketamine: {
@@ -584,6 +620,13 @@ export const SUBSTANCES: Record<string, SubstanceData> = {
       'Do not drive or operate machinery — motor coordination and perception are severely impaired',
       'Limit use to once per week maximum to reduce tolerance and bladder damage',
       'Consider esketamine (Spravato) as a legal, supervised alternative if using for depression — available through psychiatrists',
+    ],
+    recoveryTips: [
+      'Hydration is critical — drink at least 3 liters of water daily to support kidney and bladder recovery',
+      'Omega-3 fatty acids (2-4g daily) reduce neuroinflammation and support cognitive healing',
+      'Bladder pain management: DMSO supplements and cranberry extract may provide relief',
+      'Abstinence allows significant NMDA receptor normalization within 3-6 months',
+      'If using for depression, explore legal ketamine therapy clinics for supervised, therapeutic use',
     ],
   },
 
@@ -676,6 +719,13 @@ export const SUBSTANCES: Record<string, SubstanceData> = {
       'Allow minimum 1-2 weeks between experiences for tolerance to reset (cross-tolerance with other psychedelics lasts 3-7 days)',
       'Consider integration therapy with a trained professional after significant psychedelic experiences to process insights and emotions',
     ],
+    recoveryTips: [
+      'Psychedelics are not physically addictive, but psychological patterns can develop — monitor your relationship with use',
+      'Integration is key — journal about your experiences and discuss insights with a trusted person or therapist',
+      'Allow 2+ weeks between experiences for serotonin receptors to fully reset and tolerance to clear',
+      'Set and setting matter profoundly — never use psychedelics during emotionally unstable periods',
+      'If experiencing persistent perceptual changes (HPPD), consult a neurologist — symptoms often resolve with abstinence',
+    ],
   },
 
   nicotine: {
@@ -767,6 +817,13 @@ export const SUBSTANCES: Record<string, SubstanceData> = {
       'Join a quitline or support group — PDEA and DOH Philippines offer smoking cessation resources',
       'Don\'t be discouraged by relapse — most smokers require multiple quit attempts; each attempt teaches valuable coping strategies',
     ],
+    recoveryTips: [
+      'Nicotine replacement therapy (NRT) doubles quit success rates — patch + gum combination is most effective',
+      'Exercise produces natural dopamine release that partially replaces the nicotine reward signal',
+      'Vitamin C supplementation (500-1000mg) helps metabolize nicotine faster and reduce cravings',
+      'Identify your smoking triggers (coffee, stress, social) and plan alternative responses in advance',
+      'The worst cravings last only 3-5 minutes — develop a "craving toolkit" of distractions (water, breathing, walking)',
+    ],
   },
 
   methamphetamine: {
@@ -857,6 +914,13 @@ export const SUBSTANCES: Record<string, SubstanceData> = {
       'Monitor heart rate — if resting HR exceeds 120bpm, seek medical attention',
       'Rotate veins and use clean equipment if injecting to prevent infection',
       'Have naloxone available — while not an opioid, polydrug use is common',
+    ],
+    recoveryTips: [
+      'Dopamine receptor recovery takes 6-12 months — patience is essential, improvement is steady',
+      'L-tyrosine + B-vitamins on an empty stomach each morning support dopamine synthesis',
+      'Strict sleep schedule (bed/wake times) dramatically improves cognitive recovery and emotional regulation',
+      'High-protein diet provides tyrosine and phenylalanine — the raw materials for dopamine production',
+      'Dental care is critical — meth causes severe dental problems ("meth mouth"); see a dentist early in recovery',
     ],
   },
 
@@ -950,6 +1014,13 @@ export const SUBSTANCES: Record<string, SubstanceData> = {
       'Have a trusted "trip sitter" who is sober',
       'Start with a test dose (quarter pill) if using a new batch',
     ],
+    recoveryTips: [
+      'Serotonin recovery takes 2-4 weeks of abstinence — mood will gradually stabilize',
+      '5-HTP (50-100mg) with a small carbohydrate meal can support serotonin production during recovery',
+      'MDMA depletes magnesium — supplement 400mg daily to reduce jaw clenching, muscle tension, and anxiety',
+      'Antioxidant supplementation (Vitamin C, alpha-lipoic acid) before and after use reduces oxidative neurotoxicity',
+      'Psychological integration of MDMA experiences with a therapist amplifies long-term benefits',
+    ],
   },
 
   cannabis: {
@@ -1041,6 +1112,13 @@ export const SUBSTANCES: Record<string, SubstanceData> = {
       'Keep track of usage patterns — dependence develops gradually with daily use',
       'If experiencing paranoia/anxiety, use lower-THC strains or CBD-dominant products',
       'Support lung health with antioxidants (Vitamin C, NAC) if smoking',
+    ],
+    recoveryTips: [
+      'Exercise is the single most effective natural craving reducer — even 20 minutes of cardio helps',
+      'Cannabis withdrawal symptoms (insomnia, irritability, anxiety) peak at days 2-6 and resolve within 2-4 weeks',
+      'Replace the smoking ritual with herbal tea, deep breathing exercises, or a hobby that occupies your hands',
+      'CBD oil (10-20mg) has shown promise in reducing cannabis withdrawal symptoms and anxiety',
+      'Cognitive function and memory improve significantly within 4-12 weeks of sustained abstinence',
     ],
   },
 };

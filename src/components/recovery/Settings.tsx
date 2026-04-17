@@ -3,6 +3,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { CURRENCY } from '@/lib/recovery-constants';
 import { useToast } from './Toast';
+import ConfirmDialog from './ConfirmDialog';
 
 interface SettingsProps {
   dailyAvgSpending: number;
@@ -29,21 +30,11 @@ const Settings = React.memo(function Settings({
   const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleReset = useCallback(() => {
-    if (!confirmReset) {
-      setConfirmReset(true);
-      if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
-      resetTimerRef.current = setTimeout(() => {
-        setConfirmReset(false);
-      }, 3000);
-      return;
-    }
-    // Second click within 3 seconds — actually reset
-    if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
     setConfirmReset(false);
     onReset();
     onClose();
     showToast('All data has been reset', 'info');
-  }, [confirmReset, onReset, onClose, showToast]);
+  }, [onReset, onClose, showToast]);
 
   // Cleanup timer on unmount
   React.useEffect(() => {
@@ -173,18 +164,24 @@ const Settings = React.memo(function Settings({
           {/* Reset */}
           <div>
             <button
-              onClick={handleReset}
-              className={`w-full p-3.5 rounded-xl text-sm font-medium transition-all text-left ${
-                confirmReset
-                  ? 'bg-red-500/20 text-red-400 border border-red-500/30 animate-pulse'
-                  : 'bg-white/5 text-slate-400 hover:bg-red-500/10 hover:text-red-400 border border-transparent'
-              }`}
+              onClick={() => setConfirmReset(true)}
+              className="w-full p-3.5 rounded-xl text-sm font-medium transition-all text-left bg-white/5 text-slate-400 hover:bg-red-500/10 hover:text-red-400 border border-transparent"
             >
-              {!confirmReset
-                ? '\ud83d\uddd1\ufe0f Reset all data'
-                : '\u26a0\ufe0f Are you sure? Tap again to confirm.'}
+              {'\ud83d\uddd1\ufe0f Reset all data'}
             </button>
           </div>
+
+          {/* Confirm Reset Dialog */}
+          <ConfirmDialog
+            open={confirmReset}
+            title="Reset All Data"
+            message="This will permanently delete all check-ins, notes, and settings. Export your data first if you want to keep it. This action cannot be undone."
+            confirmLabel="Yes, Reset Everything"
+            cancelLabel="Cancel"
+            variant="danger"
+            onConfirm={handleReset}
+            onCancel={() => setConfirmReset(false)}
+          />
 
           {/* App Info */}
           <div className="pt-3 border-t border-white/5">
