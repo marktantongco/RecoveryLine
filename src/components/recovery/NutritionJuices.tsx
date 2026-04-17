@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { JUICE_RECIPES, JUICE_CATEGORIES, type JuiceRecipe } from '@/lib/nutrition-data';
 import { NUTRITION_PROTOCOLS, type NutritionProtocol } from '@/lib/nutrition-data';
 import { NUTRIENT_GUIDES, type NutrientGuide } from '@/lib/nutrition-data';
+import { copyToClipboard } from '@/lib/utils';
 import { useToast } from './Toast';
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
@@ -348,13 +349,14 @@ function JuiceRecipeCard({ recipe, index }: { recipe: JuiceRecipe; index: number
   const { showToast } = useToast();
   const staggerClass = index < 6 ? `stagger-${Math.min(index + 1, 6)}` : '';
 
-  const copyRecipe = () => {
+  const copyRecipe = async () => {
     const text = `${recipe.name}\n\nIngredients:\n${recipe.ingredients.map((i) => `• ${i.amount} ${i.item}`).join('\n')}\n\nInstructions:\n${recipe.instructions.map((s, i) => `${i + 1}. ${s}`).join('\n')}`;
-    navigator.clipboard.writeText(text).then(() => {
+    const ok = await copyToClipboard(text);
+    if (ok) {
       showToast(`${recipe.name} copied to clipboard`, 'success');
-    }).catch(() => {
+    } else {
       showToast('Could not copy to clipboard', 'error');
-    });
+    }
   };
 
   return (
@@ -629,13 +631,14 @@ function NutritionProtocolCard({ protocol, index }: { protocol: NutritionProtoco
   const { showToast } = useToast();
   const staggerClass = index < 6 ? `stagger-${Math.min(index + 1, 6)}` : '';
 
-  const copyProtocol = () => {
+  const copyProtocol = async () => {
     const text = `${protocol.name} (${protocol.phase})\n\nPrinciples:\n${protocol.principles.map((p) => `• ${p}`).join('\n')}\n\n${protocol.hydration}\n\nPH Tips: ${protocol.phTips}`;
-    navigator.clipboard.writeText(text).then(() => {
+    const ok = await copyToClipboard(text);
+    if (ok) {
       showToast(`${protocol.name} protocol copied`, 'success');
-    }).catch(() => {
+    } else {
       showToast('Could not copy to clipboard', 'error');
-    });
+    }
   };
 
   return (

@@ -2,6 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { MOODS, CURRENCY } from '@/lib/recovery-constants';
+import { RECOVERY_QUOTES } from '@/lib/recovery-content';
 import { Checkin, MoodKey } from '@/lib/recovery-types';
 import ProgressRing from './ProgressRing';
 
@@ -82,23 +83,7 @@ function getBrainPhase(streak: number): BrainPhase & { pct: number } {
   return { ...phase, pct };
 }
 
-// ─── Motivational Quotes ─────────────────────────────────────────────────────
-
-const RECOVERY_QUOTES = [
-  '"Every day is a battle — and every day you win matters more than you know."',
-  '"Recovery is not a straight line. It\'s a winding road that leads to a better you."',
-  '"You didn\'t choose addiction, but you can choose recovery. That takes immense courage."',
-  '"The chains of habit are too light to be felt until they are too heavy to be broken." — Samuel Johnson',
-  '"Fall seven times, stand up eight." — Japanese Proverb',
-  '"Your brain is healing right now, even when you can\'t feel it. Trust the process."',
-  '"The only person you are destined to become is the person you decide to be." — Ralph Waldo Emerson',
-  '"Sobriety isn\'t about what you give up — it\'s about what you gain."',
-  '"You are stronger than your strongest urge."',
-  '"Healing doesn\'t mean the damage never existed. It means the damage no longer controls your life." — Akshay Dubey',
-  '"One day at a time is too many. Take it one hour, one minute, one breath at a time if you need to."',
-  '"The comeback is always stronger than the setback."',
-  '"What lies behind us and what lies before us are tiny matters compared to what lies within us." — Ralph Waldo Emerson',
-];
+// ─── Motivational Quotes (imported from centralized data) ───────────────────
 
 // ─── Mood Color Helper ───────────────────────────────────────────────────────
 

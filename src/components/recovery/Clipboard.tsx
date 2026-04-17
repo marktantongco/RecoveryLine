@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { ClipboardItem } from '@/lib/recovery-types';
+import { copyToClipboard } from '@/lib/utils';
 import { useToast } from './Toast';
 
 interface ClipboardProps {
@@ -36,19 +37,14 @@ export default function Clipboard({ items, onAdd, onDelete }: ClipboardProps) {
   };
 
   const handleCopy = async (item: ClipboardItem) => {
-    try {
-      await navigator.clipboard.writeText(item.text);
-    } catch {
-      const ta = document.createElement('textarea');
-      ta.value = item.text;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
+    const ok = await copyToClipboard(item.text);
+    if (ok) {
+      setCopiedId(item.id);
+      showToast('Copied to clipboard', 'info');
+      setTimeout(() => setCopiedId(null), 2000);
+    } else {
+      showToast('Could not copy to clipboard', 'error');
     }
-    setCopiedId(item.id);
-    showToast('Copied to clipboard', 'info');
-    setTimeout(() => setCopiedId(null), 2000);
   };
 
   const handleDelete = (id: string) => {

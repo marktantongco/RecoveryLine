@@ -3,16 +3,10 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Checkin, ClipboardItem, RecoveryState, SectionName, MoodKey } from '@/lib/recovery-types';
 import { STORAGE_KEY } from '@/lib/recovery-constants';
+import { getLocalDateString, safeGetItem, safeSetItem, StorageQuotaError } from '@/lib/utils';
 
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
-}
-
-function getLocalDateString(d: Date = new Date()): string {
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
 }
 
 const defaultState: RecoveryState = {
@@ -29,36 +23,45 @@ const defaultState: RecoveryState = {
   checkinPreselect: null,
 };
 
-function loadState(): RecoveryState {
-  if (typeof window === 'undefined') return defaultState;
+function loadState(): { state: RecoveryState; error: StorageQuotaError | null } {
+  if (typeof window === 'undefined') return { state: defaultState, error: null };
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = safeGetItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      return { ...defaultState, ...parsed };
+      return { state: { ...defaultState, ...parsed }, error: null };
     }
-  } catch {
-    // ignore
+  } catch (e) {
+    if (e instanceof StorageQuotaError) {
+      return { state: defaultState, error: e };
+    }
+    // For other errors, just return default
   }
-  return defaultState;
+  return { state: defaultState, error: null };
 }
 
-function saveState(state: RecoveryState): void {
-  if (typeof window === 'undefined') return;
+function saveState(state: RecoveryState): StorageQuotaError | null {
+  if (typeof window === 'undefined') return null;
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch {
-    // ignore quota errors
+    safeSetItem(STORAGE_KEY, JSON.stringify(state));
+    return null;
+  } catch (e) {
+    if (e instanceof StorageQuotaError) {
+      return e;
+    }
+    return null;
   }
 }
 
 export function useRecoveryState() {
   const [state, setState] = useState<RecoveryState>(defaultState);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [storageError, setStorageError] = useState<StorageQuotaError | null>(null);
 
   useEffect(() => {
-    const loaded = loadState();
+    const { state: loaded, error } = loadState();
     setState(loaded);
+    if (error) setStorageError(error);
     setIsLoaded(true);
   }, []);
 
@@ -70,14 +73,16 @@ export function useRecoveryState() {
 
     // Immediately save critical data (checkins, resets)
     if (state.checkins.length === 0 && !state.startDate) {
-      saveState(state);
+      const err = saveState(state);
+      if (err) setStorageError(err);
       return;
     }
 
     // Debounce other saves by 300ms
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
-      saveState(state);
+      const err = saveState(state);
+      if (err) setStorageError(err);
     }, 300);
 
     return () => {
@@ -354,12 +359,18 @@ export function useRecoveryState() {
       result.push('👋 Welcome to RecoveryLine! Start by logging your first check-in.');
     }
 
+    // Storage quota warning
+    if (storageError) {
+      result.push('⚠️ Storage is almost full. Export your data and consider resetting old entries.');
+    }
+
     return result;
-  }, [stats, state.spiritualEnabled]);
+  }, [stats, state.spiritualEnabled, storageError]);
 
   return {
     state,
     isLoaded,
+    storageError,
     setSection,
     navigateWithPreselect,
     setPreselect,

@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { SUBSTANCES, SUBSTANCE_LIST } from '@/lib/substance-data';
 import type { SubstanceData } from '@/lib/substance-data';
+import { SYMBIOTIC_PROTOCOL } from '@/lib/recovery-protocol-data';
 
 // --- Helpers ---
 
@@ -93,7 +94,13 @@ const Icons = {
   ),
   harm: (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
+    </svg>
+  ),
+  protocol: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
+      <path d="m9 12 2 2 4-4" />
     </svg>
   ),
   chevron: (
@@ -121,23 +128,26 @@ const Icons = {
   ),
 };
 
+// --- Header Card Tab Config ---
+type HeaderTabId = 'damage' | 'reduction' | 'withdrawal';
+const HEADER_TABS: { id: HeaderTabId; label: string; icon: string }[] = [
+  { id: 'damage', label: 'Damages', icon: '⚡' },
+  { id: 'reduction', label: 'Reductions', icon: '🛡' },
+  { id: 'withdrawal', label: 'Withdrawals', icon: '☀' },
+];
+
 // --- Substance Detail View ---
 
 const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { substance: SubstanceData }) {
-  const [damageExpanded, setDamageExpanded] = useState(false);
-  const [withdrawalExpanded, setWithdrawalExpanded] = useState(false);
+  const [headerTab, setHeaderTab] = useState<HeaderTabId>('damage');
   const [supplementsExpanded, setSupplementsExpanded] = useState(false);
+  const [protocolExpanded, setProtocolExpanded] = useState<string | null>(null);
 
   const sev = getSeverityConfig(substance.withdrawal.severity);
 
-  // Handle the typo in substance-data.ts for MDMA (paaws vs paws)
-  const pawsText = (substance.withdrawal as Record<string, string>).paws
-    || (substance.withdrawal as Record<string, string>).paaws
-    || '';
-
   return (
     <div className="space-y-4 pb-6">
-      {/* --- Header Card --- */}
+      {/* --- Header Card with 3 Tabs --- */}
       <div className="glass-card-hero p-5 animate-fadeUp relative overflow-hidden">
         {/* Background danger accent */}
         <div className={`absolute top-0 right-0 w-32 h-32 rounded-full bg-gradient-to-br ${getDangerGradient(substance.dangerLevel)} opacity-[0.07] blur-2xl -translate-y-1/2 translate-x-1/2`} />
@@ -182,124 +192,99 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
             ))}
           </div>
 
-          {/* Quick Actions */}
-          <div className="flex gap-2 mt-3">
-            <button
-              onClick={() => setDamageExpanded(!damageExpanded)}
-              className="flex-1 py-2 rounded-xl bg-white/5 text-[10px] text-slate-400 font-medium hover:bg-white/8 transition-all active:scale-[0.99]"
-            >
-              View Damage ({substance.primaryDamage.items.length} areas)
-            </button>
-            <button
-              onClick={() => setSupplementsExpanded(!supplementsExpanded)}
-              className="flex-1 py-2 rounded-xl bg-emerald-500/10 text-[10px] text-emerald-400 font-medium hover:bg-emerald-500/15 transition-all active:scale-[0.99] border border-emerald-500/15"
-            >
-              Supplements ({substance.recoveryFocus.prioritySupplements.length})
-            </button>
+          {/* 3 Tabs: Damages, Reductions, Withdrawals */}
+          <div className="flex mt-4 p-1 rounded-xl bg-white/[0.04]">
+            {HEADER_TABS.map((tab) => {
+              const isActive = headerTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setHeaderTab(tab.id)}
+                  className={`flex-1 py-2 rounded-lg text-[10px] font-medium transition-all flex items-center justify-center gap-1 ${
+                    isActive
+                      ? 'bg-white/[0.08] text-white border border-white/15 shadow-sm'
+                      : 'text-slate-500 hover:text-slate-300 border border-transparent'
+                  }`}
+                >
+                  <span>{tab.icon}</span>
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Tab Content */}
+          <div className="mt-3">
+            {/* Damages Tab */}
+            {headerTab === 'damage' && (
+              <div className="max-h-48 overflow-y-auto custom-scrollbar space-y-1.5 mb-3">
+                {substance.primaryDamage.items.map((item, i) => (
+                  <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-white/[0.02]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-500/60 flex-shrink-0 mt-1.5" />
+                    <span className="text-[11px] text-slate-400 leading-relaxed">{item}</span>
+                  </div>
+                ))}
+                <div className="rounded-xl bg-red-500/5 border border-red-500/10 p-3 mt-2">
+                  <p className="text-[10px] font-semibold text-red-400 uppercase tracking-wide mb-1">Summary</p>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">{substance.primaryDamage.summary}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Reductions (Harm Reduction) Tab */}
+            {headerTab === 'reduction' && (
+              <div className="max-h-48 overflow-y-auto custom-scrollbar space-y-1.5 mb-3">
+                {substance.harmReduction.map((tip, i) => (
+                  <div key={i} className="flex items-start gap-2.5 p-2 rounded-lg bg-white/[0.02]">
+                    <span className="w-5 h-5 rounded-md bg-sky-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-[10px] font-bold text-sky-400">{i + 1}</span>
+                    </span>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">{tip}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Withdrawals Tab */}
+            {headerTab === 'withdrawal' && (
+              <div className="max-h-48 overflow-y-auto custom-scrollbar mb-3">
+                {/* Timeline + Severity */}
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="flex-1">
+                    <p className="text-[10px] text-slate-500 uppercase tracking-wide mb-0.5">Timeline</p>
+                    <p className="text-xs text-slate-300">{substance.withdrawal.timeline}</p>
+                  </div>
+                  <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border ${sev.bg} ${sev.color}`}>
+                    {sev.label}
+                  </span>
+                </div>
+
+                {/* Symptoms */}
+                <div className="space-y-1.5 mb-3">
+                  {substance.withdrawal.symptoms.map((symptom, i) => (
+                    <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-white/[0.02]">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500/60 flex-shrink-0 mt-1.5" />
+                      <span className="text-[11px] text-slate-400 leading-relaxed">{symptom}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* PAWS */}
+                <div className="rounded-xl bg-amber-500/5 border border-amber-500/10 p-3">
+                  <p className="text-[10px] font-semibold text-amber-400 uppercase tracking-wide mb-1">Post-Acute Withdrawal (PAWS)</p>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">{substance.withdrawal.paws}</p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Description */}
-          <p className="text-xs text-slate-400 leading-relaxed mt-3">{substance.description}</p>
-        </div>
-      </div>
-
-      {/* --- PRIMARY DAMAGE --- */}
-      <div className="glass-card p-4 animate-fadeUp stagger-1" style={{ opacity: 0 }}>
-        <SectionHeader icon={Icons.damage} title="Primary Damage" />
-
-        {/* Expandable items */}
-        <button
-          onClick={() => setDamageExpanded(!damageExpanded)}
-          className="w-full flex items-center justify-between p-2.5 rounded-xl bg-white/5 hover:bg-white/8 active:scale-[0.995] transition-all mb-2"
-        >
-          <span className="text-[11px] text-slate-400 font-medium">
-            {substance.primaryDamage.items.length} damage areas
-          </span>
-          <span className={`text-slate-500 transition-transform ${damageExpanded ? 'rotate-180' : ''}`}>
-            {React.cloneElement(Icons.chevron as React.ReactElement, { width: 14, height: 14 })}
-          </span>
-        </button>
-
-        {damageExpanded && (
-          <div className="space-y-1.5 mb-3 max-h-64 overflow-y-auto custom-scrollbar">
-            {substance.primaryDamage.items.map((item, i) => (
-              <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-white/[0.02]">
-                <span className="w-1.5 h-1.5 rounded-full bg-red-500/60 flex-shrink-0 mt-1.5" />
-                <span className="text-[11px] text-slate-400 leading-relaxed">{item}</span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Summary */}
-        <div className="rounded-xl bg-red-500/5 border border-red-500/10 p-3">
-          <p className="text-[10px] font-semibold text-red-400 uppercase tracking-wide mb-1">Summary</p>
-          <p className="text-[11px] text-slate-400 leading-relaxed">{substance.primaryDamage.summary}</p>
-        </div>
-      </div>
-
-      {/* --- PHARMACOLOGY --- */}
-      <div className="glass-card p-4 animate-fadeUp stagger-2" style={{ opacity: 0 }}>
-        <SectionHeader icon={Icons.pharmacology} title="Pharmacology" />
-
-        <div className="space-y-2.5">
-          <PharmRow label="Mechanism" value={substance.pharmacology.mechanism} />
-          <PharmRow label="Half-life" value={substance.pharmacology.halfLife} />
-          <PharmRow label="Onset" value={substance.pharmacology.onset} />
-          <PharmRow label="Peak" value={substance.pharmacology.peak} />
-          <PharmRow label="Duration" value={substance.pharmacology.duration} />
-          <PharmRow label="Metabolites" value={substance.pharmacology.metabolites} />
-        </div>
-      </div>
-
-      {/* --- WITHDRAWAL --- */}
-      <div className="glass-card p-4 animate-fadeUp stagger-3" style={{ opacity: 0 }}>
-        <SectionHeader icon={Icons.withdrawal} title="Withdrawal" />
-
-        {/* Timeline + Severity */}
-        <div className="flex items-center gap-3 mb-3">
-          <div className="flex-1">
-            <p className="text-[10px] text-slate-500 uppercase tracking-wide mb-0.5">Timeline</p>
-            <p className="text-xs text-slate-300">{substance.withdrawal.timeline}</p>
-          </div>
-          <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border ${sev.bg} ${sev.color}`}>
-            {sev.label}
-          </span>
-        </div>
-
-        {/* Expandable Symptoms */}
-        <button
-          onClick={() => setWithdrawalExpanded(!withdrawalExpanded)}
-          className="w-full flex items-center justify-between p-2.5 rounded-xl bg-white/5 hover:bg-white/8 active:scale-[0.995] transition-all mb-2"
-        >
-          <span className="text-[11px] text-slate-400 font-medium">
-            {substance.withdrawal.symptoms.length} withdrawal symptoms
-          </span>
-          <span className={`text-slate-500 transition-transform ${withdrawalExpanded ? 'rotate-180' : ''}`}>
-            {React.cloneElement(Icons.chevron as React.ReactElement, { width: 14, height: 14 })}
-          </span>
-        </button>
-
-        {withdrawalExpanded && (
-          <div className="space-y-1.5 mb-3 max-h-64 overflow-y-auto custom-scrollbar">
-            {substance.withdrawal.symptoms.map((symptom, i) => (
-              <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-white/[0.02]">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500/60 flex-shrink-0 mt-1.5" />
-                <span className="text-[11px] text-slate-400 leading-relaxed">{symptom}</span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* PAWS */}
-        <div className="rounded-xl bg-amber-500/5 border border-amber-500/10 p-3">
-          <p className="text-[10px] font-semibold text-amber-400 uppercase tracking-wide mb-1">Post-Acute Withdrawal (PAWS)</p>
-          <p className="text-[11px] text-slate-400 leading-relaxed">{pawsText}</p>
+          <p className="text-xs text-slate-400 leading-relaxed mt-1">{substance.description}</p>
         </div>
       </div>
 
       {/* --- RECOVERY FOCUS --- */}
-      <div className="glass-card p-4 animate-fadeUp stagger-4" style={{ opacity: 0 }}>
+      <div className="glass-card p-4 animate-fadeUp stagger-1" style={{ opacity: 0 }}>
         <SectionHeader icon={Icons.recovery} title="Recovery Focus" />
 
         {/* Neurotransmitters */}
@@ -377,8 +362,111 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
         </div>
       </div>
 
+      {/* --- RECOVERY PROTOCOL --- */}
+      <div className="glass-card p-4 animate-fadeUp stagger-2" style={{ opacity: 0 }}>
+        <SectionHeader icon={Icons.protocol} title="Recovery Protocol" />
+        <p className="text-[11px] text-slate-400 leading-relaxed mb-3">
+          The Symbiotic Protocol integrates neurochemical restoration, gut-brain axis repair, and lifestyle synergy into a comprehensive recovery framework.
+        </p>
+        <div className="space-y-2">
+          {SYMBIOTIC_PROTOCOL.map((section) => {
+            const isPillarOpen = protocolExpanded === section.id;
+            return (
+              <div key={section.id} className="rounded-xl border border-white/[0.06] overflow-hidden">
+                {/* Pillar Header */}
+                <button
+                  onClick={() => setProtocolExpanded(isPillarOpen ? null : section.id)}
+                  className="w-full p-3 text-left hover:bg-white/[0.02] transition-colors active:scale-[0.999]"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-white">{section.name}</p>
+                      <p className="text-[10px] text-slate-500 mt-0.5">{section.subtitle}</p>
+                      <div className="flex items-center gap-2 mt-1.5">
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/15 font-medium">
+                          {section.phases.length} {section.phases.length === 1 ? 'phase' : 'phases'}
+                        </span>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.04] text-slate-500 border border-white/[0.06] font-medium">
+                          {section.principles.length} principles
+                        </span>
+                      </div>
+                    </div>
+                    <span className={`text-slate-500 transition-transform flex-shrink-0 ${isPillarOpen ? 'rotate-180' : ''}`}>
+                      {React.cloneElement(Icons.chevron as React.ReactElement, { width: 14, height: 14 })}
+                    </span>
+                  </div>
+                </button>
+
+                {/* Expanded Pillar Content */}
+                {isPillarOpen && (
+                  <div className="border-t border-white/[0.06] p-3 space-y-3 max-h-72 overflow-y-auto custom-scrollbar">
+                    {/* Description */}
+                    <p className="text-[10px] text-slate-400 leading-relaxed">{section.description}</p>
+
+                    {/* Principles (show first 3) */}
+                    <div>
+                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-1.5">Core Principles</p>
+                      <div className="space-y-1">
+                        {section.principles.slice(0, 3).map((principle, i) => (
+                          <div key={i} className="flex items-start gap-1.5">
+                            <span className="text-[10px] font-bold text-emerald-400 mt-0.5 flex-shrink-0 w-4 text-right">{i + 1}.</span>
+                            <p className="text-[10px] text-slate-400 leading-relaxed">{principle}</p>
+                          </div>
+                        ))}
+                        {section.principles.length > 3 && (
+                          <p className="text-[10px] text-slate-600 pl-5">+{section.principles.length - 3} more principles</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Phases (collapsed) */}
+                    <div>
+                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-1.5">Recovery Phases</p>
+                      <div className="space-y-1.5">
+                        {section.phases.map((phase, idx) => (
+                          <div key={idx} className="p-2.5 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="w-5 h-5 rounded-md bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
+                                <span className="text-[10px] font-bold text-emerald-400">{idx + 1}</span>
+                              </span>
+                              <p className="text-[11px] font-medium text-white">{phase.name}</p>
+                            </div>
+                            <div className="flex items-center gap-2 ml-7">
+                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/15 font-medium">
+                                {phase.timeline}
+                              </span>
+                              <span className="text-[10px] text-slate-600">{phase.actions.length} actions</span>
+                              <span className="text-[10px] text-slate-600">&middot;</span>
+                              <span className="text-[10px] text-slate-600">{phase.supplements.length} supplements</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* --- PHARMACOLOGY --- */}
+      <div className="glass-card p-4 animate-fadeUp stagger-3" style={{ opacity: 0 }}>
+        <SectionHeader icon={Icons.pharmacology} title="Pharmacology" />
+
+        <div className="space-y-2.5">
+          <PharmRow label="Mechanism" value={substance.pharmacology.mechanism} />
+          <PharmRow label="Half-life" value={substance.pharmacology.halfLife} />
+          <PharmRow label="Onset" value={substance.pharmacology.onset} />
+          <PharmRow label="Peak" value={substance.pharmacology.peak} />
+          <PharmRow label="Duration" value={substance.pharmacology.duration} />
+          <PharmRow label="Metabolites" value={substance.pharmacology.metabolites} />
+        </div>
+      </div>
+
       {/* --- PHILIPPINES --- */}
-      <div className="glass-card p-4 animate-fadeUp stagger-5" style={{ opacity: 0 }}>
+      <div className="glass-card p-4 animate-fadeUp stagger-4" style={{ opacity: 0 }}>
         <SectionHeader icon={Icons.philippines} title="Philippines" />
 
         <div className="space-y-2.5">
@@ -389,39 +477,8 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
         </div>
       </div>
 
-      {/* --- HARM REDUCTION --- */}
-      <div className="glass-card p-4 animate-fadeUp stagger-6" style={{ opacity: 0 }}>
-        <SectionHeader icon={Icons.harm} title="Harm Reduction" />
-
-        <div className="space-y-2">
-          {substance.harmReduction.map((tip, i) => (
-            <div key={i} className="flex items-start gap-2.5 p-2.5 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
-              <span className="w-5 h-5 rounded-md bg-sky-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-[10px] font-bold text-sky-400">{i + 1}</span>
-              </span>
-              <p className="text-[11px] text-slate-400 leading-relaxed">{tip}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* --- RECOVERY TIPS --- */}
-      <div className="glass-card p-4 animate-fadeUp stagger-6" style={{ opacity: 0 }}>
-        <SectionHeader icon={Icons.recovery} title="Recovery Tips" />
-        <div className="space-y-2">
-          {substance.recoveryFocus.prioritySupplements.slice(0, 4).map((supp, i) => (
-            <div key={i} className="flex items-start gap-2.5 p-2 rounded-xl bg-emerald-500/[0.03] hover:bg-emerald-500/[0.06] transition-colors">
-              <span className="w-5 h-5 rounded-md bg-emerald-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-[10px] font-bold text-emerald-400">{i + 1}</span>
-              </span>
-              <p className="text-[11px] text-slate-400 leading-relaxed">{supp}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* --- Disclaimer --- */}
-      <div className="glass-card p-3 animate-fadeUp stagger-6" style={{ opacity: 0 }}>
+      <div className="glass-card p-3 animate-fadeUp stagger-5" style={{ opacity: 0 }}>
         <p className="text-[10px] text-slate-500 leading-relaxed">
           <strong className="text-slate-400">Disclaimer:</strong> This information is for educational purposes only and is not medical advice. Always consult a healthcare professional for substance-related concerns.
         </p>
@@ -454,16 +511,15 @@ function InfoRow({ label, value, highlight }: { label: string; value: string; hi
 
 // --- Main Component ---
 
-type SubstanceId = 'methamphetamine' | 'mdma' | 'cannabis';
-
-const TAB_CONFIG: { id: SubstanceId; label: string; dangerLevel: number }[] = [
-  { id: 'methamphetamine', label: 'Meth', dangerLevel: 5 },
-  { id: 'mdma', label: 'MDMA', dangerLevel: 4 },
-  { id: 'cannabis', label: 'Cannabis', dangerLevel: 2 },
-];
+// Data-driven tab config derived from SUBSTANCE_LIST
+const TAB_CONFIG = SUBSTANCE_LIST.map((s) => ({
+  id: s.id,
+  label: s.name.replace(/\s*\(.*\)/, '').trim(),
+  dangerLevel: s.dangerLevel,
+}));
 
 const Substances = React.memo(function Substances() {
-  const [activeTab, setActiveTab] = useState<SubstanceId>('methamphetamine');
+  const [activeTab, setActiveTab] = useState(TAB_CONFIG[0]?.id ?? '');
   const [searchQuery, setSearchQuery] = useState('');
 
   const activeSubstance = SUBSTANCES[activeTab];
@@ -545,7 +601,7 @@ const Substances = React.memo(function Substances() {
                 <button
                   key={substance.id}
                   onClick={() => {
-                    setActiveTab(substance.id as SubstanceId);
+                    setActiveTab(substance.id);
                     setSearchQuery('');
                   }}
                   className="glass-card p-3 w-full text-left hover:bg-white/[0.04] transition-all active:scale-[0.995] animate-fadeUp"

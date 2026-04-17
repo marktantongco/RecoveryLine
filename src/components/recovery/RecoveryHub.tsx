@@ -3,6 +3,8 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { Checkin, CheckinType, MoodKey, ClipboardItem } from '@/lib/recovery-types';
 import { MOODS, CURRENCY } from '@/lib/recovery-constants';
+import { AFFIRMATIONS, JOURNAL_PROMPTS } from '@/lib/recovery-content';
+import { getLocalDateString, copyToClipboard } from '@/lib/utils';
 import CheckIn from './CheckIn';
 import Clipboard from './Clipboard';
 import { useToast } from './Toast';
@@ -88,13 +90,6 @@ export default function RecoveryHub({
   const useCount = useMemo(() => checkins.filter((c) => c.type === 'use').length, [checkins]);
 
   const netBalance = stats.totalMoneySaved - stats.totalMoneySpent;
-
-  function getLocalDateString(d: Date = new Date()): string {
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
 
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr + 'T00:00:00');
@@ -570,7 +565,7 @@ export default function RecoveryHub({
   );
 }
 
-// ─── Helpers & Data for Affirmation + Journal ────────────────────────────────
+// ─── Helpers for Affirmation + Journal ────────────────────────────────────────
 
 function getDayOfYear(): number {
   const now = new Date();
@@ -579,49 +574,6 @@ function getDayOfYear(): number {
   return Math.floor(diff / (1000 * 60 * 60 * 24));
 }
 
-const AFFIRMATIONS: string[] = [
-  'I am worthy of a healthy, vibrant life free from addiction.',
-  'Every day in recovery is a victory worth celebrating.',
-  'I have the strength to overcome any challenge that comes my way.',
-  'My past does not define my future — I am creating a new story.',
-  'I choose progress over perfection, one step at a time.',
-  'I am surrounded by people who support my healing journey.',
-  'My body is healing, my mind is clearing, and my spirit is growing.',
-  'I am not alone in this journey — help is always available.',
-  'Today, I choose self-compassion over self-criticism.',
-  'I am resilient, and setbacks are temporary, not permanent.',
-  'My recovery is a gift I give to myself and those who love me.',
-  'I trust the process and honor my commitment to change.',
-  'I deserve joy, peace, and fulfillment in my life.',
-  'Every breath I take is a reminder of my strength to keep going.',
-  'I am proud of how far I have come in my recovery journey.',
-  'I release guilt and shame — they do not serve me anymore.',
-  'New possibilities open for me as I continue to heal and grow.',
-];
-
-const JOURNAL_PROMPTS: string[] = [
-  'What triggered my desire to use today, and how did I respond?',
-  'What are three things I am grateful for in my recovery journey?',
-  'How has my body felt different since I started my recovery?',
-  'What coping strategies worked well for me this week?',
-  'Describe a moment this week when you felt proud of yourself.',
-  'What relationships in my life support my recovery, and how can I nurture them?',
-  'What emotions am I currently avoiding, and how can I face them safely?',
-  'Write a letter to your future self, one year from now in recovery.',
-  'What would I tell someone who is just starting their recovery journey?',
-  'Identify a negative thought pattern and write a healthier alternative.',
-  'What activities or hobbies bring me genuine joy without substances?',
-  'How do I define "recovery" for myself? Has this definition changed?',
-  'What boundaries do I need to set to protect my sobriety?',
-  'Describe your ideal sober day from morning to night.',
-  'What lessons has addiction taught me that I can use positively?',
-  'How can I be more patient and kind with myself during difficult moments?',
-  'What role does community or support groups play in my recovery?',
-  'What physical sensations in my body tell me I am stressed, and how can I respond?',
-  'Write about a person who has inspired your recovery. What qualities do they have?',
-  'What would my life look like in 5 years if I stay committed to recovery?',
-  'Reflect on a craving you experienced. What helped you get through it?',
-];
 
 // ─── Daily Affirmation Component ─────────────────────────────────────────────
 
@@ -678,19 +630,14 @@ function JournalPrompt() {
   const nextPrompt = () => setPromptOffset((prev) => prev + 1);
 
   const handleCopy = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(todaysPrompt);
-    } catch {
-      const ta = document.createElement('textarea');
-      ta.value = todaysPrompt;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
+    const ok = await copyToClipboard(todaysPrompt);
+    if (ok) {
+      setCopied(true);
+      showToast('Prompt copied to clipboard', 'success');
+      setTimeout(() => setCopied(false), 2000);
+    } else {
+      showToast('Could not copy to clipboard', 'error');
     }
-    setCopied(true);
-    showToast('Prompt copied to clipboard', 'success');
-    setTimeout(() => setCopied(false), 2000);
   }, [todaysPrompt, showToast]);
 
   return (

@@ -125,3 +125,46 @@ Stage Summary:
 - Journal Prompt has "New Prompt" button + clipboard copy button with checkmark feedback
 - Note saves include day+time prefix: `[Fri, Apr 18, 3:45 PM] User's note text`
 - Files modified: page.tsx, RecoveryHub.tsx, Clipboard.tsx
+---
+Task ID: 3
+Agent: Main Agent
+Task: Comprehensive upgrade — 10 suggestions applied
+
+Work Log:
+- Deep audit of entire codebase (21 components, 8 lib files, hooks, types)
+- Identified 10 critical/medium issues across substance data, code quality, error handling
+- Launched 3 parallel subagents to implement all 10 fixes simultaneously
+
+**Agent 1 (Substance Data):**
+- Added 8 missing substances: Cocaine, Heroin, Alcohol, Benzodiazepines, GHB, Ketamine, LSD, Nicotine
+- Each with complete data: 10 damages, 10 symptoms, 10 supplements, 10 harm reduction, pharmacology, Philippines context
+- Fixed `paaws` → `paws` typo in all entries
+- Added `hallucinogen` to category union type
+- SUBSTANCE_LIST sorted by dangerLevel desc, then alphabetically
+
+**Agent 2 (Substances.tsx fixes):**
+- Removed `paaws` workaround hack, now uses `substance.withdrawal.paws` directly
+- Made TAB_CONFIG data-driven (derives from SUBSTANCE_LIST, no more hardcoded SubstanceId type)
+- Removed unsafe `as SubstanceId` cast in search handler
+- Removed redundant "Recovery Tips" section (duplicated Recovery Focus content)
+- Section order: Header(3 tabs) → Recovery Focus → Recovery Protocol → Pharmacology → Philippines → Disclaimer
+
+**Agent 3 (Content extraction + error handling + validation):**
+- Created `/src/lib/recovery-content.ts` — extracted 17 affirmations, 21 journal prompts, 13 recovery quotes
+- Created shared utilities in `/src/lib/utils.ts` — copyToClipboard(), getLocalDateString(), AppError/StorageError/StorageQuotaError classes, safeGetItem/safeSetItem/safeRemoveItem
+- Updated use-recovery-state.ts — uses safe storage wrappers, propagates StorageQuotaError to UI
+- Updated RecoveryHub.tsx — imports from data file, uses shared clipboard utility
+- Updated Clipboard.tsx — uses shared clipboard utility
+- Updated NutritionJuices.tsx — uses shared clipboard utility with error handling
+- Updated Dashboard.tsx — imports recovery quotes from data file
+- Added Check-In form validation: mood required, spending ≥ 0, notes max 500 chars with character counter, inline error messages
+
+Stage Summary:
+- ✅ Build: 0 errors, 0 warnings, 5.3s compile
+- ✅ ESLint: 0 errors, 0 warnings
+- ✅ 11 substances (was 3), all with complete data
+- ✅ paaws typo fixed, tab config data-driven, redundant section removed
+- ✅ 51 hardcoded strings extracted to data files
+- ✅ Typed error handling with StorageQuotaError detection
+- ✅ Form validation on Check-In with inline feedback
+- ✅ 3 duplicate utility patterns consolidated into shared utils
