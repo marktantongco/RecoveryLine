@@ -25,7 +25,6 @@ function lazyWithLog(factory: () => Promise<{ default: React.ComponentType }>, n
   );
 }
 
-const Onboarding = lazyWithLog(() => import('@/components/recovery/Onboarding'), 'Onboarding');
 const Dashboard = lazyWithLog(() => import('@/components/recovery/Dashboard'), 'Dashboard');
 const Substances = lazyWithLog(() => import('@/components/recovery/Substances'), 'Substances');
 const BioTools = lazyWithLog(() => import('@/components/recovery/BioTools'), 'BioTools');
@@ -246,12 +245,13 @@ function AppContent() {
               <p className="text-[10px] text-slate-400 mt-0.5 text-label">Biochemical Recovery</p>
             </div>
           </div>
-          <nav className="flex items-center gap-1" aria-label="Quick navigation">
+          <nav className="flex items-center gap-0.5" aria-label="Quick navigation">
+            {/* Top 3 most-used shortcuts */}
             <button
               onClick={() => handleNavigate('substances')}
-              className={`p-2 rounded-lg transition-all active:scale-90 ${
+              className={`p-2.5 rounded-xl transition-all active:scale-90 min-w-[36px] min-h-[36px] flex items-center justify-center ${
                 state.currentSection === 'substances'
-                  ? 'text-amber-400 bg-amber-500/10'
+                  ? 'text-amber-400 bg-amber-500/15 shadow-sm shadow-amber-500/10'
                   : 'text-slate-400 hover:text-slate-300 hover:bg-white/[0.06]'
               }`}
               title="Substances"
@@ -264,9 +264,9 @@ function AppContent() {
             </button>
             <button
               onClick={() => handleNavigate('biotools')}
-              className={`p-2 rounded-lg transition-all active:scale-90 ${
+              className={`p-2.5 rounded-xl transition-all active:scale-90 min-w-[36px] min-h-[36px] flex items-center justify-center ${
                 state.currentSection === 'biotools'
-                  ? 'text-purple-400 bg-purple-500/10'
+                  ? 'text-purple-400 bg-purple-500/15 shadow-sm shadow-purple-500/10'
                   : 'text-slate-400 hover:text-slate-300 hover:bg-white/[0.06]'
               }`}
               title="Bio Tools"
@@ -278,63 +278,33 @@ function AppContent() {
               </svg>
             </button>
             <button
-              onClick={() => handleNavigate('nutrition')}
-              className={`p-2 rounded-lg transition-all active:scale-90 ${
-                state.currentSection === 'nutrition'
-                  ? 'text-lime-400 bg-lime-500/10'
+              onClick={() => handleNavigate('recovery')}
+              className={`p-2.5 rounded-xl transition-all active:scale-90 min-w-[36px] min-h-[36px] flex items-center justify-center ${
+                state.currentSection === 'recovery'
+                  ? 'text-rose-400 bg-rose-500/15 shadow-sm shadow-rose-500/10'
                   : 'text-slate-400 hover:text-slate-300 hover:bg-white/[0.06]'
               }`}
-              title="Nutrition"
-              aria-label="Go to Nutrition"
-              aria-current={state.currentSection === 'nutrition' ? 'page' : undefined}
+              title="Recovery"
+              aria-label="Go to Recovery"
+              aria-current={state.currentSection === 'recovery' ? 'page' : undefined}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 8h1a4 4 0 0 1 0 8h-1" /><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" /><path d="M2 12h16" /><path d="M6 1v3" /><path d="M18 1v3" /><path d="M10 1v3" /><path d="M14 1v3" />
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
               </svg>
             </button>
-            <button
-              onClick={() => handleNavigate('mindpsych')}
-              className={`p-2 rounded-lg transition-all active:scale-90 ${
-                state.currentSection === 'mindpsych'
-                  ? 'text-purple-400 bg-purple-500/10'
-                  : 'text-slate-400 hover:text-slate-300 hover:bg-white/[0.06]'
-              }`}
-              title="Mind & Psych"
-              aria-label="Go to Mind and Psychology"
-              aria-current={state.currentSection === 'mindpsych' ? 'page' : undefined}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" /><path d="m8 14 1.5-4.5L11 14" /><path d="m14 14 1.5 4.5L11 14" /><path d="M9 18h6" /><path d="M9 6h6" />
-              </svg>
-            </button>
+            {/* More dropdown trigger */}
             <button
               onClick={() => handleNavigate('protocol')}
-              className={`p-2 rounded-lg transition-all active:scale-90 ${
-                state.currentSection === 'protocol'
-                  ? 'text-emerald-400 bg-emerald-500/10'
+              className={`p-2.5 rounded-xl transition-all active:scale-90 min-w-[36px] min-h-[36px] flex items-center justify-center ${
+                ['protocol', 'nutrition', 'mindpsych', 'phguide'].includes(state.currentSection)
+                  ? 'text-sky-400 bg-sky-500/15 shadow-sm shadow-sky-500/10'
                   : 'text-slate-400 hover:text-slate-300 hover:bg-white/[0.06]'
               }`}
-              title="Protocol"
-              aria-label="Go to Recovery Protocol"
-              aria-current={state.currentSection === 'protocol' ? 'page' : undefined}
+              title="More sections"
+              aria-label="More sections"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="m9 11 3 3L22 4" />
-              </svg>
-            </button>
-            <button
-              onClick={() => handleNavigate('phguide')}
-              className={`p-2 rounded-lg transition-all active:scale-90 ${
-                state.currentSection === 'phguide'
-                  ? 'text-emerald-400 bg-emerald-500/10'
-                  : 'text-slate-400 hover:text-slate-300 hover:bg-white/[0.06]'
-              }`}
-              title="PH Guide"
-              aria-label="Go to Philippines Guide"
-              aria-current={state.currentSection === 'phguide' ? 'page' : undefined}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
+                <circle cx="12" cy="12" r="1" /><circle cx="12" cy="5" r="1" /><circle cx="12" cy="19" r="1" />
               </svg>
             </button>
           </nav>
@@ -385,38 +355,6 @@ function AppContent() {
 }
 
 export default function Home() {
-  const [isOnboarded, setIsOnboarded] = useState<boolean>(true);
-
-  useEffect(() => {
-    try {
-      const onboarded = localStorage.getItem('recoveryline_onboarded') === 'true';
-      setIsOnboarded(onboarded);
-    } catch {
-      // Default to onboarded
-    }
-  }, []);
-
-  if (!isOnboarded) {
-    return (
-      <ToastProvider>
-        <ErrorBoundary fallback={
-          <div className="flex flex-col items-center justify-center py-16 px-4">
-            <div className="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center mb-4">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
-            </div>
-            <p className="text-sm font-medium text-slate-300 mb-1">Section unavailable</p>
-            <p className="text-xs text-slate-500 mb-4">The <strong>Onboarding</strong> section encountered an error.</p>
-            <button onClick={() => window.location.reload()} className="px-4 py-2 rounded-lg bg-white/5 text-xs text-slate-400 border border-white/10 hover:bg-white/10 active:scale-95 transition-all">Reload</button>
-          </div>
-        }>
-          <Suspense fallback={null}>
-            <Onboarding />
-          </Suspense>
-        </ErrorBoundary>
-      </ToastProvider>
-    );
-  }
-
   return (
     <ToastProvider>
       <ErrorBoundary>

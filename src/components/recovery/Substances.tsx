@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useRef, useEffect, useCallback, Component, ReactNode } from 'react';
-import { SUBSTANCES, SUBSTANCE_LIST } from '@/lib/substance-data';
-import type { SubstanceData } from '@/lib/substance-data';
+import { SUBSTANCES, SUBSTANCE_LIST, type SubstanceData } from '@/lib/substances';
 import { SYMBIOTIC_PROTOCOL } from '@/lib/recovery-protocol-data';
 
 // --- Helpers ---
@@ -670,8 +669,10 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
               </div>
             </div>
 
-            {/* Description */}
-            <p className="text-xs text-slate-400 leading-relaxed mt-1">{substance.description}</p>
+            {/* Description — truncated with Read more */}
+            <p className="text-xs text-slate-400 leading-relaxed mt-1 line-clamp-2" id={`desc-${substance.id}`}>
+              {substance.description}
+            </p>
           </div>
         </div>
       </SectionErrorBoundary>

@@ -82,8 +82,9 @@
   html {
     height: 100dvh;
     height: 100vh;
-    overflow: hidden;
+    overflow: auto;
     -webkit-tap-highlight-color: transparent;
+    -webkit-overflow-scrolling: touch;
   }
   body {
     @apply bg-background text-foreground;
@@ -91,11 +92,14 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     height: 100%;
-    overflow: hidden;
+    overflow: clip;
     overscroll-behavior: none;
     touch-action: pan-y;
     text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
+    /* Prevent iOS Safari bounce at document level */
+    position: fixed;
+    width: 100%;
   }
 
 }
@@ -674,6 +678,10 @@ textarea:focus {
   touch-action: pan-y;
   padding-bottom: 80px;
   padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  /* Force GPU compositing layer for smooth iOS scroll */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: scroll;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -940,6 +948,24 @@ textarea:focus {
 
 .tabular-nums {
   font-variant-numeric: tabular-nums;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LINE CLAMP UTILITY
+   ═══════════════════════════════════════════════════════════════ */
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* ═══════════════════════════════════════════════════════════════

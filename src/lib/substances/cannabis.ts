@@ -1,0 +1,183 @@
+import { SubstanceData } from './types';
+
+const cannabis: SubstanceData = {
+    id: 'cannabis',
+    name: 'Cannabis (Marijuana)',
+    aliases: ['Marijuana', 'Weed', 'Pot', 'Ganja', 'Hemp', 'THC'],
+    streetNames: ['Weed', 'Pot', 'Mary Jane', 'Ganja', 'Kush', 'Dro', 'Trees', 'Bud'],
+    category: 'cannabinoid',
+    schedule: 'Schedule I (PH: Illegal under RA 9165)',
+    dangerLevel: 2,
+    description:
+      'Cannabis contains delta-9-tetrahydrocannabinol (THC), which primarily acts on CB1 (brain) and CB2 (immune) receptors of the endocannabinoid system. THC modulates GABA and glutamate release, producing characteristic effects of relaxation, altered perception, increased appetite, and euphoria. The endocannabinoid system plays crucial roles in neurogenesis, synaptic plasticity, stress response, and emotional regulation. Chronic cannabis use leads to CB1 receptor downregulation and desensitization, disrupted dopamine signaling in the reward pathway, impaired memory consolidation via hippocampal CB1 activation, and potential motivational syndrome (amotivation). CBD (cannabidiol) present in some strains may have neuroprotective and anxiolytic properties that partially counteract THC\'s negative effects. Recovery focuses on CB1 receptor upregulation, dopamine pathway restoration, and addressing the psychological dependence patterns that develop around chronic use.',
+    primaryDamage: {
+      items: [
+        'CB1 receptor downregulation and desensitization',
+        'Anhedonia, amotivation, and reduced reward sensitivity',
+        'Impaired hippocampal-dependent memory consolidation',
+        'Altered mesolimbic dopamine signaling (blunted reward response)',
+        'Respiratory damage (if smoked — chronic bronchitis, tar exposure)',
+        'Disrupted circadian rhythm and sleep architecture',
+        'Potential for cannabis hyperemesis syndrome (CHS)',
+        'Impaired executive function and decision-making',
+        'Increased anxiety and paranoia (especially with high-THC strains)',
+        'Testosterone reduction and fertility impact in chronic male users',
+      ],
+      summary:
+        'Cannabis primarily disrupts the endocannabinoid system through CB1 receptor downregulation, leading to broad effects on mood, motivation, cognition, and reward processing. While generally less neurotoxic than stimulants or empathogens, chronic use creates a dependency loop where the brain\'s natural endocannabinoid tone (anandamide) is suppressed, making sober life feel flat and unrewarding. The motivational and cognitive effects can be particularly insidious because they develop gradually and are often attributed to other causes.',
+    },
+    pharmacology: {
+      mechanism:
+        'THC is a partial agonist at CB1 (brain) and CB2 (immune/peripheral) receptors. CB1 activation inhibits adenylate cyclase, reducing cAMP and modulating ion channels. This decreases GABA and glutamate release, affecting virtually all brain circuits. THC also activates TRPV1 (pain) and PPAR-gamma receptors. CBD acts as a negative allosteric modulator at CB1, with additional 5-HT1A agonist activity.',
+      halfLife:
+        'THC: 1-3 days for occasional users; 5-13 days for chronic users. THC-COOH metabolite: up to 30+ days for heavy chronic users. Lipophilic — stored in fat cells and slowly released.',
+      onset: 'Smoked/vaporized: 1-5 minutes; Oral (edibles): 30-120 minutes; Sublingual: 15-45 minutes',
+      peak: 'Smoked: 15-30 minutes; Oral: 2-4 hours',
+      duration: 'Smoked: 2-4 hours; Oral: 4-8 hours (edibles can last up to 12 hours)',
+      metabolites: '11-OH-THC (active, more potent than THC — especially with oral use), THC-COOH (inactive, long-lasting, basis for drug tests). Metabolized primarily by CYP2C9 and CYP3A4.',
+    },
+    withdrawal: {
+      timeline: 'Acute: 1-14 days; Subacute: 2-4 weeks; Extended: 1-3 months',
+      symptoms: [
+        'Irritability and mood swings',
+        'Sleep disturbances (insomnia, vivid dreams, night sweats)',
+        'Decreased appetite and mild nausea',
+        'Anxiety and restlessness',
+        'Physical discomfort (headaches, sweating, chills)',
+        'Intense cravings (especially triggered by routine use times)',
+        'Depressed mood and emotional flatness',
+        'Difficulty concentrating',
+        'Restless legs and mild tremor',
+        'Dream rebound (unusually vivid, sometimes disturbing dreams)',
+      ],
+      severity: 'mild',
+      paws:
+        'Cannabis PAWS is less severe than other substances but can persist for 1-3 months. Characterized by intermittent anxiety, sleep disruption, mood instability, and cravings. The motivational syndrome may take 3-6 months to fully resolve as CB1 receptors upregulate and dopamine signaling normalizes. Cognitive function typically recovers within 1-3 months of abstinence.',
+    },
+    recoveryFocus: {
+      neurotransmitters: ['Anandamide (endocannabinoid)', 'Dopamine', 'Serotonin', 'GABA', 'Glutamate'],
+      organs: ['Brain (CB1 receptors, hippocampus, prefrontal cortex)', 'Lungs (if smoked)', 'Liver'],
+      prioritySupplements: [
+        'Omega-3 Fish Oil',
+        'L-Theanine',
+        'Ashwagandha',
+        'Magnesium Glycinate',
+        'Vitamin D3',
+        'Probiotics',
+        'Exercise (natural endocannabinoid boost)',
+        'B-Complex Vitamins',
+        'Melatonin (for sleep)',
+        'NAC (for cravings)',
+      ],
+      timeline:
+        'Days 1-7: Acute withdrawal — insomnia, irritability, cravings. Weeks 1-2: Sleep begins normalizing, mood improves. Weeks 2-4: CB1 receptors begin upregulating, appetite normalizes. Months 1-3: Significant CB1 recovery, motivation returns, cognition improves. Months 3-6: Near-complete endocannabinoid system recovery. Full recovery: 3-6 months for most functions; cognitive gains continue for up to 1 year.',
+    },
+    philippines: {
+      legality: 'Illegal under Republic Act No. 9165. However, medical cannabis legalization is under legislative discussion. Possession, use, sale, and cultivation are criminal offenses. The Philippine House of Representatives has filed bills for medical marijuana but none have passed into law as of 2025.',
+      penalties: 'Possession of small quantity: 6 months + 1 day to 6 years + fine up to ₱500,000. Sale/trading: 12 years + 1 day to 20 years + fine up to ₱10,000,000. Cultivation: Life imprisonment + fine up to ₱10,000,000.',
+      commonForm: 'Dried flower buds (smoked in joints, bongs, or improvised pipes). Occasionally found as hashish/kief. Edibles are rare in the local market. THC potency of locally-available cannabis varies widely.',
+      streetPrice: '₱100-300 per "stick" (joint). ₱500-2,000 per gram. ₱3,000-8,000 per ounce (lower quality). Higher-grade imported strains can cost significantly more. Price and availability vary by region.',
+    },
+    harmReduction: [
+      'Vaporize instead of smoking to reduce respiratory damage and tar exposure',
+      'Start low, go slow — especially with edibles (wait 2+ hours before redosing)',
+      'Use strains with CBD content to buffer THC\'s psychoactive effects',
+      'Stay hydrated and maintain nutrition — cannabis suppresses appetite during use but recovery requires nutrients',
+      'Take tolerance breaks — regular use leads to rapid CB1 downregulation',
+      'Don\'t drive or operate machinery under the influence',
+      'Avoid mixing with alcohol or other drugs — unpredictable interactions',
+      'Keep track of usage patterns — dependence develops gradually with daily use',
+      'If experiencing paranoia/anxiety, use lower-THC strains or CBD-dominant products',
+      'Support lung health with antioxidants (Vitamin C, NAC) if smoking',
+    ],
+    recoveryTips: [
+      'Exercise is the single most effective natural craving reducer — even 20 minutes of cardio helps',
+      'Cannabis withdrawal symptoms (insomnia, irritability, anxiety) peak at days 2-6 and resolve within 2-4 weeks',
+      'Replace the smoking ritual with herbal tea, deep breathing exercises, or a hobby that occupies your hands',
+      'CBD oil (10-20mg) has shown promise in reducing cannabis withdrawal symptoms and anxiety',
+      'Cognitive function and memory improve significantly within 4-12 weeks of sustained abstinence',
+    ],
+    recoveryPhases: [
+      {
+        name: 'Acute Withdrawal — The Rebound',
+        timeline: 'Days 0-14',
+        prioritySupplements: [
+          { name: 'Magnesium Glycinate', dosage: '300-400mg' },
+          { name: 'Ashwagandha', dosage: '300-600mg' },
+          { name: 'Probiotic Complex', dosage: '1-2 caps' },
+          { name: 'Omega-3', dosage: '2000-4000mg' },
+          { name: 'Turmeric', dosage: '500-1000mg' },
+          { name: 'NAC', dosage: '600-1200mg' },
+          { name: 'B6', dosage: '25-50mg' },
+        ],
+        dietaryFocus: [
+          'Complex carbohydrates for serotonin support (brown rice, oats)',
+          'Magnesium-rich foods (dark leafy greens, pumpkin seeds, dark chocolate)',
+          'Anti-inflammatory foods (turmeric, ginger, berries)',
+          'Regular meals to stabilize blood sugar and mood',
+          'Avoid caffeine excess — worsens anxiety and insomnia',
+        ],
+        milestones: ['first_night_without_cannabis', 'first_vivid_dreams', 'irritability_peaked'],
+      },
+      {
+        name: 'Early Recovery — The Fog Lifting',
+        timeline: 'Days 14-45',
+        prioritySupplements: [
+          { name: 'Omega-3', dosage: '2000-4000mg' },
+          { name: 'Turmeric', dosage: '500-1000mg' },
+          { name: 'Probiotic Complex', dosage: '1-2 caps' },
+          { name: 'Magnesium Glycinate', dosage: '300-400mg' },
+          { name: 'Ashwagandha', dosage: '300-600mg' },
+          { name: 'Creatine', dosage: '3-5g' },
+          { name: 'B6', dosage: '25-50mg' },
+        ],
+        dietaryFocus: [
+          'Brain-supportive foods: fatty fish, walnuts, eggs',
+          'Antioxidant-rich fruits (blueberries, strawberries, papaya)',
+          'Regular exercise to accelerate CB1 receptor upregulation',
+          'Consistent sleep-wake schedule',
+          'Hydration: 2-3L water daily',
+        ],
+        milestones: ['two_weeks_clear', 'brain_fog_improving', 'natural_sleep_returning', 'cb1_upregulating'],
+      },
+      {
+        name: 'Rebuilding — Cognitive Comeback',
+        timeline: 'Months 1.5-4',
+        prioritySupplements: [
+          { name: 'Omega-3', dosage: '2000-4000mg' },
+          { name: 'Creatine', dosage: '3-5g' },
+          { name: 'Turmeric', dosage: '500-1000mg' },
+          { name: 'Probiotic Complex', dosage: '1-2 caps' },
+          { name: 'B6', dosage: '25-50mg' },
+        ],
+        dietaryFocus: [
+          'Balanced diet with emphasis on whole foods',
+          'Regular cardiovascular exercise (30 min/day)',
+          'Omega-3 sources (fatty fish, chia seeds, walnuts)',
+          'Fruits and vegetables at every meal',
+          'Limit processed foods and refined sugars',
+        ],
+        milestones: ['six_weeks_clear', 'motivation_returning', 'memory_noticeably_better', 'emotional_regulation_improving'],
+      },
+      {
+        name: 'Maintenance — Endocannabinoid Balance',
+        timeline: 'Month 4+',
+        prioritySupplements: [
+          { name: 'Omega-3', dosage: '2000-4000mg' },
+          { name: 'Probiotic Complex', dosage: '1-2 caps' },
+          { name: 'B6', dosage: '25-50mg' },
+          { name: 'Turmeric', dosage: '500-1000mg' },
+        ],
+        dietaryFocus: [
+          'Anti-inflammatory Mediterranean-style diet',
+          'Regular exercise (supports natural endocannabinoid production)',
+          'Balanced omega-3 to omega-6 ratio',
+          'Regular sleep schedule (7-8 hours)',
+          'Stress management and mindfulness practices',
+        ],
+        milestones: ['four_months_clear', 'full_cognitive_recovery', 'natural_cannabinoid_balance', 'stress_resilience_normal'],
+      },
+    ],
+};
+
+export default cannabis;

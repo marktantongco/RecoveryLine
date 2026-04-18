@@ -2,8 +2,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { SYMBIOTIC_PROTOCOL, type ProtocolSection } from '@/lib/recovery-protocol-data';
-import { SUBSTANCES, SUBSTANCE_LIST } from '@/lib/substance-data';
-import type { SubstanceData } from '@/lib/substance-data';
+import { SUBSTANCES, SUBSTANCE_LIST, type SubstanceData } from '@/lib/substances';
 
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
 
