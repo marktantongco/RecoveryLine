@@ -14,7 +14,7 @@ export interface ProtocolSection {
     timeline: string;
     actions: string[];
     supplements: { name: string; dosage: string; reason: string }[];
-    nutrition: string[];
+    nutrition: string;
     expectedOutcomes: string[];
   }[];
   faq: { question: string; answer: string }[];

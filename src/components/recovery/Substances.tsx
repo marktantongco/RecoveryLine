@@ -719,7 +719,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
           {/* Neurotransmitters */}
           <div className="mb-3">
             <p className="text-[10px] text-slate-400 uppercase tracking-wide mb-1.5 flex items-center gap-1.5">
-              {React.cloneElement(Icons.brain as React.ReactElement, { width: 11, height: 11 })}
+              {React.cloneElement(Icons.brain as React.ReactElement<Record<string, unknown>>, { width: 11, height: 11 })}
               Neurotransmitters
             </p>
             <div className="flex flex-wrap gap-1.5">
@@ -755,7 +755,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
                 Priority Supplements ({substance.recoveryFocus.prioritySupplements.length})
               </p>
               <span className={`text-slate-500 transition-transform duration-300 ${supplementsExpanded ? 'rotate-180' : ''}`}>
-                {React.cloneElement(Icons.chevron as React.ReactElement, { width: 12, height: 12 })}
+                {React.cloneElement(Icons.chevron as React.ReactElement<Record<string, unknown>>, { width: 12, height: 12 })}
               </span>
             </button>
             {supplementsExpanded ? (
@@ -1275,6 +1275,16 @@ const TAB_CONFIG = SUBSTANCE_LIST.map((s) => ({
 const Substances = React.memo(function Substances() {
   const [activeTab, setActiveTab] = useState(TAB_CONFIG[0]?.id ?? '');
   const [searchQuery, setSearchQuery] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+
+  // Recently viewed substances (persisted in localStorage)
+  const [recentlyViewed, setRecentlyViewed] = useState<string[]>(() => {
+    if (typeof window === 'undefined') return [];
+    try {
+      const stored = localStorage.getItem('recently-viewed-substances');
+      return stored ? JSON.parse(stored) : [];
+    } catch (e) { console.warn('[RecoveryLine] Failed to read recently viewed:', e); return []; }
+  });
 
   // Scroll indicator state
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -1301,6 +1311,31 @@ const Substances = React.memo(function Substances() {
   }, [searchQuery]);
 
   const isSearching = searchQuery.trim().length > 0;
+
+  // Category filter options
+  const CATEGORIES = useMemo(() => {
+    const cats = new Set(SUBSTANCE_LIST.map(s => s.category));
+    return ['all', ...Array.from(cats)];
+  }, []);
+
+  const filteredSearchResults = useMemo(() => {
+    if (categoryFilter === 'all') return searchResults;
+    return searchResults.filter(s => s.category === categoryFilter);
+  }, [searchResults, categoryFilter]);
+
+  // Track recently viewed when activeTab changes
+  useEffect(() => {
+    if (!activeTab) return;
+    setRecentlyViewed(prev => {
+      const next = [activeTab, ...prev.filter(id => id !== activeTab)].slice(0, 5);
+      try { localStorage.setItem('recently-viewed-substances', JSON.stringify(next)); } catch (e) { console.warn('[RecoveryLine] Failed to save recently viewed:', e); }
+      return next;
+    });
+  }, [activeTab]);
+
+  const recentlyViewedSubstances = useMemo(() => {
+    return recentlyViewed.map(id => SUBSTANCES[id]).filter(Boolean);
+  }, [recentlyViewed]);
 
   // Compute scroll indicator visibility
   const updateScrollIndicators = useCallback(() => {
@@ -1355,7 +1390,7 @@ const Substances = React.memo(function Substances() {
       {/* Search Input */}
       <div className="glass-card p-1.5 flex items-center gap-2 animate-fadeUp stagger-1" style={{ opacity: 0 }}>
         <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0">
-          {React.cloneElement(Icons.search as React.ReactElement, { width: 14, height: 14, className: 'text-slate-500' })}
+          {React.cloneElement(Icons.search as React.ReactElement<Record<string, unknown>>, { width: 14, height: 14, className: 'text-slate-500' })}
         </div>
         <input
           type="text"
@@ -1369,10 +1404,69 @@ const Substances = React.memo(function Substances() {
             onClick={() => setSearchQuery('')}
             className="w-6 h-6 rounded-md bg-white/5 flex items-center justify-center flex-shrink-0 hover:bg-white/10 transition-colors active:scale-[0.98] transition-transform duration-150"
           >
-            {React.cloneElement(Icons.x as React.ReactElement, { width: 12, height: 12, className: 'text-slate-500' })}
+            {React.cloneElement(Icons.x as React.ReactElement<Record<string, unknown>>, { width: 12, height: 12, className: 'text-slate-500' })}
           </button>
         )}
       </div>
+
+      {/* Category Filter Chips (shown when searching) */}
+      {isSearching && (
+        <div className="flex gap-1.5 overflow-x-auto hide-scrollbar-x animate-fadeUp stagger-1 pb-1" style={{ opacity: 0 }}>
+          {CATEGORIES.map((cat) => {
+            const isActive = categoryFilter === cat;
+            const count = cat === 'all' ? searchResults.length : searchResults.filter(s => s.category === cat).length;
+            if (cat !== 'all' && count === 0) return null;
+            return (
+              <button
+                key={cat}
+                onClick={() => setCategoryFilter(cat)}
+                className={`flex-shrink-0 px-3 py-1.5 rounded-full text-[10px] font-medium border transition-all active:scale-95 transition-transform duration-150 ${
+                  isActive
+                    ? 'bg-sky-500/15 border-sky-500/25 text-sky-400'
+                    : 'bg-white/[0.04] border-white/[0.08] text-slate-500 hover:text-slate-300'
+                }`}
+              >
+                {getCategoryLabel(cat === 'all' ? 'all' : cat)}{' '}
+                <span className="ml-1 opacity-60">{count}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Recently Viewed (shown when not searching and not in detail view) */}
+      {!isSearching && !activeSubstance && recentlyViewedSubstances.length > 0 && (
+        <div className="animate-fadeUp stagger-1" style={{ opacity: 0 }}>
+          <div className="flex items-center gap-2 mb-2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+            </svg>
+            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Recently Viewed</span>
+          </div>
+          <div className="flex gap-2 overflow-x-auto hide-scrollbar-x">
+            {recentlyViewedSubstances.map((s) => (
+              <button
+                key={s.id}
+                onClick={() => {
+                  haptic(10);
+                  setActiveTab(s.id);
+                }}
+                className="flex-shrink-0 w-24 p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:border-white/[0.12] transition-all active:scale-95 transition-transform duration-150 text-left"
+              >
+                <div className="flex items-center gap-1.5 mb-1.5">
+                  <div className={`w-6 h-6 rounded-lg bg-gradient-to-br ${getDangerGradient(s.dangerLevel)} flex items-center justify-center flex-shrink-0`}>
+                    <span className="text-[8px] font-bold text-white">{s.dangerLevel}</span>
+                  </div>
+                  <span className="text-[9px] px-1.5 py-0.5 rounded-md bg-white/5 text-slate-500 font-medium truncate max-w-[70px]">
+                    {getCategoryLabel(s.category)}
+                  </span>
+                </div>
+                <p className="text-[11px] font-medium text-white truncate">{s.label}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Tab Navigation (hidden when searching) — horizontally scrollable */}
       {!isSearching && (
@@ -1440,10 +1534,10 @@ const Substances = React.memo(function Substances() {
       {/* Search Results (flat list) */}
       {isSearching && (
         <div className="space-y-3 animate-fadeUp">
-          {searchResults.length > 0 ? (
+          {filteredSearchResults.length > 0 ? (
             <>
-              <p className="text-[10px] text-slate-500 px-1">{searchResults.length} result{searchResults.length !== 1 ? 's' : ''} found</p>
-              {searchResults.map((substance) => (
+              <p className="text-[10px] text-slate-500 px-1">{filteredSearchResults.length} result{filteredSearchResults.length !== 1 ? 's' : ''} found</p>
+              {filteredSearchResults.map((substance) => (
                 <button
                   key={substance.id}
                   onClick={() => {
@@ -1480,7 +1574,7 @@ const Substances = React.memo(function Substances() {
           ) : (
             <div className="glass-card p-6 text-center">
               <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center mx-auto mb-3">
-                {React.cloneElement(Icons.search as React.ReactElement, { width: 18, height: 18, className: 'text-slate-600' })}
+                {React.cloneElement(Icons.search as React.ReactElement<Record<string, unknown>>, { width: 18, height: 18, className: 'text-slate-600' })}
               </div>
               <p className="text-xs text-slate-400 font-medium">No substances found</p>
               <p className="text-[10px] text-slate-500 mt-1">Try a different search term</p>

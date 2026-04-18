@@ -16,8 +16,8 @@ const NAV_ORDER: SectionName[] = ['home', 'substances', 'biotools', 'recovery', 
 
 // Dynamic imports for code splitting — only load section when needed
 // Error logging wrapper for lazy imports to surface silent failures
-function lazyWithLog(factory: () => Promise<{ default: React.ComponentType }>, name: string) {
-  return lazy(() =>
+function lazyWithLog<T extends React.ComponentType<any>>(factory: () => Promise<{ default: T }>, name: string) {
+  return lazy<T>(() =>
     factory().catch((err) => {
       console.error(`[RecoveryLine] Failed to lazy-load "${name}":`, err);
       throw err;
@@ -96,15 +96,20 @@ function AppContent() {
 
   // Track section for animation key
   const [sectionKey, setSectionKey] = useState(0);
+  const isFirstRender = useRef(true);
   // Track previous section for directional transitions
   const prevSectionRef = useRef(state.currentSection);
   const [slideDirection, setSlideDirection] = useState<'right' | 'left'>('right');
 
-  // Scroll to top + animate on section change
+  // Scroll to top + animate on section change (skip animation on first render for instant page load)
   useEffect(() => {
     const mainEl = document.getElementById('app-shell-main');
     if (mainEl) {
       mainEl.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
     }
     // Determine slide direction
     const prevIdx = NAV_ORDER.indexOf(prevSectionRef.current);

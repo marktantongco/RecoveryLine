@@ -18,6 +18,20 @@ const MORE_MENU_ITEMS: {
   icon: React.ReactNode;
 }[] = [
   {
+    id: 'mindpsych',
+    label: 'Mind & Psych',
+    emoji: '\u{1F9E0}',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
+        <path d="m8 14 1.5-4.5L11 14" />
+        <path d="m14 14 1.5 4.5L11 14" />
+        <path d="M9 18h6" />
+        <path d="M9 6h6" />
+      </svg>
+    ),
+  },
+  {
     id: 'phguide',
     label: 'PH Guide',
     emoji: '\u{1F1F5}\u{1F1ED}',
@@ -165,7 +179,7 @@ export default React.memo(function BottomNav({
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
 
   // Check if any More sub-menu section is active (to highlight More button)
-  const isMoreActive = ['phguide', 'nutrition', 'protocol'].includes(currentSection);
+  const isMoreActive = ['phguide', 'nutrition', 'protocol', 'mindpsych'].includes(currentSection);
 
   // Close More menu when currentSection changes (e.g. via header nav)
   useEffect(() => {

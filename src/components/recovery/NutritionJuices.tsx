@@ -46,9 +46,9 @@ function ClockIcon({ className = 'w-3.5 h-3.5' }: { className?: string }) {
   );
 }
 
-function FlameIcon({ className = 'w-3.5 h-3.5' }: { className?: string }) {
+function FlameIcon({ className = 'w-3.5 h-3.5', style }: { className?: string; style?: React.CSSProperties }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
     </svg>
   );
@@ -63,17 +63,17 @@ function ChefHatIcon({ className = 'w-3.5 h-3.5' }: { className?: string }) {
   );
 }
 
-function ZapIcon({ className = 'w-3.5 h-3.5' }: { className?: string }) {
+function ZapIcon({ className = 'w-3.5 h-3.5', style }: { className?: string; style?: React.CSSProperties }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
     </svg>
   );
 }
 
-function LeafIcon({ className = 'w-3.5 h-3.5' }: { className?: string }) {
+function LeafIcon({ className = 'w-3.5 h-3.5', style }: { className?: string; style?: React.CSSProperties }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M11 20A7 7 0 0 1 9.8 6.9C15.5 4.9 17 3.5 19 2c1 2 2 4.5 2 8 0 5.5-4.78 10-10 10Z" />
       <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
     </svg>
@@ -89,9 +89,9 @@ function BeakerIcon({ className = 'w-4 h-4' }: { className?: string }) {
   );
 }
 
-function BrainIcon({ className = 'w-4 h-4' }: { className?: string }) {
+function BrainIcon({ className = 'w-4 h-4', style }: { className?: string; style?: React.CSSProperties }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z" />
       <path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z" />
       <path d="M12 5v13" />
@@ -99,17 +99,17 @@ function BrainIcon({ className = 'w-4 h-4' }: { className?: string }) {
   );
 }
 
-function HeartIcon({ className = 'w-4 h-4' }: { className?: string }) {
+function HeartIcon({ className = 'w-4 h-4', style }: { className?: string; style?: React.CSSProperties }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
     </svg>
   );
 }
 
-function ShieldIcon({ className = 'w-4 h-4' }: { className?: string }) {
+function ShieldIcon({ className = 'w-4 h-4', style }: { className?: string; style?: React.CSSProperties }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
       <path d="m9 12 2 2 4-4" />
     </svg>
@@ -125,9 +125,9 @@ function AlertTriangleIcon({ className = 'w-3.5 h-3.5' }: { className?: string }
   );
 }
 
-function DropletIcon({ className = 'w-4 h-4' }: { className?: string }) {
+function DropletIcon({ className = 'w-4 h-4', style }: { className?: string; style?: React.CSSProperties }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z" />
     </svg>
   );
@@ -1240,8 +1240,8 @@ function HydrationStrategyTab() {
           {schedule.map((slot, i) => (
             <div key={i} className="rounded-xl bg-white/[0.02] border border-white/[0.05] p-3">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm">{slot.icon}</span>
-                <h5 className="text-xs font-bold text-white">{slot.timeSlot}</h5>
+                <span className="text-sm">{'\ud83d\udcc5'}</span>
+                <h5 className="text-xs font-bold text-white">{slot.timeOfDay}</h5>
               </div>
               <div className="space-y-1.5">
                 {slot.beverages.map((bev, bi) => (

@@ -512,9 +512,25 @@ export default React.memo(function Dashboard({ stats, insights, onNavigate }: Da
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════
+          MOTIVATIONAL QUOTE
+          ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="glass-card-hero-glow-sm p-4 animate-fadeUp stagger-1" style={{ opacity: 0 }}>
+        <div className="flex items-start gap-3">
+          <div className="w-8 h-8 rounded-lg bg-violet-500/15 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 20.94c1.5 0 3-.09 4.43-2.56l.42-.45A9.06 9.06 0 0 0 21.5 7.5c0-5-3.5-9.5-8.5-9.5S4.5 2.5 4.5 7.5c0 2.72 1.29 5.14 3.3 6.7l.42.45A4.5 4.5 0 0 0 12 20.94Z" />
+            </svg>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs text-slate-300 leading-relaxed italic">"{quote}"</p>
+          </div>
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
           BRAIN RECOVERY SCORE WIDGET
           ═══════════════════════════════════════════════════════════════════════ */}
-      <div className="glass-card-hero-glow p-5 animate-fadeUp stagger-1 relative overflow-hidden" style={{ opacity: 0 }}>
+      <div className="glass-card-hero-glow p-5 animate-fadeUp stagger-3 relative overflow-hidden" style={{ opacity: 0 }}>
         {/* Subtle background glow */}
         <div
           className="absolute -top-12 -right-12 w-36 h-36 rounded-full blur-3xl pointer-events-none opacity-30"
@@ -597,7 +613,7 @@ export default React.memo(function Dashboard({ stats, insights, onNavigate }: Da
       {/* ═══════════════════════════════════════════════════════════════════════
           7-DAY MOOD TREND MINI-CHART
           ═══════════════════════════════════════════════════════════════════════ */}
-      <div className="glass-card p-4 animate-fadeUp stagger-2" style={{ opacity: 0 }}>
+      <div className="glass-card p-4 animate-fadeUp stagger-4" style={{ opacity: 0 }}>
         <div className="flex items-center justify-between mb-3">
           <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">7-Day Mood Trend</span>
           <span className="text-[10px] text-slate-400 font-medium">Last 7 days</span>
@@ -739,6 +755,40 @@ export default React.memo(function Dashboard({ stats, insights, onNavigate }: Da
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════
+          QUICK ACTIONS
+          ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="grid grid-cols-2 gap-3 animate-fadeUp stagger-4" style={{ opacity: 0 }}>
+        <button
+          onClick={() => onNavigate('recovery')}
+          className="flex items-center gap-3 p-3.5 rounded-xl bg-gradient-to-r from-sky-500/15 to-blue-500/10 border border-sky-500/20 hover:border-sky-500/30 active:scale-[0.97] transition-all group"
+        >
+          <div className="w-9 h-9 rounded-xl bg-sky-500/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+          </div>
+          <div className="text-left">
+            <p className="text-xs font-semibold text-white">Check In Now</p>
+            <p className="text-[10px] text-sky-400/70">Log your day</p>
+          </div>
+        </button>
+        <button
+          onClick={() => onNavigate('substances')}
+          className="flex items-center gap-3 p-3.5 rounded-xl bg-gradient-to-r from-emerald-500/15 to-teal-500/10 border border-emerald-500/20 hover:border-emerald-500/30 active:scale-[0.97] transition-all group"
+        >
+          <div className="w-9 h-9 rounded-xl bg-emerald-500/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M8 2v4" /><path d="M16 2v4" /><rect x="2" y="6" width="20" height="16" rx="2" /><path d="M2 10h20" /><path d="M12 6v16" />
+            </svg>
+          </div>
+          <div className="text-left">
+            <p className="text-xs font-semibold text-white">Substances</p>
+            <p className="text-[10px] text-emerald-400/70">Explore info</p>
+          </div>
+        </button>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
           RECOVERY MILESTONES
           ═══════════════════════════════════════════════════════════════════════ */}
       <MilestonesSection streak={stats.streak} soberDays={stats.soberDays} totalCheckins={stats.totalCheckins} />
@@ -746,7 +796,7 @@ export default React.memo(function Dashboard({ stats, insights, onNavigate }: Da
       {/* ═══════════════════════════════════════════════════════════════════════
           TODAY'S STATUS — Clickable
           ═══════════════════════════════════════════════════════════════════════ */}
-      <div className="glass-card glass-card-interactive p-4 animate-fadeUp stagger-4" style={{ opacity: 0 }}>
+      <div className="glass-card glass-card-interactive p-4 animate-fadeUp stagger-7" style={{ opacity: 0 }}>
         <div className="flex items-center justify-between">
           <div className="flex-1 min-w-0">
             <p className="text-xs text-slate-400 mb-1.5">Today&apos;s Status</p>
@@ -789,7 +839,7 @@ export default React.memo(function Dashboard({ stats, insights, onNavigate }: Da
       {/* ═══════════════════════════════════════════════════════════════════════
           WEEKLY SUMMARY CARD
           ═══════════════════════════════════════════════════════════════════════ */}
-      <div className="glass-card p-4 animate-fadeUp stagger-5" style={{ opacity: 0 }}>
+      <div className="glass-card p-4 animate-fadeUp stagger-8" style={{ opacity: 0 }}>
         <div className="flex items-center gap-2 mb-4">
           {/* Calendar icon */}
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

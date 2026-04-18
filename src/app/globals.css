@@ -787,6 +787,21 @@ textarea:focus {
   animation: slideUpMenu 0.3s var(--ease-out-expo) forwards;
 }
 
+@keyframes slideDownMenu {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+.animate-slideDownMenu {
+  animation: slideDownMenu 0.2s ease-in forwards;
+}
+
 /* ═══════════════════════════════════════════════════════════════
    CRISIS PULSE ANIMATION
    ═══════════════════════════════════════════════════════════════ */
@@ -1057,6 +1072,82 @@ button:disabled:active {
 
 .dropdown-expand {
   transition: grid-template-rows 0.35s var(--ease-out-expo);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GLASS CARD HERO GLOW SM — Smaller subtler variant
+   ═══════════════════════════════════════════════════════════════ */
+
+.glass-card-hero-glow-sm {
+  position: relative;
+  background: rgba(17, 24, 39, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background-clip: padding-box;
+  overflow: hidden;
+  isolation: isolate;
+}
+.glass-card-hero-glow-sm::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--border-angle, 0deg), transparent 70%, rgba(14,165,233,0.25) 82%, rgba(16,185,129,0.25) 92%, transparent 100%);
+  z-index: -1;
+  animation: border-glow-rotate 6s linear infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SHIMMER TEXT — Loading text placeholder
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes shimmer-text {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.shimmer-text {
+  background: linear-gradient(90deg, rgba(255,255,255,0.08) 25%, rgba(255,255,255,0.18) 50%, rgba(255,255,255,0.08) 75%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer-text 2s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GLASS CARD WARNING — Amber/red accent variant
+   ═══════════════════════════════════════════════════════════════ */
+
+.glass-card-warning {
+  position: relative;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.06) 0%, rgba(17, 24, 39, 0.9) 60%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(245, 158, 11, 0.15);
+  border-top: 1px solid rgba(245, 158, 11, 0.1);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm), 0 0 16px rgba(245, 158, 11, 0.04);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  isolation: isolate;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GLASS CARD SUCCESS — Emerald/green accent variant
+   ═══════════════════════════════════════════════════════════════ */
+
+.glass-card-success {
+  position: relative;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.06) 0%, rgba(17, 24, 39, 0.9) 60%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(16, 185, 129, 0.15);
+  border-top: 1px solid rgba(16, 185, 129, 0.1);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm), 0 0 16px rgba(16, 185, 129, 0.04);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  isolation: isolate;
 }
 
 /* ═══════════════════════════════════════════════════════════════
