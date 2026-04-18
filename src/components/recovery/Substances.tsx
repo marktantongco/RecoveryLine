@@ -48,15 +48,95 @@ function getCategoryLabel(cat: string): string {
   }
 }
 
-// --- Section Header with SVG Icon ---
+// --- 4-Phase Color System ---
+const PHASE_COLORS = [
+  { badge: 'bg-red-500/15 text-red-400 border-red-500/25', dot: 'bg-red-500', text: 'text-red-400', border: 'border-red-500/10', bg: 'bg-red-500/[0.03]', timeline: 'bg-red-500/10 text-red-400 border-red-500/15' },
+  { badge: 'bg-amber-500/15 text-amber-400 border-amber-500/25', dot: 'bg-amber-500', text: 'text-amber-400', border: 'border-amber-500/10', bg: 'bg-amber-500/[0.03]', timeline: 'bg-amber-500/10 text-amber-400 border-amber-500/15' },
+  { badge: 'bg-blue-500/15 text-blue-400 border-blue-500/25', dot: 'bg-blue-500', text: 'text-blue-400', border: 'border-blue-500/10', bg: 'bg-blue-500/[0.03]', timeline: 'bg-blue-500/10 text-blue-400 border-blue-500/15' },
+  { badge: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/25', dot: 'bg-emerald-500', text: 'text-emerald-400', border: 'border-emerald-500/10', bg: 'bg-emerald-500/[0.03]', timeline: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/15' },
+];
 
-function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }) {
+// --- Animated Chevron Icon ---
+function AnimatedChevron({ isOpen, size = 14 }: { isOpen: boolean; size?: number }) {
   return (
-    <div className="flex items-center gap-2.5 mb-3">
-      <div className="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0">
-        {icon}
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={`transition-transform duration-300 flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`}
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
+
+// --- Collapsible Section Card ---
+function CollapsibleSection({
+  id,
+  icon,
+  label,
+  labelColor = 'text-white',
+  labelBg = 'bg-white/10 border-white/15',
+  subtitle,
+  children,
+  expandedId,
+  onToggle,
+  staggerClass = '',
+}: {
+  id: string;
+  icon: React.ReactNode;
+  label: string;
+  labelColor?: string;
+  labelBg?: string;
+  subtitle: string;
+  children: React.ReactNode;
+  expandedId: string | null;
+  onToggle: (id: string) => void;
+  staggerClass?: string;
+}) {
+  const isOpen = expandedId === id;
+  return (
+    <div className={`glass-card overflow-hidden animate-fadeUp ${staggerClass}`} style={{ opacity: 0 }}>
+      <button
+        onClick={() => onToggle(isOpen ? '' : id)}
+        className="w-full p-4 text-left hover:bg-white/[0.02] transition-colors active:scale-[0.999]"
+      >
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 flex-1 min-w-0">
+            <div className="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0">
+              {icon}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="text-[10px] font-bold uppercase tracking-wider text-white">{label}</h3>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">{subtitle}</p>
+            </div>
+          </div>
+          <div className={`text-slate-500 ${isOpen ? 'rotate-180' : ''} transition-transform duration-300 flex-shrink-0`}>
+            <AnimatedChevron isOpen={isOpen} size={14} />
+          </div>
+        </div>
+      </button>
+      {/* Collapsible Content via CSS Grid */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateRows: isOpen ? '1fr' : '0fr',
+          transition: 'grid-template-rows 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+        }}
+      >
+        <div style={{ overflow: 'hidden', minHeight: 0 }}>
+          <div className="px-4 pb-4 border-t border-white/[0.04] pt-3">
+            {children}
+          </div>
+        </div>
       </div>
-      <h3 className="text-xs font-bold text-white uppercase tracking-wider">{title}</h3>
     </div>
   );
 }
@@ -126,6 +206,13 @@ const Icons = {
       <path d="M18 6 6 18" /><path d="m6 6 12 12" />
     </svg>
   ),
+  lightbulb: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#facc15" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
+      <path d="M9 18h6" />
+      <path d="M10 22h4" />
+    </svg>
+  ),
 };
 
 // --- Header Card Tab Config ---
@@ -141,8 +228,9 @@ const DROPDOWN_AUTO_CLOSE_MS = 4000;
 
 const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { substance: SubstanceData }) {
   const [expandedDropdown, setExpandedDropdown] = useState<HeaderTabId | null>(null);
-  const [supplementsExpanded, setSupplementsExpanded] = useState(false);
+  const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [protocolExpanded, setProtocolExpanded] = useState<string | null>(null);
+  const [supplementsExpanded, setSupplementsExpanded] = useState(false);
 
   // Simple timer ref — no complex useCallback chain
   const autoCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -183,8 +271,12 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
     }, DROPDOWN_AUTO_CLOSE_MS);
   }, [expandedDropdown]);
 
+  const handleSectionToggle = useCallback((id: string) => {
+    setExpandedSection((prev) => (prev === id ? null : id));
+  }, []);
+
   return (
-    <div className="space-y-4 pb-6">
+    <div className="space-y-3 pb-6">
       {/* --- Header Card with 3 Tabs --- */}
       <div className="glass-card-hero-glow p-5 animate-fadeUp relative overflow-hidden">
         {/* Background danger accent */}
@@ -230,7 +322,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
             ))}
           </div>
 
-          {/* 3 Dropdown Tabs: Damages, Reductions, Withdrawals */}
+          {/* 3 Dropdown Tabs: Damages, Reductions, Withdrawals — with animated chevrons */}
           <div className="flex mt-4 gap-1.5">
             {HEADER_TABS.map((tab) => {
               const isOpen = expandedDropdown === tab.id;
@@ -247,6 +339,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
                 >
                   <span className="text-xs">{tab.icon}</span>
                   <span className="leading-tight text-center">{tab.label}</span>
+                  <AnimatedChevron isOpen={isOpen} size={10} />
                 </button>
               );
             })}
@@ -351,10 +444,120 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
         </div>
       </div>
 
-      {/* --- RECOVERY FOCUS --- */}
-      <div className="glass-card p-4 animate-fadeUp stagger-1" style={{ opacity: 0 }}>
-        <SectionHeader icon={Icons.recovery} title="Recovery Focus" />
+      {/* --- PRIMARY DAMAGE (Collapsible) --- */}
+      <CollapsibleSection
+        id="damage"
+        icon={Icons.damage}
+        label="Primary Damage"
+        subtitle={`Comprehensive organ and system damage overview — ${substance.primaryDamage.items.length} key areas affected`}
+        expandedId={expandedSection}
+        onToggle={handleSectionToggle}
+        staggerClass="stagger-1"
+      >
+        <div className="space-y-1.5">
+          {substance.primaryDamage.items.map((item, i) => (
+            <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-red-500/[0.04]">
+              <span className="w-5 h-5 rounded-md bg-red-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-[10px] font-bold text-red-400">{i + 1}</span>
+              </span>
+              <span className="text-[11px] text-slate-300 leading-relaxed">{item}</span>
+            </div>
+          ))}
+          <div className="rounded-xl bg-red-500/5 border border-red-500/10 p-3 mt-2">
+            <p className="text-[10px] font-semibold text-red-400 uppercase tracking-wide mb-1">Summary</p>
+            <p className="text-[11px] text-slate-400 leading-relaxed">{substance.primaryDamage.summary}</p>
+          </div>
+        </div>
+      </CollapsibleSection>
 
+      {/* --- PHARMACOLOGY (Collapsible) --- */}
+      <CollapsibleSection
+        id="pharmacology"
+        icon={Icons.pharmacology}
+        label="Pharmacology"
+        subtitle="Mechanism of action, half-life, and metabolism details"
+        expandedId={expandedSection}
+        onToggle={handleSectionToggle}
+        staggerClass="stagger-2"
+      >
+        <div className="space-y-2.5">
+          <PharmRow label="Mechanism" value={substance.pharmacology.mechanism} />
+          <PharmRow label="Half-life" value={substance.pharmacology.halfLife} />
+          <PharmRow label="Onset" value={substance.pharmacology.onset} />
+          <PharmRow label="Peak" value={substance.pharmacology.peak} />
+          <PharmRow label="Duration" value={substance.pharmacology.duration} />
+          <PharmRow label="Metabolites" value={substance.pharmacology.metabolites} />
+        </div>
+      </CollapsibleSection>
+
+      {/* --- HARM REDUCTION (Collapsible) --- */}
+      <CollapsibleSection
+        id="reduction"
+        icon={Icons.harm}
+        label="Harm Reduction"
+        subtitle={`${substance.harmReduction.length} evidence-based harm reduction strategies`}
+        expandedId={expandedSection}
+        onToggle={handleSectionToggle}
+        staggerClass="stagger-2"
+      >
+        <div className="space-y-1.5">
+          {substance.harmReduction.map((tip, i) => (
+            <div key={i} className="flex items-start gap-2.5 p-2 rounded-lg bg-sky-500/[0.04]">
+              <span className="w-5 h-5 rounded-md bg-sky-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-[10px] font-bold text-sky-400">{i + 1}</span>
+              </span>
+              <p className="text-[11px] text-slate-300 leading-relaxed">{tip}</p>
+            </div>
+          ))}
+        </div>
+      </CollapsibleSection>
+
+      {/* --- WITHDRAWAL SYMPTOMS (Collapsible) --- */}
+      <CollapsibleSection
+        id="withdrawal"
+        icon={Icons.withdrawal}
+        label="Withdrawal Symptoms"
+        subtitle={`Timeline: ${substance.withdrawal.timeline} · Severity: ${sev.label}`}
+        expandedId={expandedSection}
+        onToggle={handleSectionToggle}
+        staggerClass="stagger-3"
+      >
+        {/* Timeline + Severity */}
+        <div className="flex items-center gap-3 mb-3">
+          <div className="flex-1">
+            <p className="text-[10px] text-slate-400 uppercase tracking-wide mb-0.5">Timeline</p>
+            <p className="text-xs text-slate-300">{substance.withdrawal.timeline}</p>
+          </div>
+          <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border ${sev.bg} ${sev.color}`}>
+            {sev.label}
+          </span>
+        </div>
+        <div className="space-y-1.5 mb-3">
+          {substance.withdrawal.symptoms.map((symptom, i) => (
+            <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-amber-500/[0.04]">
+              <span className="w-5 h-5 rounded-md bg-amber-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-[10px] font-bold text-amber-400">{i + 1}</span>
+              </span>
+              <span className="text-[11px] text-slate-300 leading-relaxed">{symptom}</span>
+            </div>
+          ))}
+        </div>
+        <div className="rounded-xl bg-amber-500/5 border border-amber-500/10 p-3">
+          <p className="text-[10px] font-semibold text-amber-400 uppercase tracking-wide mb-1">Post-Acute Withdrawal (PAWS)</p>
+          <p className="text-[11px] text-slate-400 leading-relaxed">{substance.withdrawal.paws}</p>
+        </div>
+      </CollapsibleSection>
+
+      {/* --- RECOVERY FOCUS (Collapsible) --- */}
+      <CollapsibleSection
+        id="recovery-focus"
+        icon={Icons.recovery}
+        label="Recovery Focus"
+        subtitle={`Target neurotransmitters, organs, and ${substance.recoveryFocus.timeline.toLowerCase()}`}
+        expandedId={expandedSection}
+        onToggle={handleSectionToggle}
+        staggerClass="stagger-3"
+      >
         {/* Neurotransmitters */}
         <div className="mb-3">
           <p className="text-[10px] text-slate-400 uppercase tracking-wide mb-1.5 flex items-center gap-1.5">
@@ -392,7 +595,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
             <p className="text-[10px] text-slate-400 uppercase tracking-wide">
               Priority Supplements ({substance.recoveryFocus.prioritySupplements.length})
             </p>
-            <span className={`text-slate-500 transition-transform ${supplementsExpanded ? 'rotate-180' : ''}`}>
+            <span className={`text-slate-500 transition-transform duration-300 ${supplementsExpanded ? 'rotate-180' : ''}`}>
               {React.cloneElement(Icons.chevron as React.ReactElement, { width: 12, height: 12 })}
             </span>
           </button>
@@ -428,41 +631,60 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
           <p className="text-[10px] font-semibold text-emerald-400 uppercase tracking-wide mb-1">Recovery Timeline</p>
           <p className="text-[11px] text-slate-400 leading-relaxed">{substance.recoveryFocus.timeline}</p>
         </div>
-      </div>
+      </CollapsibleSection>
 
-      {/* --- RECOVERY PROTOCOL --- */}
-      <div className="glass-card p-4 animate-fadeUp stagger-2" style={{ opacity: 0 }}>
-        <SectionHeader icon={Icons.protocol} title="Recovery Protocol" />
+      {/* --- RECOVERY PROTOCOL (Collapsible with 4-Phase nested rows) --- */}
+      <CollapsibleSection
+        id="protocol"
+        icon={Icons.protocol}
+        label="Recovery Protocol"
+        subtitle="4-phase symbiotic recovery framework"
+        expandedId={expandedSection}
+        onToggle={handleSectionToggle}
+        staggerClass="stagger-4"
+      >
         <p className="text-[11px] text-slate-400 leading-relaxed mb-3">
           The Symbiotic Protocol integrates neurochemical restoration, gut-brain axis repair, and lifestyle synergy into a comprehensive recovery framework.
         </p>
         <div className="space-y-2">
-          {SYMBIOTIC_PROTOCOL.map((section) => {
+          {SYMBIOTIC_PROTOCOL.map((section, sIdx) => {
+            const phaseColor = PHASE_COLORS[sIdx] || PHASE_COLORS[PHASE_COLORS.length - 1];
             const isPillarOpen = protocolExpanded === section.id;
             return (
               <div key={section.id} className="rounded-xl border border-white/[0.06] overflow-hidden">
-                {/* Pillar Header */}
+                {/* Phase Row Header — matching Recovery Protocol screenshot pattern */}
                 <button
                   onClick={() => setProtocolExpanded(isPillarOpen ? null : section.id)}
                   className="w-full p-3 text-left hover:bg-white/[0.02] transition-colors active:scale-[0.999]"
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-white">{section.name}</p>
-                      <p className="text-[10px] text-slate-400 mt-0.5">{section.subtitle}</p>
-                      <div className="flex items-center gap-2 mt-1.5">
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/15 font-medium">
-                          {section.phases.length} {section.phases.length === 1 ? 'phase' : 'phases'}
-                        </span>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.06] text-slate-400 border border-white/[0.08] font-medium">
-                          {section.principles.length} principles
-                        </span>
+                    <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                      {/* Colored Phase Badge */}
+                      <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold border flex-shrink-0 ${phaseColor.badge}`}>
+                        {sIdx + 1}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold text-white leading-tight truncate">{section.name}</p>
+                        <p className="text-[10px] text-slate-400 mt-0.5 truncate">{section.subtitle}</p>
                       </div>
                     </div>
-                    <span className={`text-slate-500 transition-transform flex-shrink-0 ${isPillarOpen ? 'rotate-180' : ''}`}>
-                      {React.cloneElement(Icons.chevron as React.ReactElement, { width: 14, height: 14 })}
-                    </span>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      {/* Timeline Badge */}
+                      <span className={`text-[9px] px-1.5 py-0.5 rounded border font-medium whitespace-nowrap ${phaseColor.timeline}`}>
+                        {section.phases.length} phase{section.phases.length !== 1 ? 's' : ''}
+                      </span>
+                      {/* Animated Chevron */}
+                      <span className={`text-slate-500 transition-transform duration-300 ${isPillarOpen ? 'rotate-180' : ''}`}>
+                        <AnimatedChevron isOpen={isPillarOpen} size={12} />
+                      </span>
+                    </div>
                   </div>
+                  {/* Retracted Description */}
+                  {!isPillarOpen && (
+                    <p className="text-[10px] text-slate-500 leading-relaxed mt-1.5 pl-[42px]">
+                      {section.description.slice(0, 120)}...
+                    </p>
+                  )}
                 </button>
 
                 {/* Expanded Pillar Content */}
@@ -487,28 +709,31 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
                       </div>
                     </div>
 
-                    {/* Phases (collapsed) */}
+                    {/* Phases — with colored phase rows */}
                     <div>
                       <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">Recovery Phases</p>
                       <div className="space-y-1.5">
-                        {section.phases.map((phase, idx) => (
-                          <div key={idx} className="p-2.5 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="w-5 h-5 rounded-md bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
-                                <span className="text-[10px] font-bold text-emerald-400">{idx + 1}</span>
-                              </span>
-                              <p className="text-[11px] font-medium text-white">{phase.name}</p>
+                        {section.phases.map((phase, idx) => {
+                          const innerPhaseColor = PHASE_COLORS[idx] || PHASE_COLORS[PHASE_COLORS.length - 1];
+                          return (
+                            <div key={idx} className={`p-2.5 rounded-lg ${innerPhaseColor.bg} border ${innerPhaseColor.border}`}>
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className={`w-5 h-5 rounded-md ${innerPhaseColor.timeline} flex items-center justify-center flex-shrink-0 border`}>
+                                  <span className={`text-[10px] font-bold ${innerPhaseColor.text}`}>{idx + 1}</span>
+                                </span>
+                                <p className="text-[11px] font-medium text-white">{phase.name}</p>
+                              </div>
+                              <div className="flex items-center gap-2 ml-7">
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded border font-medium ${innerPhaseColor.timeline}`}>
+                                  {phase.timeline}
+                                </span>
+                                <span className="text-[10px] text-slate-600">{phase.actions.length} actions</span>
+                                <span className="text-[10px] text-slate-600">&middot;</span>
+                                <span className="text-[10px] text-slate-600">{phase.supplements.length} supplements</span>
+                              </div>
                             </div>
-                            <div className="flex items-center gap-2 ml-7">
-                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/15 font-medium">
-                                {phase.timeline}
-                              </span>
-                              <span className="text-[10px] text-slate-600">{phase.actions.length} actions</span>
-                              <span className="text-[10px] text-slate-600">&middot;</span>
-                              <span className="text-[10px] text-slate-600">{phase.supplements.length} supplements</span>
-                            </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
@@ -517,24 +742,22 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
             );
           })}
         </div>
-      </div>
+      </CollapsibleSection>
 
-      {/* --- SUBSTANCE-SPECIFIC RECOVERY PHASES --- */}
+      {/* --- SUBSTANCE-SPECIFIC RECOVERY PHASES (Collapsible) --- */}
       {substance.recoveryPhases && substance.recoveryPhases.length > 0 && (
-        <div className="glass-card p-4 animate-fadeUp stagger-3" style={{ opacity: 0 }}>
-          <SectionHeader icon={Icons.brain} title="Substance-Specific Recovery Phases" />
-          <p className="text-[11px] text-slate-400 leading-relaxed mb-3">
-            Phase-based supplement protocol and dietary guidance specific to {substance.name} recovery.
-          </p>
+        <CollapsibleSection
+          id="substance-phases"
+          icon={Icons.brain}
+          label="Substance-Specific Phases"
+          subtitle={`Phase-based protocol for ${substance.name} recovery`}
+          expandedId={expandedSection}
+          onToggle={handleSectionToggle}
+          staggerClass="stagger-5"
+        >
           <div className="space-y-3">
             {substance.recoveryPhases.map((phase, phaseIdx) => {
-              const phaseColors = [
-                { accent: 'red', bg: 'bg-red-500/5', border: 'border-red-500/10', text: 'text-red-400', dot: 'bg-red-400', badge: 'bg-red-500/15 text-red-400 border-red-500/20', supplementBg: 'bg-red-500/[0.03]', supplementBorder: 'border-red-500/[0.06]' },
-                { accent: 'amber', bg: 'bg-amber-500/5', border: 'border-amber-500/10', text: 'text-amber-400', dot: 'bg-amber-400', badge: 'bg-amber-500/15 text-amber-400 border-amber-500/20', supplementBg: 'bg-amber-500/[0.03]', supplementBorder: 'border-amber-500/[0.06]' },
-                { accent: 'emerald', bg: 'bg-emerald-500/5', border: 'border-emerald-500/10', text: 'text-emerald-400', dot: 'bg-emerald-400', badge: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20', supplementBg: 'bg-emerald-500/[0.03]', supplementBorder: 'border-emerald-500/[0.06]' },
-                { accent: 'sky', bg: 'bg-sky-500/5', border: 'border-sky-500/10', text: 'text-sky-400', dot: 'bg-sky-400', badge: 'bg-sky-500/15 text-sky-400 border-sky-500/20', supplementBg: 'bg-sky-500/[0.03]', supplementBorder: 'border-sky-500/[0.06]' },
-              ];
-              const colors = phaseColors[phaseIdx] || phaseColors[3];
+              const colors = PHASE_COLORS[phaseIdx] || PHASE_COLORS[PHASE_COLORS.length - 1];
               return (
                 <div key={phaseIdx} className="space-y-2">
                   {/* Phase connector line */}
@@ -638,27 +861,20 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
               );
             })}
           </div>
-        </div>
+        </CollapsibleSection>
       )}
 
-      {/* --- PHARMACOLOGY --- */}
-      <div className="glass-card p-4 animate-fadeUp stagger-4" style={{ opacity: 0 }}>
-        <SectionHeader icon={Icons.pharmacology} title="Pharmacology" />
-
-        <div className="space-y-2.5">
-          <PharmRow label="Mechanism" value={substance.pharmacology.mechanism} />
-          <PharmRow label="Half-life" value={substance.pharmacology.halfLife} />
-          <PharmRow label="Onset" value={substance.pharmacology.onset} />
-          <PharmRow label="Peak" value={substance.pharmacology.peak} />
-          <PharmRow label="Duration" value={substance.pharmacology.duration} />
-          <PharmRow label="Metabolites" value={substance.pharmacology.metabolites} />
-        </div>
-      </div>
-
-      {/* --- RECOVERY TIPS --- */}
+      {/* --- RECOVERY TIPS (Collapsible) --- */}
       {substance.recoveryTips && substance.recoveryTips.length > 0 && (
-        <div className="glass-card p-4 animate-fadeUp stagger-5" style={{ opacity: 0 }}>
-          <SectionHeader icon={Icons.harm} title="Recovery Tips" />
+        <CollapsibleSection
+          id="recovery-tips"
+          icon={Icons.lightbulb}
+          label="Recovery Tips"
+          subtitle={`${substance.recoveryTips.length} evidence-based recovery strategies`}
+          expandedId={expandedSection}
+          onToggle={handleSectionToggle}
+          staggerClass="stagger-5"
+        >
           <div className="space-y-1.5">
             {substance.recoveryTips.map((tip, i) => (
               <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-sky-500/[0.04]">
@@ -669,20 +885,26 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
               </div>
             ))}
           </div>
-        </div>
+        </CollapsibleSection>
       )}
 
-      {/* --- PHILIPPINES --- */}
-      <div className="glass-card p-4 animate-fadeUp stagger-6" style={{ opacity: 0 }}>
-        <SectionHeader icon={Icons.philippines} title="Philippines" />
-
+      {/* --- PHILIPPINES (Collapsible) --- */}
+      <CollapsibleSection
+        id="philippines"
+        icon={Icons.philippines}
+        label="Philippines"
+        subtitle="Legal status, penalties, and local context"
+        expandedId={expandedSection}
+        onToggle={handleSectionToggle}
+        staggerClass="stagger-6"
+      >
         <div className="space-y-2.5">
           <InfoRow label="Legality" value={substance.philippines.legality} />
           <InfoRow label="Penalties" value={substance.philippines.penalties} />
           <InfoRow label="Common Form" value={substance.philippines.commonForm} />
           <InfoRow label="Street Price" value={substance.philippines.streetPrice} highlight />
         </div>
-      </div>
+      </CollapsibleSection>
 
       {/* --- Disclaimer --- */}
       <div className="glass-card p-3 animate-fadeUp stagger-7" style={{ opacity: 0 }}>

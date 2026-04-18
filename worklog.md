@@ -567,3 +567,76 @@ Stage Summary:
 - Per-substance accent colors by category/danger level (violet for MDMA, lime for cannabis, cyan for GHB, rose for cocaine/meth)
 - Detail view includes recovery focus summary and expandable phase cards
 - File grew: RecoveryProtocol.tsx 637 → 1163 lines
+---
+Task ID: 8
+Agent: Main Agent
+Task: Rewrite Substances component UI to match Recovery Protocol collapsible card layout
+
+Work Log:
+- Read Substances.tsx (957 lines) and recovery-protocol-data.ts to understand full data structures
+- Analyzed Recovery Protocol screenshot pattern: 4-layer expandable hierarchy with colored phase labels, timeline badges, animated chevrons
+
+### 1. Animated Chevron Arrows on 3 Header Dropdown Tabs
+- Created `AnimatedChevron` component with `transition-transform duration-300` and `rotate-180` on open
+- Added chevron (size 10) to each of the 3 dropdown tabs (Damages, Reductions, Withdrawals)
+- Arrows rotate 180° when tab opens, back to 0° when collapsed
+
+### 2. CollapsibleSection Component — Reusable Card Pattern
+- Created `CollapsibleSection` component matching Recovery Protocol layout:
+  - Icon + label + subtitle in header row
+  - Animated chevron on right side
+  - CSS grid animation for smooth expand/collapse (0.35s cubic-bezier)
+  - Content wrapped in border-t divider when expanded
+- Each section has descriptive subtitle shown while collapsed
+
+### 3. Restructured ALL Sections into Collapsible Cards
+Converted all 9 sections from static glass-cards to collapsible cards:
+- **Primary Damage** — red icon, shows damage count in subtitle
+- **Pharmacology** — purple icon, mechanism/dosage subtitle
+- **Harm Reduction** — sky shield icon, strategy count subtitle
+- **Withdrawal Symptoms** — amber sun icon, timeline + severity subtitle
+- **Recovery Focus** — emerald check icon, neurotransmitters/organs subtitle
+- **Recovery Protocol** — green shield+check icon, 4-phase framework subtitle
+- **Substance-Specific Phases** — purple brain icon, drug name in subtitle
+- **Recovery Tips** — yellow lightbulb icon, strategy count subtitle
+- **Philippines** — pink globe icon, legal context subtitle
+
+### 4. Recovery Protocol with 4-Phase Nested Expandable Rows
+- Added `PHASE_COLORS` array: red → amber → blue → emerald for 4-level color system
+- Each SYMBIOTIC_PROTOCOL section renders as a phase row with:
+  - Colored numbered badge (phase index)
+  - Section name + subtitle
+  - Timeline badge (e.g., "3 phases")
+  - Animated chevron (12px, rotate-180 on open)
+  - Truncated description shown while collapsed (120 chars + "...")
+  - Full content when expanded: description, core principles, colored phase sub-rows
+- Inner phase sub-rows use corresponding PHASE_COLORS (red, amber, blue, emerald) with colored badges
+
+### 5. New Icon Added
+- `Icons.lightbulb` — yellow stroke lightbulb SVG for Recovery Tips section
+
+### 6. State Management
+- Added `expandedSection` state (string | null) tracking which section is open
+- `handleSectionToggle` callback toggles sections
+- `protocolExpanded` state preserved for nested Recovery Protocol rows
+- `supplementsExpanded` state preserved for Priority Supplements sub-toggle
+- All existing timer/dropdown logic preserved unchanged
+
+### 7. Main Substances Component — Unchanged
+- Tab navigation, search, scroll indicators, drug list — all preserved
+- No changes to main component logic
+
+### Verification
+- `npx eslint src/components/recovery/Substances.tsx`: 0 errors, 0 warnings
+- Dev server compiles successfully: ✓ Compiled in 273ms
+- All existing functionality preserved
+
+Stage Summary:
+- Complete SubstanceDetail UI rewrite to Recovery Protocol collapsible card pattern
+- 9 sections converted from static glass-cards to expandable/collapsible cards
+- 3 header dropdown tabs now have animated chevron arrows
+- Recovery Protocol section has 4-phase nested expandable rows with red/amber/blue/emerald color system
+- Retracted state shows brief descriptions; expanded reveals full content
+- Smooth CSS grid transitions (0.35s cubic-bezier) for all expand/collapse animations
+- All existing functionality preserved (timer auto-close, scroll, search, drug tabs)
+- File: Substances.tsx ~957 lines (complete rewrite of SubstanceDetail, main component unchanged)
