@@ -640,3 +640,93 @@ Stage Summary:
 - Smooth CSS grid transitions (0.35s cubic-bezier) for all expand/collapse animations
 - All existing functionality preserved (timer auto-close, scroll, search, drug tabs)
 - File: Substances.tsx ~957 lines (complete rewrite of SubstanceDetail, main component unchanged)
+---
+Task ID: 9
+Agent: Main Agent
+Task: Major Substances.tsx UI Restructure + Bookmark Feature + 10 Upgrades
+
+Work Log:
+- Read Substances.tsx (1179 lines) completely to understand structure
+- Analyzed recovery-protocol-data.ts (3 SYMBIOTIC_PROTOCOL sections) and substance-data.ts (recoveryPhases type)
+
+### 1. Removed 3 Redundant Collapsible Cards (lines 447-549)
+- Deleted "PRIMARY DAMAGE" CollapsibleSection (id="damage")
+- Deleted "HARM REDUCTION" CollapsibleSection (id="reduction")
+- Deleted "WITHDRAWAL SYMPTOMS" CollapsibleSection (id="withdrawal")
+- These were redundant because the 3 dropdown tabs in the header card already show this content
+
+### 2. Replaced Recovery Protocol + Substance-Specific Sections with 2 Big Buttons
+- Removed the single "Recovery Protocol" CollapsibleSection that contained both SYMBIOTIC_PROTOCOL and substance-specific phases
+- Removed the standalone "Substance-Specific Phases" CollapsibleSection
+- Created new 2-column grid layout with two clickable cards:
+  - LEFT: "SYMBIOTIC PROTOCOL" (emerald/teal gradient, brain icon, 3 pillars subtitle)
+  - RIGHT: "SUBSTANCE-SPECIFIC" (violet/purple gradient, pill icon, phase count subtitle)
+- Both buttons are initially collapsed; clicking expands the corresponding panel below
+- Symbiotic panel shows 3 expandable rows with SYMBIOTIC_COLORS (emerald/teal/green)
+- Substance panel shows 4 expandable phase rows with PHASE_COLORS (red/amber/blue/emerald)
+- Each row has: colored badge, title, subtitle, bookmark icon, animated chevron
+- Expanded rows show full content (description, principles, phases, supplements, etc.)
+- Retracted rows show truncated descriptions
+
+### 3. Enhanced Philippines Card
+- Added 🇵🇭 flag emoji to Legality section header
+- Added colored status indicator (red dot for illegal, amber for regulated, green for legal)
+- Penalties section styled with rose/warning background and border
+- Common Form and Street Price moved to 2-column mini grid
+
+### 4. Bookmark Functionality
+- Added BookmarkIcon component (filled yellow when bookmarked, outlined when not)
+- Added bookmarks state with localStorage persistence (per substance)
+- Added toggleBookmark handler with useCallback
+- Bookmark icons placed on:
+  - All CollapsibleSection headers (before chevron)
+  - All supplement rows in expanded tables
+  - All recovery tips
+  - All symbiotic protocol rows
+  - All substance-specific phase rows
+
+### 5. 10 Comprehensive Upgrades Implemented
+
+1. **Skeleton Loading**: Added SkeletonHeader and SkeletonSection components using skeleton-shimmer CSS class. 100ms minimum display when switching substance tabs (useEffect on substance.id).
+
+2. **Section Transition Stagger**: Existing stagger classes (stagger-1 through stagger-6) already handle sequential animation. Renumbered stagger classes after removing 3 cards.
+
+3. **Touch Feedback**: Added `active:scale-[0.98] transition-transform duration-150` on all interactive elements (buttons, phase rows, tip items).
+
+4. **Error Boundary per Section**: Created SectionErrorBoundary class component. Wrapped each section (header, pharmacology, recovery focus, protocol buttons, recovery tips, philippines, disclaimer) with individual error boundaries showing "Section unavailable" + retry button.
+
+5. **Smooth Number Animations**: Danger level dots now animate in sequence using staggered CSS `fadeUp` animation with `animationDelay: ${i * 60}ms`.
+
+6. **Progress Indicator**: Added progress bar showing viewedPhases.size / totalPhases. Tracks which phases have been expanded at least once, stored in localStorage. Gradient bar (emerald→violet) displayed above the 2 Big Buttons.
+
+7. **Haptic Feedback**: Added `haptic()` utility using `navigator.vibrate?.()`. Called on bookmark toggle, section expand, and protocol panel toggle.
+
+8. **Keyboard Navigation**: Added onKeyDown handlers for Enter/Space on all clickable elements. Escape key closes all open sections/panels via window event listener.
+
+9. **Accessibility**: Added `role="button"`, `aria-expanded`, `aria-controls`, `aria-label`, `role="region"`, `role="progressbar"` attributes throughout. CollapsibleSection links header button to content region via aria-controls.
+
+10. **React.memo Optimization**: Wrapped SubstanceDetail, AnimatedChevron, BookmarkIcon, CollapsibleSection, PharmRow, InfoRow in React.memo. All event handlers use useCallback. All display calculations use useMemo.
+
+### 6. New Components and Constants
+- `SectionErrorBoundary` — class component for per-section error catching
+- `BookmarkIcon` — memoized bookmark toggle button
+- `SkeletonSection` / `SkeletonHeader` — loading skeleton placeholders
+- `SYMBIOTIC_COLORS` — 3-color system for symbiotic protocol pillars
+- `Icons.pill` — violet pill/capsule SVG icon
+- `haptic()` — vibration API helper function
+
+### 7. State Management Added
+- `activeProtocolPanel`: tracks which big button panel is open
+- `expandedProtocolRow`: tracks which nested row is expanded
+- `bookmarks`: Set<string> persisted to localStorage per substance
+- `viewedPhases`: Set<string> persisted to localStorage per substance
+- `isLoading`: boolean for skeleton loading state
+
+Stage Summary:
+- 3 redundant collapsible cards removed (Primary Damage, Harm Reduction, Withdrawal Symptoms)
+- Single Recovery Protocol section replaced with 2 Big Buttons grid layout
+- Enhanced Philippines card with flag, status indicators, warning styling, 2-column grid
+- Full bookmark system with localStorage persistence
+- 10 upgrades implemented: skeleton, stagger, touch, error boundaries, number animations, progress indicator, haptic, keyboard, accessibility, React.memo
+- Build passes clean: ✓ Compiled successfully in 5.2s, 0 errors
+- Lint: 0 errors on Substances.tsx
