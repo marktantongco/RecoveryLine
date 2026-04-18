@@ -4,10 +4,12 @@ import React, { useState, useMemo } from 'react';
 import { JUICE_RECIPES, JUICE_CATEGORIES, type JuiceRecipe, NUTRITION_PROTOCOLS, type NutritionProtocol, NUTRIENT_GUIDES, type NutrientGuide, HYDRATION_BEVERAGES, DAILY_HYDRATION_SCHEDULE, type BeverageEntry, type HydrationSchedule } from '@/lib/nutrition-data';
 import { copyToClipboard } from '@/lib/utils';
 import { useToast } from './Toast';
+import { SUPPLEMENTS_DB, SUPPLEMENT_CATEGORIES, searchSupplements } from '@/lib/supplement-data';
+import type { SupplementData } from '@/lib/supplement-data';
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
 
-type SubTab = 'juice-recipes' | 'nutrition-protocols' | 'nutrient-guides' | 'hydration-strategy';
+type SubTab = 'juice-recipes' | 'nutrition-protocols' | 'nutrient-guides' | 'hydration-strategy' | 'supplements';
 
 // ─── Inline SVG Icons ──────────────────────────────────────────────────────────
 
@@ -142,6 +144,15 @@ function AppleIcon({ className = 'w-4 h-4' }: { className?: string }) {
   );
 }
 
+function PillIcon({ className = 'w-4 h-4' }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/>
+      <path d="m8.5 8.5 7 7"/>
+    </svg>
+  );
+}
+
 function TimerIcon({ className = 'w-4 h-4' }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -226,6 +237,7 @@ function SubTabNav({ active, onChange }: { active: SubTab; onChange: (tab: SubTa
     { id: 'nutrition-protocols', label: 'Nutrition Protocols', icon: <ClipboardIcon className="w-4 h-4" /> },
     { id: 'nutrient-guides', label: 'Nutrient Guides', icon: <BookIcon className="w-4 h-4" /> },
     { id: 'hydration-strategy', label: 'Hydration', icon: <DropletIcon className="w-4 h-4" /> },
+    { id: 'supplements', label: 'Supplements', icon: <PillIcon className="w-4 h-4" /> },
   ];
 
   return (
@@ -1343,6 +1355,155 @@ function HydrationStrategyTab() {
   );
 }
 
+// ─── Supplements Tab ──────────────────────────────────────────────────────────
+
+function getSupplementCategoryColor(cat: string): string {
+  switch (cat) {
+    case 'Minerals': return 'bg-amber-500/15 text-amber-400 border-amber-500/20';
+    case 'Amino Acids': return 'bg-sky-500/15 text-sky-400 border-sky-500/20';
+    case 'Herbal': return 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20';
+    case 'Vitamins': return 'bg-purple-500/15 text-purple-400 border-purple-500/20';
+    case 'Antioxidants': return 'bg-rose-500/15 text-rose-400 border-rose-500/20';
+    case 'Probiotics': return 'bg-teal-500/15 text-teal-400 border-teal-500/20';
+    case 'Adaptogens': return 'bg-violet-500/15 text-violet-400 border-violet-500/20';
+    case 'Protein': return 'bg-orange-500/15 text-orange-400 border-orange-500/20';
+    case 'Gut Healing': return 'bg-green-500/15 text-green-400 border-green-500/20';
+    default: return 'bg-slate-500/15 text-slate-400 border-slate-500/20';
+  }
+}
+
+function SupplementsTab() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('All');
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const filtered = useMemo(() => {
+    let results = searchQuery.trim() ? searchSupplements(searchQuery) : SUPPLEMENTS_DB;
+    if (categoryFilter !== 'All') {
+      results = results.filter((s) => s.category === categoryFilter);
+    }
+    return results;
+  }, [searchQuery, categoryFilter]);
+
+  return (
+    <div className="space-y-4 pb-6">
+      <div className="glass-card p-1.5 flex items-center gap-2 animate-fadeUp stagger-1" style={{ opacity: 0 }}>
+        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-500">
+            <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
+          </svg>
+        </div>
+        <input type="text" placeholder="Search supplements..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="flex-1 bg-transparent text-xs text-white placeholder:text-slate-500 outline-none min-w-0" />
+        {searchQuery && (
+          <button onClick={() => setSearchQuery('')} className="w-6 h-6 rounded-md bg-white/5 flex items-center justify-center flex-shrink-0 hover:bg-white/10 transition-colors">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-500"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+          </button>
+        )}
+      </div>
+
+      <div className="flex gap-1.5 overflow-x-auto hide-scrollbar-x animate-fadeUp stagger-1 pb-1" style={{ opacity: 0 }}>
+        {SUPPLEMENT_CATEGORIES.map((cat) => {
+          const count = cat === 'All' ? SUPPLEMENTS_DB.length : SUPPLEMENTS_DB.filter((s) => s.category === cat).length;
+          if (cat !== 'All' && count === 0) return null;
+          return (
+            <button key={cat} onClick={() => setCategoryFilter(cat)} className={`flex-shrink-0 px-3 py-1.5 rounded-full text-[10px] font-medium border transition-all active:scale-95 ${categoryFilter === cat ? 'bg-sky-500/15 border-sky-500/25 text-sky-400' : 'bg-white/[0.04] border-white/[0.08] text-slate-500 hover:text-slate-300'}`}>
+              {cat} <span className="ml-1 opacity-60">{count}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <p className="text-[10px] text-slate-500 px-1 animate-fadeUp" style={{ opacity: 0 }}>{filtered.length} supplement{filtered.length !== 1 ? 's' : ''}</p>
+
+      <div className="space-y-3">
+        {filtered.map((supp, i) => {
+          const isExpanded = expandedId === supp.id;
+          return (
+            <div key={supp.id} className="glass-card overflow-hidden animate-fadeUp" style={{ opacity: 0, animationDelay: `${Math.min(i, 5) * 60}ms` }}>
+              <button onClick={() => setExpandedId(isExpanded ? null : supp.id)} className="w-full p-4 text-left hover:bg-white/[0.02] transition-colors">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <h3 className="text-xs font-bold text-white">{supp.shortName}</h3>
+                      <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-medium border ${getSupplementCategoryColor(supp.category)}`}>{supp.category}</span>
+                      <span className="text-[9px] text-slate-600">{supp.timing}</span>
+                    </div>
+                    <p className="text-[10px] text-slate-500 italic">{supp.tagline}</p>
+                    <p className="text-[10px] text-slate-400 mt-1.5"><span className="text-slate-500">Dosage:</span> {supp.dosage}</p>
+                    {!isExpanded && <p className="text-[10px] text-slate-500 mt-1.5 line-clamp-2">{supp.description}</p>}
+                  </div>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-slate-500 flex-shrink-0 mt-1 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}><path d="m6 9 6 6 6-6" /></svg>
+                </div>
+              </button>
+              {isExpanded && (
+                <div className="px-4 pb-4 border-t border-white/[0.04] pt-3 space-y-3">
+                  <p className="text-[11px] text-slate-400 leading-relaxed">{supp.description}</p>
+                  <div className="p-2.5 rounded-xl bg-white/[0.03]">
+                    <p className="text-[10px] text-slate-500 uppercase tracking-wide mb-1">Mechanism</p>
+                    <p className="text-[10px] text-slate-400 leading-relaxed">{supp.mechanism}</p>
+                  </div>
+                  {supp.benefits.length > 0 && (
+                    <div>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-wide mb-1.5">Benefits</p>
+                      <div className="space-y-1">
+                        {supp.benefits.slice(0, 5).map((b, bi) => (
+                          <div key={bi} className="flex items-start gap-2">
+                            <span className="w-1 h-1 rounded-full bg-emerald-500/60 mt-1.5 flex-shrink-0" />
+                            <span className="text-[10px] text-slate-400 leading-relaxed">{b}</span>
+                          </div>
+                        ))}
+                        {supp.benefits.length > 5 && <p className="text-[9px] text-slate-600 pl-3">+{supp.benefits.length - 5} more benefits</p>}
+                      </div>
+                    </div>
+                  )}
+                  {supp.cautions.length > 0 && (
+                    <div>
+                      <p className="text-[10px] text-amber-400 uppercase tracking-wide mb-1.5">Cautions</p>
+                      <div className="space-y-1">
+                        {supp.cautions.map((c, ci) => (
+                          <div key={ci} className="flex items-start gap-2">
+                            <span className="w-1 h-1 rounded-full bg-amber-500/60 mt-1.5 flex-shrink-0" />
+                            <span className="text-[10px] text-slate-400 leading-relaxed">{c}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {supp.stackNotes && (
+                    <div className="p-2.5 rounded-xl bg-sky-500/[0.04] border border-sky-500/10">
+                      <p className="text-[10px] text-sky-400 uppercase tracking-wide mb-1">Stack Notes</p>
+                      <p className="text-[10px] text-slate-400 leading-relaxed">{supp.stackNotes}</p>
+                    </div>
+                  )}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="p-2.5 rounded-xl bg-white/[0.03]">
+                      <p className="text-[10px] text-slate-500 uppercase tracking-wide mb-0.5">PH Availability</p>
+                      <p className="text-[10px] text-slate-400 leading-relaxed">{supp.philippinesAvailability}</p>
+                    </div>
+                    <div className="p-2.5 rounded-xl bg-white/[0.03]">
+                      <p className="text-[10px] text-slate-500 uppercase tracking-wide mb-0.5">Price Range</p>
+                      <p className="text-[10px] text-slate-300 font-medium">{supp.priceRange}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      {filtered.length === 0 && (
+        <div className="glass-card p-6 text-center animate-fadeUp" style={{ opacity: 0 }}>
+          <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center mx-auto mb-3">
+            <PillIcon className="w-5 h-5 text-slate-600" />
+          </div>
+          <p className="text-xs text-slate-400 font-medium">No supplements found</p>
+          <p className="text-[10px] text-slate-500 mt-1">Try a different search or category</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Main Component ─────────────────────────────────────────────────────────────
 
 export default function NutritionJuices() {
@@ -1367,6 +1528,7 @@ export default function NutritionJuices() {
         {activeTab === 'nutrition-protocols' && <NutritionProtocolsTab />}
         {activeTab === 'nutrient-guides' && <NutrientGuidesTab />}
         {activeTab === 'hydration-strategy' && <HydrationStrategyTab />}
+        {activeTab === 'supplements' && <SupplementsTab />}
       </div>
     </div>
   );

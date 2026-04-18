@@ -141,6 +141,7 @@ const CollapsibleSection = React.memo(function CollapsibleSection({
   bookmarkKey,
   isBookmarked,
   onToggleBookmark,
+  forceExpanded = false,
 }: {
   id: string;
   icon: React.ReactNode;
@@ -155,13 +156,14 @@ const CollapsibleSection = React.memo(function CollapsibleSection({
   bookmarkKey?: string;
   isBookmarked?: boolean;
   onToggleBookmark?: () => void;
+  forceExpanded?: boolean;
 }) {
-  const isOpen = expandedId === id;
+  const isOpen = forceExpanded || expandedId === id;
   return (
     <div className={`glass-card overflow-hidden animate-fadeUp ${staggerClass}`} style={{ opacity: 0 }}>
       <button
-        onClick={() => onToggle(isOpen ? '' : id)}
-        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(isOpen ? '' : id); } }}
+        onClick={() => { if (!forceExpanded) onToggle(isOpen ? '' : id); }}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (!forceExpanded) onToggle(isOpen ? '' : id); } }}
         className="w-full p-4 text-left hover:bg-white/[0.02] transition-colors active:scale-[0.98] transition-transform duration-150"
         role="button"
         aria-expanded={isOpen}
@@ -358,8 +360,8 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [supplementsExpanded, setSupplementsExpanded] = useState(false);
 
-  // New state: Two Big Buttons
-  const [activeProtocolPanel, setActiveProtocolPanel] = useState<'symbiotic' | 'substance' | null>(null);
+  // State: Substance-Specific Phases panel
+  const [activeProtocolPanel, setActiveProtocolPanel] = useState<'substance' | null>(null);
   const [expandedProtocolRow, setExpandedProtocolRow] = useState<string | null>(null);
 
   // New state: Bookmarks
@@ -462,7 +464,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
     });
   }, [substance.id]);
 
-  const toggleProtocolPanel = useCallback((panel: 'symbiotic' | 'substance') => {
+  const toggleProtocolPanel = useCallback((panel: 'substance') => {
     haptic(10);
     setActiveProtocolPanel(prev => prev === panel ? null : panel);
     setExpandedProtocolRow(null);
@@ -669,8 +671,8 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
               </div>
             </div>
 
-            {/* Description — truncated with Read more */}
-            <p className="text-xs text-slate-400 leading-relaxed mt-1 line-clamp-2" id={`desc-${substance.id}`}>
+            {/* Description — full text always visible */}
+            <p className="text-xs text-slate-400 leading-relaxed mt-1" id={`desc-${substance.id}`}>
               {substance.description}
             </p>
           </div>
@@ -702,7 +704,128 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
         </CollapsibleSection>
       </SectionErrorBoundary>
 
-      {/* --- RECOVERY FOCUS (Collapsible) --- */}
+      {/* --- SYMBIOTIC PROTOCOL (Always Expanded) --- */}
+      <SectionErrorBoundary>
+        <CollapsibleSection
+          id="symbiotic-protocol"
+          icon={Icons.protocol}
+          label="Symbiotic Protocol"
+          subtitle="Neurochemical restoration, gut-brain repair, lifestyle synergy"
+          expandedId={expandedSection}
+          onToggle={handleSectionToggle}
+          staggerClass="stagger-2"
+          forceExpanded
+        >
+          <div className="space-y-2.5">
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              The Symbiotic Protocol integrates neurochemical restoration, gut-brain axis repair, and lifestyle synergy into a comprehensive recovery framework.
+            </p>
+            <div className="divide-y divide-white/[0.04]">
+              {SYMBIOTIC_PROTOCOL.map((section, sIdx) => {
+                const symColor = SYMBIOTIC_COLORS[sIdx] || SYMBIOTIC_COLORS[SYMBIOTIC_COLORS.length - 1];
+                const rowId = `sym-${section.id}`;
+                const isOpen = expandedProtocolRow === rowId;
+                return (
+                  <div key={section.id} className="overflow-hidden">
+                    <button
+                      onClick={() => handleProtocolRowToggle(rowId)}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleProtocolRowToggle(rowId); } }}
+                      className="w-full p-3 text-left hover:bg-white/[0.02] transition-colors active:scale-[0.999] transition-transform duration-150"
+                      role="button"
+                      aria-expanded={isOpen}
+                      aria-controls={`protocol-row-${rowId}`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                          <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold border flex-shrink-0 ${symColor.badge}`}>
+                            {symColor.icon}
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-semibold text-white leading-tight truncate">{section.name}</p>
+                            <p className="text-[10px] text-slate-400 mt-0.5 truncate">{section.subtitle}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <span className={`text-[9px] px-1.5 py-0.5 rounded border font-medium whitespace-nowrap ${symColor.badge}`}>
+                            {section.phases.length} phase{section.phases.length !== 1 ? 's' : ''}
+                          </span>
+                          <BookmarkIcon isBookmarked={bookmarks.has(`sym-${section.id}`)} onClick={() => toggleBookmark(`sym-${section.id}`)} />
+                          <span className={`text-slate-500 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
+                            <AnimatedChevron isOpen={isOpen} size={12} />
+                          </span>
+                        </div>
+                      </div>
+                      {!isOpen && (
+                        <p className="text-[10px] text-slate-500 leading-relaxed mt-1.5 pl-[52px]">
+                          {section.description.slice(0, 120)}...
+                        </p>
+                      )}
+                    </button>
+
+                    {isOpen && (
+                      <div
+                        id={`protocol-row-${rowId}`}
+                        role="region"
+                        className="border-t border-white/[0.06] p-3 space-y-3 max-h-72 overflow-y-auto custom-scrollbar"
+                      >
+                        <p className="text-[10px] text-slate-400 leading-relaxed">{section.description}</p>
+                        <div>
+                          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">Core Principles</p>
+                          <div className="space-y-1">
+                            {section.principles.slice(0, 3).map((principle, i) => (
+                              <div key={i} className="flex items-start gap-1.5">
+                                <span className={`text-[10px] font-bold ${symColor.text} mt-0.5 flex-shrink-0 w-4 text-right`}>{i + 1}.</span>
+                                <p className="text-[10px] text-slate-400 leading-relaxed">{principle}</p>
+                              </div>
+                            ))}
+                            {section.principles.length > 3 && (
+                              <p className="text-[10px] text-slate-600 pl-5">+{section.principles.length - 3} more principles</p>
+                            )}
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">Recovery Phases</p>
+                          <div className="space-y-1.5">
+                            {section.phases.map((phase, idx) => {
+                              const phaseColor = PHASE_COLORS[idx] || PHASE_COLORS[PHASE_COLORS.length - 1];
+                              const phaseViewId = `${rowId}-p${idx}`;
+                              const wasViewed = viewedPhases.has(phaseViewId);
+                              return (
+                                <div key={idx} className={`p-2.5 rounded-lg ${phaseColor.bg} border ${phaseColor.border}`}>
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <span className={`w-5 h-5 rounded-md ${phaseColor.timeline} flex items-center justify-center flex-shrink-0 border`}>
+                                      <span className={`text-[10px] font-bold ${phaseColor.text}`}>{idx + 1}</span>
+                                    </span>
+                                    <p className="text-[11px] font-medium text-white flex-1">{phase.name}</p>
+                                    <BookmarkIcon isBookmarked={bookmarks.has(phaseViewId)} onClick={() => toggleBookmark(phaseViewId)} />
+                                  </div>
+                                  <div className="flex items-center gap-2 ml-7">
+                                    <span className={`text-[10px] px-1.5 py-0.5 rounded border font-medium ${phaseColor.timeline}`}>
+                                      {phase.timeline}
+                                    </span>
+                                    <span className="text-[10px] text-slate-600">{phase.actions.length} actions</span>
+                                    <span className="text-[10px] text-slate-600">&middot;</span>
+                                    <span className="text-[10px] text-slate-600">{phase.supplements.length} supplements</span>
+                                    {wasViewed && (
+                                      <span className="text-[9px] text-emerald-400 ml-auto flex-shrink-0">✓ viewed</span>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </CollapsibleSection>
+      </SectionErrorBoundary>
+
+      {/* --- RECOVERY FOCUS (Always Expanded) --- */}
       <SectionErrorBoundary>
         <CollapsibleSection
           id="recovery-focus"
@@ -711,10 +834,10 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
           subtitle={`Target neurotransmitters, organs, and ${substance.recoveryFocus.timeline.toLowerCase()}`}
           expandedId={expandedSection}
           onToggle={handleSectionToggle}
-          staggerClass="stagger-2"
-          bookmarkKey="recovery-focus"
+          staggerClass="stagger-3"
           isBookmarked={bookmarks.has('recovery-focus')}
           onToggleBookmark={() => toggleBookmark('recovery-focus')}
+          forceExpanded
         >
           {/* Neurotransmitters */}
           <div className="mb-3">
@@ -794,7 +917,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
         </CollapsibleSection>
       </SectionErrorBoundary>
 
-      {/* --- RECOVERY PROTOCOL: 2 Big Buttons --- */}
+      {/* --- SUBSTANCE-SPECIFIC PHASES --- */}
       <SectionErrorBoundary>
         <div className="space-y-3">
           {/* Progress indicator */}
@@ -808,42 +931,13 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
             <span className="text-[9px] text-slate-500 flex-shrink-0">{viewedPhases.size}/{totalPhases}</span>
           </div>
 
-          {/* Two Big Buttons Grid */}
-          <div className="grid grid-cols-2 gap-2 animate-fadeUp stagger-3" style={{ opacity: 0 }}>
-            {/* LEFT: Symbiotic Protocol */}
-            <button
-              onClick={() => toggleProtocolPanel('symbiotic')}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleProtocolPanel('symbiotic'); } }}
-              className={`relative p-4 rounded-xl border text-left transition-all active:scale-[0.98] transition-transform duration-150 ${
-                activeProtocolPanel === 'symbiotic'
-                  ? 'bg-emerald-500/10 border-emerald-500/25 shadow-lg shadow-emerald-500/5'
-                  : 'bg-white/[0.03] border-white/[0.08] hover:bg-white/[0.05]'
-              }`}
-              role="button"
-              aria-expanded={activeProtocolPanel === 'symbiotic'}
-              aria-controls="symbiotic-panel"
-            >
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center mb-3 shadow-md shadow-emerald-500/20">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z" />
-                  <path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z" />
-                  <path d="M12 5v13" />
-                </svg>
-              </div>
-              <h3 className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">SYMBIOTIC</h3>
-              <p className="text-xs font-semibold text-white mt-0.5">Protocol</p>
-              <p className="text-[10px] text-slate-500 mt-1">3 pillars of recovery</p>
-              <div className="absolute top-3 right-3">
-                <AnimatedChevron isOpen={activeProtocolPanel === 'symbiotic'} size={12} />
-              </div>
-            </button>
-
-            {/* RIGHT: Substance-Specific Phases */}
-            {substance.recoveryPhases && substance.recoveryPhases.length > 0 && (
+          {/* Single Substance-Specific Button */}
+          {substance.recoveryPhases && substance.recoveryPhases.length > 0 && (
+            <div className="animate-fadeUp stagger-3" style={{ opacity: 0 }}>
               <button
                 onClick={() => toggleProtocolPanel('substance')}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleProtocolPanel('substance'); } }}
-                className={`relative p-4 rounded-xl border text-left transition-all active:scale-[0.98] transition-transform duration-150 ${
+                className={`relative w-full p-4 rounded-xl border text-left transition-all active:scale-[0.98] transition-transform duration-150 ${
                   activeProtocolPanel === 'substance'
                     ? 'bg-violet-500/10 border-violet-500/25 shadow-lg shadow-violet-500/5'
                     : 'bg-white/[0.03] border-white/[0.08] hover:bg-white/[0.05]'
@@ -852,139 +946,23 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
                 aria-expanded={activeProtocolPanel === 'substance'}
                 aria-controls="substance-panel"
               >
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center mb-3 shadow-md shadow-violet-500/20">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/>
-                    <path d="m8.5 8.5 7 7"/>
-                  </svg>
-                </div>
-                <h3 className="text-[10px] font-bold uppercase tracking-wider text-violet-400">SUBSTANCE-SPECIFIC</h3>
-                <p className="text-xs font-semibold text-white mt-0.5">Phases</p>
-                <p className="text-[10px] text-slate-500 mt-1">{substance.recoveryPhases.length} phases for {substance.name}</p>
-                <div className="absolute top-3 right-3">
-                  <AnimatedChevron isOpen={activeProtocolPanel === 'substance'} size={12} />
+                <div className="flex items-center gap-4">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center shadow-md shadow-violet-500/20 flex-shrink-0">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/>
+                      <path d="m8.5 8.5 7 7"/>
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-[10px] font-bold uppercase tracking-wider text-violet-400">SUBSTANCE-SPECIFIC</h3>
+                    <p className="text-xs font-semibold text-white mt-0.5">{substance.name} Phases</p>
+                    <p className="text-[10px] text-slate-500 mt-1">{substance.recoveryPhases.length} phase{substance.recoveryPhases.length !== 1 ? 's' : ''} with supplements & milestones</p>
+                  </div>
+                  <div className="flex-shrink-0">
+                    <AnimatedChevron isOpen={activeProtocolPanel === 'substance'} size={14} />
+                  </div>
                 </div>
               </button>
-            )}
-          </div>
-
-          {/* Expanded Symbiotic Panel */}
-          {activeProtocolPanel === 'symbiotic' && (
-            <div id="symbiotic-panel" className="glass-card overflow-hidden animate-tab-switch">
-              <div className="p-3 border-b border-white/[0.04]">
-                <p className="text-[11px] text-slate-400 leading-relaxed">
-                  The Symbiotic Protocol integrates neurochemical restoration, gut-brain axis repair, and lifestyle synergy into a comprehensive recovery framework.
-                </p>
-              </div>
-              <div className="divide-y divide-white/[0.04]">
-                {SYMBIOTIC_PROTOCOL.map((section, sIdx) => {
-                  const symColor = SYMBIOTIC_COLORS[sIdx] || SYMBIOTIC_COLORS[SYMBIOTIC_COLORS.length - 1];
-                  const rowId = `sym-${section.id}`;
-                  const isOpen = expandedProtocolRow === rowId;
-                  return (
-                    <div key={section.id} className="overflow-hidden">
-                      {/* Row Header */}
-                      <button
-                        onClick={() => handleProtocolRowToggle(rowId)}
-                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleProtocolRowToggle(rowId); } }}
-                        className="w-full p-3 text-left hover:bg-white/[0.02] transition-colors active:scale-[0.999] transition-transform duration-150"
-                        role="button"
-                        aria-expanded={isOpen}
-                        aria-controls={`protocol-row-${rowId}`}
-                      >
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                            <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold border flex-shrink-0 ${symColor.badge}`}>
-                              {symColor.icon}
-                            </span>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-xs font-semibold text-white leading-tight truncate">{section.name}</p>
-                              <p className="text-[10px] text-slate-400 mt-0.5 truncate">{section.subtitle}</p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2 flex-shrink-0">
-                            <span className={`text-[9px] px-1.5 py-0.5 rounded border font-medium whitespace-nowrap ${symColor.badge}`}>
-                              {section.phases.length} phase{section.phases.length !== 1 ? 's' : ''}
-                            </span>
-                            <BookmarkIcon isBookmarked={bookmarks.has(`sym-${section.id}`)} onClick={() => toggleBookmark(`sym-${section.id}`)} />
-                            <span className={`text-slate-500 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
-                              <AnimatedChevron isOpen={isOpen} size={12} />
-                            </span>
-                          </div>
-                        </div>
-                        {/* Retracted description */}
-                        {!isOpen && (
-                          <p className="text-[10px] text-slate-500 leading-relaxed mt-1.5 pl-[52px]">
-                            {section.description.slice(0, 120)}...
-                          </p>
-                        )}
-                      </button>
-
-                      {/* Expanded Content */}
-                      {isOpen && (
-                        <div
-                          id={`protocol-row-${rowId}`}
-                          role="region"
-                          className="border-t border-white/[0.06] p-3 space-y-3 max-h-72 overflow-y-auto custom-scrollbar"
-                        >
-                          {/* Description */}
-                          <p className="text-[10px] text-slate-400 leading-relaxed">{section.description}</p>
-
-                          {/* Core Principles */}
-                          <div>
-                            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">Core Principles</p>
-                            <div className="space-y-1">
-                              {section.principles.slice(0, 3).map((principle, i) => (
-                                <div key={i} className="flex items-start gap-1.5">
-                                  <span className={`text-[10px] font-bold ${symColor.text} mt-0.5 flex-shrink-0 w-4 text-right`}>{i + 1}.</span>
-                                  <p className="text-[10px] text-slate-400 leading-relaxed">{principle}</p>
-                                </div>
-                              ))}
-                              {section.principles.length > 3 && (
-                                <p className="text-[10px] text-slate-600 pl-5">+{section.principles.length - 3} more principles</p>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Recovery Phases */}
-                          <div>
-                            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">Recovery Phases</p>
-                            <div className="space-y-1.5">
-                              {section.phases.map((phase, idx) => {
-                                const phaseColor = PHASE_COLORS[idx] || PHASE_COLORS[PHASE_COLORS.length - 1];
-                                const phaseViewId = `${rowId}-p${idx}`;
-                                const wasViewed = viewedPhases.has(phaseViewId);
-                                return (
-                                  <div key={idx} className={`p-2.5 rounded-lg ${phaseColor.bg} border ${phaseColor.border}`}>
-                                    <div className="flex items-center gap-2 mb-1">
-                                      <span className={`w-5 h-5 rounded-md ${phaseColor.timeline} flex items-center justify-center flex-shrink-0 border`}>
-                                        <span className={`text-[10px] font-bold ${phaseColor.text}`}>{idx + 1}</span>
-                                      </span>
-                                      <p className="text-[11px] font-medium text-white flex-1">{phase.name}</p>
-                                      <BookmarkIcon isBookmarked={bookmarks.has(phaseViewId)} onClick={() => toggleBookmark(phaseViewId)} />
-                                    </div>
-                                    <div className="flex items-center gap-2 ml-7">
-                                      <span className={`text-[10px] px-1.5 py-0.5 rounded border font-medium ${phaseColor.timeline}`}>
-                                        {phase.timeline}
-                                      </span>
-                                      <span className="text-[10px] text-slate-600">{phase.actions.length} actions</span>
-                                      <span className="text-[10px] text-slate-600">&middot;</span>
-                                      <span className="text-[10px] text-slate-600">{phase.supplements.length} supplements</span>
-                                      {wasViewed && (
-                                        <span className="text-[9px] text-emerald-400 ml-auto flex-shrink-0">✓ viewed</span>
-                                      )}
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
             </div>
           )}
 
@@ -1186,6 +1164,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
           bookmarkKey="philippines"
           isBookmarked={bookmarks.has('philippines')}
           onToggleBookmark={() => toggleBookmark('philippines')}
+          forceExpanded
         >
           <div className="space-y-2.5">
             {/* Legality with colored status indicator */}

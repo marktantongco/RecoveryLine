@@ -18,20 +18,6 @@ const MORE_MENU_ITEMS: {
   icon: React.ReactNode;
 }[] = [
   {
-    id: 'mindpsych',
-    label: 'Mind & Psych',
-    emoji: '\u{1F9E0}',
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
-        <path d="m8 14 1.5-4.5L11 14" />
-        <path d="m14 14 1.5 4.5L11 14" />
-        <path d="M9 18h6" />
-        <path d="M9 6h6" />
-      </svg>
-    ),
-  },
-  {
     id: 'phguide',
     label: 'PH Guide',
     emoji: '\u{1F1F5}\u{1F1ED}',
@@ -39,18 +25,6 @@ const MORE_MENU_ITEMS: {
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
         <circle cx="12" cy="10" r="3" />
-      </svg>
-    ),
-  },
-  {
-    id: 'nutrition',
-    label: 'Nutrition',
-    emoji: '\u{1F34E}',
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
-        <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
-        <path d="M2 12h16" />
       </svg>
     ),
   },
@@ -120,16 +94,42 @@ const NAV_ITEMS: { id: SectionName; label: string; icon: React.ReactNode; active
     ),
   },
   {
-    id: 'biotools',
-    label: 'Bio Tools',
+    id: 'nutrition',
+    label: 'Nutrition',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+        <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
+        <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
+        <path d="M2 12h16" />
+      </svg>
+    ),
+    activeIcon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
+        <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
+        <path d="M2 12h16" />
+      </svg>
+    ),
+  },
+  {
+    id: 'mindpsych',
+    label: 'Mind',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
+        <path d="m8 14 1.5-4.5L11 14" />
+        <path d="m14 14 1.5 4.5L11 14" />
+        <path d="M9 18h6" />
+        <path d="M9 6h6" />
       </svg>
     ),
     activeIcon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
+        <path d="m8 14 1.5-4.5L11 14" />
+        <path d="m14 14 1.5 4.5L11 14" />
+        <path d="M9 18h6" />
+        <path d="M9 6h6" />
       </svg>
     ),
   },
@@ -147,28 +147,7 @@ const NAV_ITEMS: { id: SectionName; label: string; icon: React.ReactNode; active
       </svg>
     ),
   },
-  {
-    id: 'mindpsych',
-    label: 'Mind',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
-        <path d="m8 14 1.5-4.5L11 14" />
-        <path d="m14 14 1.5 4.5L11 14" />
-        <path d="M9 18h6" />
-        <path d="M9 6h6" />
-      </svg>
-    ),
-    activeIcon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
-        <path d="m8 14 1.5-4.5L11 14" />
-        <path d="m14 14 1.5 4.5L11 14" />
-        <path d="M9 18h6" />
-        <path d="M9 6h6" />
-      </svg>
-    ),
-  },
+
 ];
 
 export default React.memo(function BottomNav({
@@ -179,7 +158,8 @@ export default React.memo(function BottomNav({
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
 
   // Check if any More sub-menu section is active (to highlight More button)
-  const isMoreActive = ['phguide', 'nutrition', 'protocol', 'mindpsych'].includes(currentSection);
+  // Note: 'mindpsych' is excluded — Mind has its own nav button now
+  const isMoreActive = ['phguide', 'nutrition', 'protocol'].includes(currentSection);
 
   // Close More menu when currentSection changes (e.g. via header nav)
   useEffect(() => {

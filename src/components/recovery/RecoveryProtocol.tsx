@@ -3,6 +3,7 @@
 import React, { useState, useCallback } from 'react';
 import { SYMBIOTIC_PROTOCOL, type ProtocolSection } from '@/lib/recovery-protocol-data';
 import { SUBSTANCES, SUBSTANCE_LIST, type SubstanceData } from '@/lib/substances';
+import { TIMELINE_PHASES, type TimelinePhase } from '@/lib/timeline-data';
 
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
 
@@ -281,6 +282,86 @@ function getSectionAccent(icon: string) {
         badge: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20',
       };
   }
+}
+
+// ─── Neurochemical Timeline Helpers ───────────────────────────────────────────
+
+function getNeuroLevelInfo(level: number) {
+  if (level > 100) {
+    return {
+      color: 'text-violet-400',
+      bg: 'bg-violet-500/15',
+      border: 'border-violet-500/20',
+      barBg: 'bg-violet-500/20',
+      barFill: 'bg-gradient-to-r from-violet-500 to-purple-500',
+      dot: 'bg-violet-400',
+      label: 'Artificially Elevated',
+      badge: 'bg-violet-500/15 text-violet-400 border-violet-500/20',
+    };
+  }
+  if (level >= 76) {
+    return {
+      color: 'text-emerald-400',
+      bg: 'bg-emerald-500/15',
+      border: 'border-emerald-500/20',
+      barBg: 'bg-emerald-500/20',
+      barFill: 'bg-gradient-to-r from-emerald-500 to-green-500',
+      dot: 'bg-emerald-400',
+      label: 'Healthy',
+      badge: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20',
+    };
+  }
+  if (level >= 51) {
+    return {
+      color: 'text-sky-400',
+      bg: 'bg-sky-500/15',
+      border: 'border-sky-500/20',
+      barBg: 'bg-sky-500/20',
+      barFill: 'bg-gradient-to-r from-sky-500 to-cyan-500',
+      dot: 'bg-sky-400',
+      label: 'Recovering',
+      badge: 'bg-sky-500/15 text-sky-400 border-sky-500/20',
+    };
+  }
+  if (level >= 26) {
+    return {
+      color: 'text-amber-400',
+      bg: 'bg-amber-500/15',
+      border: 'border-amber-500/20',
+      barBg: 'bg-amber-500/20',
+      barFill: 'bg-gradient-to-r from-amber-500 to-yellow-500',
+      dot: 'bg-amber-400',
+      label: 'Low',
+      badge: 'bg-amber-500/15 text-amber-400 border-amber-500/20',
+    };
+  }
+  return {
+    color: 'text-red-400',
+    bg: 'bg-red-500/15',
+    border: 'border-red-500/20',
+    barBg: 'bg-red-500/20',
+    barFill: 'bg-gradient-to-r from-red-500 to-rose-500',
+    dot: 'bg-red-400',
+    label: 'Critical',
+    badge: 'bg-red-500/15 text-red-400 border-red-500/20',
+  };
+}
+
+function getNeurotransmitterColor(status: string): { dot: string; text: string } {
+  const lower = status.toLowerCase();
+  if (lower.startsWith('normal') || lower.includes('near normal') || lower.includes('fully restored') || lower.includes('90-100%') || lower.includes('95-100%') || lower.includes('80-90%') || lower.includes('85-95%') || lower.includes('optimal')) {
+    return { dot: 'bg-emerald-400', text: 'text-emerald-400' };
+  }
+  if (lower.includes('dangerously') || lower.includes('crashed') || lower.includes('severely depleted') || lower.includes('10-20%')) {
+    return { dot: 'bg-red-400', text: 'text-red-400' };
+  }
+  if (lower.includes('recovering') || lower.includes('beginning') || lower.includes('60-70%') || lower.includes('70-80%') || lower.includes('returning') || lower.includes('normalizing')) {
+    return { dot: 'bg-sky-400', text: 'text-sky-400' };
+  }
+  if (lower.includes('suppressed') || lower.includes('elevated') || lower.includes('chronically') || lower.includes('artificially') || lower.includes('progressively') || lower.includes('extremely high') || lower.includes('very low') || lower.includes('danger')) {
+    return { dot: 'bg-amber-400', text: 'text-amber-400' };
+  }
+  return { dot: 'bg-slate-500', text: 'text-slate-500' };
 }
 
 // ─── Phase Connector ──────────────────────────────────────────────────────────
@@ -1022,6 +1103,279 @@ function SubstanceProtocolDetail({
   );
 }
 
+// ─── Neurochemical Timeline Phase Card ────────────────────────────────────────
+
+const NEUROTRANSMITTER_LABELS: { key: keyof TimelinePhase['neurotransmitterStatus']; label: string }[] = [
+  { key: 'dopamine', label: 'Dopamine' },
+  { key: 'serotonin', label: 'Serotonin' },
+  { key: 'gaba', label: 'GABA' },
+  { key: 'glutamate', label: 'Glutamate' },
+  { key: 'cortisol', label: 'Cortisol' },
+];
+
+function NeurochemicalTimelinePhaseCard({
+  phase,
+  phaseIndex,
+  isLast,
+}: {
+  phase: TimelinePhase;
+  phaseIndex: number;
+  isLast: boolean;
+}) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const neuroInfo = getNeuroLevelInfo(phase.neuroLevel);
+  const staggerClass = phaseIndex < 6 ? `stagger-${phaseIndex + 1}` : '';
+
+  return (
+    <div className="flex gap-3 animate-fadeUp" style={staggerClass ? { opacity: 0 } : undefined}>
+      {/* Timeline Vertical Line + Dot */}
+      <div className="flex flex-col items-center flex-shrink-0 pt-1">
+        <div className={`w-3 h-3 rounded-full ${neuroInfo.dot} ring-2 ring-white/[0.04] z-10`} />
+        {!isLast && <div className="w-px flex-1 bg-white/[0.08] mt-1" />}
+      </div>
+
+      {/* Phase Card */}
+      <div className="flex-1 pb-4 min-w-0">
+        <div className="glass-card overflow-hidden transition-all">
+          {/* Phase Header */}
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            aria-label={`${phase.name} — ${isExpanded ? 'collapse' : 'expand'} phase details`}
+            aria-expanded={isExpanded}
+            className="w-full p-4 text-left hover:bg-white/[0.02] transition-colors"
+          >
+            <div className="flex items-start gap-3">
+              <div className={`w-10 h-10 rounded-xl ${neuroInfo.bg} flex items-center justify-center flex-shrink-0 ring-1 ${neuroInfo.border}`}>
+                <span className={`text-sm font-bold ${neuroInfo.color}`}>{phaseIndex + 1}</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <h4 className="text-sm font-bold text-white">{phase.name}</h4>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full border font-medium ${neuroInfo.badge}`}>
+                    {phase.dayRange}
+                  </span>
+                </div>
+                <p className="text-[10px] text-slate-500 mb-2">{phase.period}</p>
+
+                {/* Neuro Level Bar */}
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${neuroInfo.barFill} transition-all duration-700`}
+                      style={{ width: `${Math.min(phase.neuroLevel, 100)}%` }}
+                    />
+                  </div>
+                  <span className={`text-[10px] font-bold ${neuroInfo.color} whitespace-nowrap`}>
+                    {phase.neuroLevel}%
+                  </span>
+                </div>
+              </div>
+              <ChevronDownIcon
+                className={`w-4 h-4 text-slate-500 flex-shrink-0 mt-1 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+              />
+            </div>
+          </button>
+
+          {/* Expanded Content */}
+          {isExpanded && (
+            <div className="border-t border-white/[0.06] animate-fadeUp">
+              {/* Description */}
+              <div className="p-4 border-b border-white/[0.04]">
+                <p className="text-[11px] text-slate-400 leading-relaxed">{phase.description}</p>
+              </div>
+
+              {/* Key Symptoms */}
+              <div className="p-4 border-b border-white/[0.04]">
+                <p className="text-[10px] font-semibold text-slate-400 mb-2.5">Key Symptoms</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {phase.symptoms.slice(0, 6).map((symptom, i) => (
+                    <span key={i} className="text-[10px] px-2 py-1 rounded-lg bg-white/[0.04] text-slate-400 border border-white/[0.06] leading-snug">
+                      {symptom}
+                    </span>
+                  ))}
+                  {phase.symptoms.length > 6 && (
+                    <span className="text-[10px] px-2 py-1 rounded-lg bg-white/[0.04] text-slate-500 border border-white/[0.06] leading-snug">
+                      +{phase.symptoms.length - 6} more
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Neurotransmitter Status */}
+              <div className="p-4 border-b border-white/[0.04]">
+                <p className="text-[10px] font-semibold text-slate-400 mb-2.5">Neurotransmitter Status</p>
+                <div className="space-y-2">
+                  {NEUROTRANSMITTER_LABELS.map(({ key, label }) => {
+                    const status = phase.neurotransmitterStatus[key];
+                    const ntColor = getNeurotransmitterColor(status);
+                    // Extract the summary portion (before the first "—" or ".")
+                    const summary = status.split('—')[0].trim().split('.')[0].trim();
+                    return (
+                      <div key={key} className="flex items-start gap-2">
+                        <span className={`w-2 h-2 rounded-full ${ntColor.dot} mt-1 flex-shrink-0`} />
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5 mb-0.5">
+                            <span className={`text-[10px] font-semibold ${ntColor.text}`}>{label}</span>
+                          </div>
+                          <p className="text-[10px] text-slate-500 leading-relaxed line-clamp-2">{summary}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Priority Supplements */}
+              {phase.prioritySupplements.length > 0 && (
+                <div className="p-4 border-b border-white/[0.04]">
+                  <p className="text-[10px] font-semibold text-slate-400 mb-2.5">Priority Supplements</p>
+                  <div className="space-y-1.5">
+                    {phase.prioritySupplements.map((supp, i) => (
+                      <div key={i} className="flex items-start gap-2">
+                        <BulletIcon />
+                        <div className="min-w-0">
+                          <span className="text-[11px] text-white font-medium">{supp.name}</span>
+                          <p className="text-[10px] text-slate-500 leading-relaxed">{supp.reason}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Lifestyle Actions */}
+              {phase.lifestyleActions.length > 0 && (
+                <div className="p-4 border-b border-white/[0.04]">
+                  <p className="text-[10px] font-semibold text-slate-400 mb-2.5">Lifestyle Actions</p>
+                  <div className="space-y-1.5 max-h-40 overflow-y-auto">
+                    {phase.lifestyleActions.map((action, i) => (
+                      <div key={i} className="flex items-start gap-2">
+                        <BulletIcon />
+                        <p className="text-[11px] text-slate-400 leading-relaxed">{action}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Mood Expectation */}
+              <div className="p-4 border-b border-white/[0.04]">
+                <p className="text-[10px] font-semibold text-slate-400 mb-2">Mood Expectation</p>
+                <div className="flex items-start gap-2">
+                  <svg className="w-4 h-4 text-amber-400/70 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                    <line x1="9" y1="9" x2="9.01" y2="9" />
+                    <line x1="15" y1="9" x2="15.01" y2="9" />
+                  </svg>
+                  <p className="text-[11px] text-slate-400 leading-relaxed italic">{phase.moodExpectation}</p>
+                </div>
+              </div>
+
+              {/* Warnings */}
+              {phase.warnings.length > 0 && (
+                <div className="p-4">
+                  <p className="text-[10px] font-semibold text-red-400 mb-2.5">Warnings</p>
+                  <div className="space-y-2">
+                    {phase.warnings.map((warning, i) => (
+                      <div key={i} className="flex items-start gap-2 rounded-xl bg-red-500/8 border border-red-500/15 p-2.5">
+                        <svg className="w-3.5 h-3.5 text-red-400 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                          <line x1="12" y1="9" x2="12" y2="13" />
+                          <line x1="12" y1="17" x2="12.01" y2="17" />
+                        </svg>
+                        <p className="text-[10px] text-red-300 leading-relaxed">{warning}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Neurochemical Timeline Section ───────────────────────────────────────────
+
+function NeurochemicalTimeline() {
+  return (
+    <div className="space-y-4 animate-fadeUp" style={{ opacity: 0 }}>
+      {/* Section Hero */}
+      <div className="relative overflow-hidden rounded-2xl border border-white/[0.08]" style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.06) 0%, rgba(17,24,39,0.95) 25%, rgba(17,24,39,0.95) 75%, rgba(14,165,233,0.06) 100%)' }}>
+        <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full bg-violet-500/5 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-12 -left-12 w-32 h-32 rounded-full bg-sky-500/5 blur-3xl pointer-events-none" />
+        <div className="relative p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500/80 to-sky-500/80 flex items-center justify-center shadow-lg shadow-violet-500/15">
+              <BrainIcon className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-white">Neurochemical Timeline</h2>
+              <p className="text-[11px] text-slate-400">Brain recovery across recovery phases</p>
+            </div>
+          </div>
+          <p className="text-[11px] text-slate-500 leading-relaxed">
+            Track how neurotransmitter levels, mood, and cognitive function evolve from baseline through active use, withdrawal, and long-term recovery. Each phase shows the neurochemical state, key symptoms, and recommended interventions.
+          </p>
+          <div className="flex items-center gap-2 mt-3 flex-wrap">
+            <span className="text-[10px] px-2.5 py-1 rounded-full bg-violet-500/15 text-violet-400 border border-violet-500/20 font-medium">
+              {TIMELINE_PHASES.length} Phases
+            </span>
+            <span className="text-[10px] px-2.5 py-1 rounded-full bg-sky-500/15 text-sky-400 border border-sky-500/20 font-medium">
+              5 Neurotransmitters
+            </span>
+            <span className="text-[10px] px-2.5 py-1 rounded-full bg-white/[0.04] text-slate-500 border border-white/[0.06] font-medium">
+              365+ Days
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Neuro Level Legend */}
+      <div className="glass-card p-4">
+        <p className="text-[10px] font-semibold text-slate-400 mb-2.5">Neurochemical Level Guide</p>
+        <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-red-400" />
+            <span className="text-[10px] text-slate-500">0-25% Critical</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-amber-400" />
+            <span className="text-[10px] text-slate-500">26-50% Low</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-sky-400" />
+            <span className="text-[10px] text-slate-500">51-75% Recovering</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-400" />
+            <span className="text-[10px] text-slate-500">76-100% Healthy</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-violet-400" />
+            <span className="text-[10px] text-slate-500">&gt;100% Artificial</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Timeline Phases */}
+      <div className="space-y-0">
+        {TIMELINE_PHASES.map((phase, idx) => (
+          <NeurochemicalTimelinePhaseCard
+            key={phase.id}
+            phase={phase}
+            phaseIndex={idx}
+            isLast={idx === TIMELINE_PHASES.length - 1}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function RecoveryProtocol() {
@@ -1170,6 +1524,13 @@ export default function RecoveryProtocol() {
           />
         );
       })()}
+
+      {/* ─── Neurochemical Timeline ───────────────────────────────────────── */}
+      {!activeSectionData && !activeSubstanceId && (
+        <div className="mt-6">
+          <NeurochemicalTimeline />
+        </div>
+      )}
     </div>
   );
 }

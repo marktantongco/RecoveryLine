@@ -3,7 +3,6 @@
 import React, { useState, useMemo, useCallback, memo } from 'react';
 import { Checkin, CheckinType, MoodKey, ClipboardItem } from '@/lib/recovery-types';
 import { MOODS, CURRENCY } from '@/lib/recovery-constants';
-import { AFFIRMATIONS, JOURNAL_PROMPTS } from '@/lib/recovery-content';
 import { getLocalDateString, copyToClipboard, haptic } from '@/lib/utils';
 import CheckIn from './CheckIn';
 import Clipboard from './Clipboard';
@@ -197,12 +196,6 @@ export default function RecoveryHub({
           </div>
         </div>
       </div>
-
-      {/* ── Daily Affirmation ─────────────────────────────────── */}
-      <DailyAffirmation />
-
-      {/* ── Journal Prompt (copy-ready) ────────────────────────── */}
-      <JournalPrompt />
 
       {/* ── Quick Notes ────────────────────────────────────────── */}
       <div className="animate-fadeUp stagger-2" style={{ opacity: 0 }}>

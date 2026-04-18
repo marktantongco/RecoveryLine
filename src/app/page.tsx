@@ -12,7 +12,7 @@ import { SectionName, CheckinType, MoodKey } from '@/lib/recovery-types';
 import { haptic } from '@/lib/utils';
 
 // Navigation order for directional transitions
-const NAV_ORDER: SectionName[] = ['home', 'substances', 'biotools', 'recovery', 'nutrition', 'mindpsych', 'protocol', 'phguide'];
+const NAV_ORDER: SectionName[] = ['home', 'substances', 'recovery', 'nutrition', 'mindpsych', 'protocol', 'phguide'];
 
 // Dynamic imports for code splitting — only load section when needed
 // Error logging wrapper for lazy imports to surface silent failures
@@ -27,7 +27,7 @@ function lazyWithLog<T extends React.ComponentType<any>>(factory: () => Promise<
 
 const Dashboard = lazyWithLog(() => import('@/components/recovery/Dashboard'), 'Dashboard');
 const Substances = lazyWithLog(() => import('@/components/recovery/Substances'), 'Substances');
-const BioTools = lazyWithLog(() => import('@/components/recovery/BioTools'), 'BioTools');
+// BioTools removed — supplements moved to Nutrition, timeline to Protocol
 const RecoveryHub = lazyWithLog(() => import('@/components/recovery/RecoveryHub'), 'RecoveryHub');
 const NutritionJuices = lazyWithLog(() => import('@/components/recovery/NutritionJuices'), 'NutritionJuices');
 const MindPsychology = lazyWithLog(() => import('@/components/recovery/MindPsychology'), 'MindPsychology');
@@ -193,15 +193,7 @@ function AppContent() {
         return sectionWrapper('home', 'Dashboard', <Dashboard stats={stats} insights={insights} onNavigate={handleNavigate} />);
       case 'substances':
         return sectionWrapper('substances', 'Substances', <Substances />);
-      case 'biotools':
-        return sectionWrapper('biotools', 'Bio Tools', (
-          <BioTools
-            selectedMeds={state.selectedMeds}
-            selectedSupplements={state.selectedSupplements}
-            onToggleMed={toggleMed}
-            onToggleSupplement={toggleSupplement}
-          />
-        ));
+
       case 'recovery':
         return sectionWrapper('recovery', 'Recovery', (
           <RecoveryHub
@@ -267,21 +259,7 @@ function AppContent() {
                 <path d="M8 2v4" /><path d="M16 2v4" /><rect x="2" y="6" width="20" height="16" rx="2" /><path d="M2 10h20" /><path d="M12 6v16" />
               </svg>
             </button>
-            <button
-              onClick={() => handleNavigate('biotools')}
-              className={`p-2.5 rounded-xl transition-all active:scale-90 min-w-[36px] min-h-[36px] flex items-center justify-center ${
-                state.currentSection === 'biotools'
-                  ? 'text-purple-400 bg-purple-500/15 shadow-sm shadow-purple-500/10'
-                  : 'text-slate-400 hover:text-slate-300 hover:bg-white/[0.06]'
-              }`}
-              title="Bio Tools"
-              aria-label="Go to Bio Tools"
-              aria-current={state.currentSection === 'biotools' ? 'page' : undefined}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
-              </svg>
-            </button>
+
             <button
               onClick={() => handleNavigate('recovery')}
               className={`p-2.5 rounded-xl transition-all active:scale-90 min-w-[36px] min-h-[36px] flex items-center justify-center ${
@@ -301,7 +279,7 @@ function AppContent() {
             <button
               onClick={() => handleNavigate('protocol')}
               className={`p-2.5 rounded-xl transition-all active:scale-90 min-w-[36px] min-h-[36px] flex items-center justify-center ${
-                ['protocol', 'nutrition', 'mindpsych', 'phguide'].includes(state.currentSection)
+                ['protocol', 'phguide'].includes(state.currentSection)
                   ? 'text-sky-400 bg-sky-500/15 shadow-sm shadow-sky-500/10'
                   : 'text-slate-400 hover:text-slate-300 hover:bg-white/[0.06]'
               }`}
