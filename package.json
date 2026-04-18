@@ -1,6 +1,7 @@
 {
-  "name": "nextjs_tailwind_shadcn_ts",
+  "name": "recoveryline",
   "version": "0.2.0",
+  "description": "RecoveryLine — Biochemical Recovery Tracker PWA",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000 2>&1 | tee dev.log",

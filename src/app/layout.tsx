@@ -46,17 +46,6 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="apple-touch-icon" href="/icon-192.png" />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js').catch(function(err) { console.warn('[RecoveryLine] SW registration failed:', err); });
-                });
-              }
-            `,
-          }}
-        />
       </head>
       <body className={`${inter.variable} antialiased`}>
         {children}

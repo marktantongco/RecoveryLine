@@ -50,5 +50,21 @@ test
 prompt
 
 server.log
+
+# RecoveryLine specific
+agent-ctx/
+worklog.md
+upload/
+*.txt
+*.html
+examples/
+db/
+Caddyfile
+app_bundle.js
+protocol.html
+substances.html
+homepage.html
+phguide_full.txt
+
 # Skills directory
 /skills/
