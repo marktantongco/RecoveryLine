@@ -83,6 +83,7 @@
     height: 100dvh;
     height: 100vh;
     overflow: auto;
+    overscroll-behavior: none;
     -webkit-tap-highlight-color: transparent;
     -webkit-overflow-scrolling: touch;
   }
@@ -94,6 +95,7 @@
     height: 100%;
     overflow: clip;
     overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
     text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;

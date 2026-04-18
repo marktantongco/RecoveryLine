@@ -25,6 +25,24 @@ Stage Summary:
 - All 11 drug data files compile correctly
 - Build verified: static pages generated in 107ms
 
+---
+Task ID: 7
+Agent: Full-stack Developer
+Task: Comprehensive RecoveryLine PWA Upgrade
+
+Work Log:
+- Verified glass-card::before containment: `.glass-card` already has `position: relative` (line 149 of globals.css) — no change needed
+- Verified PharmRow helper: already defined at line 1246 of Substances.tsx as `React.memo` — no change needed
+- Mobile Scroll Hardening: added `overscroll-behavior: none` to `html` rule in `@layer base` (was missing, only body had it); added `-webkit-overflow-scrolling: touch` to `body` rule (was missing, only html had it). Both html and body now have both defensive scroll properties.
+- Verified `app-shell-main` class already has proper mobile scroll support: `overflow-y: auto; touch-action: pan-y;` ✓
+- Service Worker Error Suppression: changed `.catch(function() {})` to `.catch(function(err) { console.warn('[RecoveryLine] SW registration failed:', err); })` in layout.tsx
+- Build verification: `rm -rf .next && npx next build` → ✓ Compiled in 5.0s, static pages in 104.3ms
+
+Stage Summary:
+- Build verification: pass — clean build, no errors
+- Files modified: `src/app/globals.css`, `src/app/layout.tsx`
+- Items verified as already correct: glass-card position: relative, PharmRow definition, app-shell-main scroll support
+
 ## Pending Items (from previous sessions)
 - Advanced feature: per-drug substance data lazy loading (optimization, not blocking)
 - Component split of Substances.tsx (1502 lines → smaller files) (optimization, not blocking)
