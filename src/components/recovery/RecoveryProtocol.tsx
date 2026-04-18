@@ -56,20 +56,20 @@ function CheckCircleIcon({ className = 'w-4 h-4' }: { className?: string }) {
   );
 }
 
-function BulletIcon() {
+const BulletIcon = React.memo(function BulletIcon() {
   return (
-    <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500/60 mt-1.5 flex-shrink-0" />
+    <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500/60 mt-1.5 flex-shrink-0" aria-hidden="true" />
   );
-}
+});
 
-function ArrowRightIcon({ className = 'w-3 h-3' }: { className?: string }) {
+const ArrowRightIcon = React.memo(function ArrowRightIcon({ className = 'w-3 h-3' }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M5 12h14" />
       <path d="m12 5 7 7-7 7" />
     </svg>
   );
-}
+});
 
 // ─── Substance Category Accent Colors ───────────────────────────────────────
 
@@ -184,9 +184,9 @@ function getSubstanceAccent(category: SubstanceData['category'], dangerLevel: Su
   return dangerColors[dangerLevel] || dangerColors[4];
 }
 
-function DangerDots({ level }: { level: SubstanceData['dangerLevel'] }) {
+const DangerDots = React.memo(function DangerDots({ level }: { level: SubstanceData['dangerLevel'] }) {
   return (
-    <div className="flex items-center gap-0.5">
+    <div className="flex items-center gap-0.5" aria-hidden="true">
       {Array.from({ length: 5 }).map((_, i) => (
         <span
           key={i}
@@ -197,7 +197,7 @@ function DangerDots({ level }: { level: SubstanceData['dangerLevel'] }) {
       ))}
     </div>
   );
-}
+});
 
 function getCategoryLabel(category: SubstanceData['category']): string {
   const labels: Record<SubstanceData['category'], string> = {
@@ -285,9 +285,9 @@ function getSectionAccent(icon: string) {
 
 // ─── Phase Connector ──────────────────────────────────────────────────────────
 
-function PhaseConnector({ isLast, accent }: { isLast: boolean; accent: ReturnType<typeof getSectionAccent> }) {
+const PhaseConnector = React.memo(function PhaseConnector({ isLast, accent }: { isLast: boolean; accent: ReturnType<typeof getSectionAccent> }) {
   return (
-    <div className="flex items-center justify-center py-1">
+    <div className="flex items-center justify-center py-1" aria-hidden="true">
       {!isLast && (
         <div className="flex flex-col items-center gap-0.5">
           <div className="w-px h-4 bg-white/[0.06]" />
@@ -297,11 +297,11 @@ function PhaseConnector({ isLast, accent }: { isLast: boolean; accent: ReturnTyp
       )}
     </div>
   );
-}
+});
 
 // ─── Section Navigation Card ─────────────────────────────────────────────────
 
-function SectionCard({
+const SectionCard = React.memo(function SectionCard({
   section,
   index,
   isActive,
@@ -318,6 +318,8 @@ function SectionCard({
   return (
     <button
       onClick={onClick}
+      aria-label={`${section.name} — ${isActive ? 'collapse' : 'expand'} protocol`}
+      aria-expanded={isActive}
       className={`glass-card p-5 text-left w-full transition-all active:scale-[0.99] animate-fadeUp ${staggerClass} ${
         isActive
           ? `border ${accent.border} ${accent.bg}`
@@ -351,7 +353,7 @@ function SectionCard({
       </div>
     </button>
   );
-}
+});
 
 // ─── Principles List ──────────────────────────────────────────────────────────
 
@@ -370,6 +372,8 @@ function PrinciplesList({ principles, accent }: { principles: string[]; accent: 
         {hasMore && (
           <button
             onClick={() => setIsExpanded(!isExpanded)}
+            aria-label={isExpanded ? 'Show less principles' : `Show ${principles.length - 3} more principles`}
+            aria-expanded={isExpanded}
             className="text-[10px] text-slate-500 hover:text-slate-300 transition-colors"
           >
             {isExpanded ? 'Show less' : `+${principles.length - 3} more`}
@@ -392,7 +396,7 @@ function PrinciplesList({ principles, accent }: { principles: string[]; accent: 
 
 // ─── Supplement Table ────────────────────────────────────────────────────────
 
-function SupplementTable({
+const SupplementTable = React.memo(function SupplementTable({
   supplements,
   accent,
 }: {
@@ -400,7 +404,7 @@ function SupplementTable({
   accent: ReturnType<typeof getSectionAccent>;
 }) {
   return (
-    <div className="overflow-x-auto -mx-1">
+    <div className="overflow-x-auto -mx-1" role="table" aria-label="Supplement protocol table">
       <table className="w-full text-left min-w-[500px]">
         <thead>
           <tr className="border-b border-white/[0.06]">
@@ -435,7 +439,7 @@ function SupplementTable({
       </table>
     </div>
   );
-}
+});
 
 // ─── Phase Card ───────────────────────────────────────────────────────────────
 
@@ -464,6 +468,8 @@ function PhaseCard({
         {/* Phase Header */}
         <button
           onClick={() => setIsExpanded(!isExpanded)}
+          aria-label={`${phase.name} — ${isExpanded ? 'collapse' : 'expand'} phase details`}
+          aria-expanded={isExpanded}
           className="w-full p-4 text-left hover:bg-white/[0.02] transition-colors"
         >
           <div className="flex items-start gap-3">
@@ -576,6 +582,8 @@ function FAQAccordion({
             <div key={i} className="transition-colors">
               <button
                 onClick={() => toggleFAQ(i)}
+                aria-label={`${item.question} — ${isOpen ? 'collapse' : 'expand'} answer`}
+                aria-expanded={isOpen}
                 className="w-full p-4 text-left hover:bg-white/[0.02] transition-colors active:scale-[0.999]"
               >
                 <div className="flex items-start gap-3">
@@ -690,7 +698,7 @@ function SectionDetail({ section }: { section: ProtocolSection }) {
 
 // ─── Substance Protocol Card ────────────────────────────────────────────────
 
-function SubstanceProtocolCard({
+const SubstanceProtocolCard = React.memo(function SubstanceProtocolCard({
   substance,
   index,
   isActive,
@@ -709,6 +717,8 @@ function SubstanceProtocolCard({
   return (
     <button
       onClick={onClick}
+      aria-label={`${substance.name} — ${isActive ? 'collapse' : 'expand'} recovery protocol`}
+      aria-expanded={isActive}
       className={`glass-card p-5 text-left w-full transition-all active:scale-[0.99] animate-fadeUp ${staggerClass} ${
         isActive
           ? `border ${accent.border} ${accent.bg}`
@@ -749,7 +759,7 @@ function SubstanceProtocolCard({
       </div>
     </button>
   );
-}
+});
 
 // ─── Substance Phase Card (for per-substance protocol detail) ──────────────────
 
@@ -778,6 +788,8 @@ function SubstancePhaseCard({
         {/* Phase Header */}
         <button
           onClick={() => setIsExpanded(!isExpanded)}
+          aria-label={`${phase.name} — ${isExpanded ? 'collapse' : 'expand'} phase details`}
+          aria-expanded={isExpanded}
           className="w-full p-4 text-left hover:bg-white/[0.02] transition-colors"
         >
           <div className="flex items-start gap-3">
@@ -903,9 +915,10 @@ function SubstanceProtocolDetail({
       <div className="animate-fadeUp">
         <button
           onClick={onBack}
+          aria-label="Back to all protocols"
           className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.03] border border-white/[0.06] text-slate-400 hover:text-slate-300 hover:bg-white/[0.06] active:scale-[0.99] transition-all"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="m15 18-6-6 6-6" />
           </svg>
           <span className="text-xs font-medium">All Protocols</span>
@@ -1068,9 +1081,10 @@ export default function RecoveryProtocol() {
           <div className="animate-fadeUp">
             <button
               onClick={handleBack}
+              aria-label="Back to all pillars"
               className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.03] border border-white/[0.06] text-slate-400 hover:text-slate-300 hover:bg-white/[0.06] active:scale-[0.99] transition-all"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="m15 18-6-6 6-6" />
               </svg>
               <span className="text-xs font-medium">All Pillars</span>

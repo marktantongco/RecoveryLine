@@ -227,6 +227,7 @@ export default React.memo(function BottomNav({
           }}
           role="menu"
           aria-label="More options"
+          id="bottom-nav-more-menu"
         >
           <div className="max-w-md mx-auto px-3">
             <div
@@ -302,8 +303,6 @@ export default React.memo(function BottomNav({
       <nav
         className="fixed bottom-0 left-0 right-0 z-[9999] bg-[#0a0f1a]/95 backdrop-blur-xl border-t border-white/[0.08]"
         style={{
-          backfaceVisibility: 'hidden',
-          WebkitBackfaceVisibility: 'hidden',
           touchAction: 'manipulation',
           paddingBottom: 'max(6px, env(safe-area-inset-bottom))',
         }}
@@ -358,6 +357,7 @@ export default React.memo(function BottomNav({
             aria-label="More options"
             aria-expanded={moreMenuOpen}
             aria-haspopup="menu"
+            aria-controls="bottom-nav-more-menu"
           >
             <span
               className={`transition-transform duration-200 ${

@@ -1,13 +1,27 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { MEDICATIONS, SUPPLEMENTS, SAFETY_RULES } from '@/lib/recovery-constants';
 import { SafetyRule } from '@/lib/recovery-types';
 import { SUPPLEMENTS_DB, SUPPLEMENT_CATEGORIES, SUPPLEMENT_USE_CASES, searchSupplements } from '@/lib/supplement-data';
-import type { SupplementData, SupplementUseCase } from '@/lib/supplement-data';
+import type { SupplementData } from '@/lib/supplement-data';
 import { TIMELINE_PHASES } from '@/lib/timeline-data';
 import type { TimelinePhase } from '@/lib/timeline-data';
 import { useToast } from './Toast';
+
+// ─── Audit Note ────────────────────────────────────────────────────────────────
+// Error handling audit (BioTools):
+//   - No localStorage operations found in this component → no try-catch needed
+//   - No catch blocks found → no silent failures to fix
+//   - All state management is via React useState/useMemo (in-memory only)
+// iOS Safety audit (BioTools):
+//   - No transform/translateZ/will-change on scrollable containers
+//   - No position:fixed inside scrollable containers
+//   - -translate-y-1/2 used only on decorative SearchIcon (not scrollable)
+//   - active:scale-* used only on buttons (acceptable tap feedback)
+// Animation audit (BioTools):
+//   - All stagger animations use animate-fadeUp + stagger-{1-6} + style={{ opacity: 0 }}
+//   - Pattern is correct and consistent throughout
 
 interface BioToolsProps {
   selectedMeds: string[];
@@ -23,18 +37,18 @@ interface StackItem {
   timing: 'AM' | 'PM';
 }
 
-// ─── SVG Icons ────────────────────────────────────────────────────────────────
+// ─── SVG Icons (memoized for render performance) ───────────────────────────────
 
-function ShieldCheckIcon({ className = 'w-5 h-5' }: { className?: string }) {
+const ShieldCheckIcon = React.memo(function ShieldCheckIcon({ className = 'w-5 h-5' }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
       <path d="m9 12 2 2 4-4" />
     </svg>
   );
-}
+});
 
-function LayersIcon({ className = 'w-5 h-5' }: { className?: string }) {
+const LayersIcon = React.memo(function LayersIcon({ className = 'w-5 h-5' }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" />
@@ -42,18 +56,18 @@ function LayersIcon({ className = 'w-5 h-5' }: { className?: string }) {
       <path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65" />
     </svg>
   );
-}
+});
 
-function ClockIcon({ className = 'w-5 h-5' }: { className?: string }) {
+const ClockIcon = React.memo(function ClockIcon({ className = 'w-5 h-5' }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="10" />
       <polyline points="12 6 12 12 16 14" />
     </svg>
   );
-}
+});
 
-function SunIcon({ className = 'w-4 h-4' }: { className?: string }) {
+const SunIcon = React.memo(function SunIcon({ className = 'w-4 h-4' }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="4" />
@@ -67,59 +81,59 @@ function SunIcon({ className = 'w-4 h-4' }: { className?: string }) {
       <path d="m19.07 4.93-1.41 1.41" />
     </svg>
   );
-}
+});
 
-function MoonIcon({ className = 'w-4 h-4' }: { className?: string }) {
+const MoonIcon = React.memo(function MoonIcon({ className = 'w-4 h-4' }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
     </svg>
   );
-}
+});
 
-function SearchIcon({ className = 'w-4 h-4' }: { className?: string }) {
+const SearchIcon = React.memo(function SearchIcon({ className = 'w-4 h-4' }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="11" cy="11" r="8" />
       <path d="m21 21-4.3-4.3" />
     </svg>
   );
-}
+});
 
-function PlusIcon({ className = 'w-4 h-4' }: { className?: string }) {
+const PlusIcon = React.memo(function PlusIcon({ className = 'w-4 h-4' }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M5 12h14" />
       <path d="M12 5v14" />
     </svg>
   );
-}
+});
 
-function MinusIcon({ className = 'w-4 h-4' }: { className?: string }) {
+const MinusIcon = React.memo(function MinusIcon({ className = 'w-4 h-4' }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M5 12h14" />
     </svg>
   );
-}
+});
 
-function ChevronDownIcon({ className = 'w-4 h-4' }: { className?: string }) {
+const ChevronDownIcon = React.memo(function ChevronDownIcon({ className = 'w-4 h-4' }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="m6 9 6 6 6-6" />
     </svg>
   );
-}
+});
 
-function CheckIcon({ className = 'w-3.5 h-3.5' }: { className?: string }) {
+const CheckIcon = React.memo(function CheckIcon({ className = 'w-3.5 h-3.5' }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
       <path d="M20 6 9 17l-5-5" />
     </svg>
   );
-}
+});
 
-function AlertTriangleIcon({ className = 'w-4 h-4' }: { className?: string }) {
+const AlertTriangleIcon = React.memo(function AlertTriangleIcon({ className = 'w-4 h-4' }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
@@ -127,9 +141,9 @@ function AlertTriangleIcon({ className = 'w-4 h-4' }: { className?: string }) {
       <path d="M12 17h.01" />
     </svg>
   );
-}
+});
 
-function InfoIcon({ className = 'w-4 h-4' }: { className?: string }) {
+const InfoIcon = React.memo(function InfoIcon({ className = 'w-4 h-4' }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="10" />
@@ -137,9 +151,9 @@ function InfoIcon({ className = 'w-4 h-4' }: { className?: string }) {
       <path d="M12 8h.01" />
     </svg>
   );
-}
+});
 
-function SkullIcon({ className = 'w-4 h-4' }: { className?: string }) {
+const SkullIcon = React.memo(function SkullIcon({ className = 'w-4 h-4' }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="10" r="8" />
@@ -151,18 +165,18 @@ function SkullIcon({ className = 'w-4 h-4' }: { className?: string }) {
       <path d="M16 14l-2-2" />
     </svg>
   );
-}
+});
 
-function XIcon({ className = 'w-4 h-4' }: { className?: string }) {
+const XIcon = React.memo(function XIcon({ className = 'w-4 h-4' }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M18 6 6 18" />
       <path d="m6 6 12 12" />
     </svg>
   );
-}
+});
 
-function TrashIcon({ className = 'w-4 h-4' }: { className?: string }) {
+const TrashIcon = React.memo(function TrashIcon({ className = 'w-4 h-4' }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M3 6h18" />
@@ -172,11 +186,11 @@ function TrashIcon({ className = 'w-4 h-4' }: { className?: string }) {
       <line x1="14" y1="11" x2="14" y2="17" />
     </svg>
   );
-}
+});
 
-// ─── Subtab Navigation ────────────────────────────────────────────────────────
+// ─── Subtab Navigation (memoized) ──────────────────────────────────────────────
 
-function SubTabNav({ active, onChange }: { active: SubTab; onChange: (tab: SubTab) => void }) {
+const SubTabNav = React.memo(function SubTabNav({ active, onChange }: { active: SubTab; onChange: (tab: SubTab) => void }) {
   const tabs: { id: SubTab; label: string; icon: React.ReactNode }[] = [
     { id: 'safety', label: 'Safety Check', icon: <ShieldCheckIcon className="w-4 h-4" /> },
     { id: 'stack-builder', label: 'Stack Builder', icon: <LayersIcon className="w-4 h-4" /> },
@@ -184,10 +198,15 @@ function SubTabNav({ active, onChange }: { active: SubTab; onChange: (tab: SubTa
   ];
 
   return (
-    <div className="flex gap-1 p-1 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
+    <div className="flex gap-1 p-1 rounded-2xl bg-white/[0.03] border border-white/[0.06]" role="tablist" aria-label="BioTools sections">
       {tabs.map((tab) => (
         <button
           key={tab.id}
+          id={`tab-${tab.id}`}
+          role="tab"
+          aria-selected={active === tab.id}
+          aria-controls={`panel-${tab.id}`}
+          tabIndex={active === tab.id ? 0 : -1}
           onClick={() => onChange(tab.id)}
           className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs font-medium transition-all ${
             active === tab.id
@@ -201,7 +220,7 @@ function SubTabNav({ active, onChange }: { active: SubTab; onChange: (tab: SubTa
       ))}
     </div>
   );
-}
+});
 
 // ─── Safety Check Tab ─────────────────────────────────────────────────────────
 
@@ -238,11 +257,11 @@ function SafetyCheckTab({
 
   const hasAnySelection = selectedMeds.length > 0 || selectedSupplements.length > 0;
 
-  const clearAll = () => {
+  const clearAll = useCallback(() => {
     selectedMeds.forEach((m) => onToggleMed(m));
     selectedSupplements.forEach((s) => onToggleSupplement(s));
     showToast('All selections cleared', 'info');
-  };
+  }, [selectedMeds, selectedSupplements, onToggleMed, onToggleSupplement, showToast]);
 
   const getLevelColors = (level: string) => {
     switch (level) {
@@ -267,20 +286,23 @@ function SafetyCheckTab({
   };
 
   return (
-    <div className="space-y-4 pb-6">
+    <div className="space-y-4 pb-6" role="tabpanel" id="panel-safety" aria-labelledby="tab-safety">
       {/* Medications */}
       <div className="glass-card p-4 animate-fadeUp stagger-1" style={{ opacity: 0 }}>
         <div className="flex items-center justify-between mb-3">
           <p className="text-xs font-semibold text-slate-400">Current Medications</p>
           <span className="text-[10px] text-slate-600">{selectedMeds.length} selected</span>
         </div>
-        <div className="space-y-1.5 max-h-60 overflow-y-auto custom-scrollbar">
+        <div className="space-y-1.5 max-h-60 overflow-y-auto custom-scrollbar" role="group" aria-label="Medication selection">
           {MEDICATIONS.map((med) => {
             const isSelected = selectedMeds.includes(med);
             return (
               <button
                 key={med}
                 type="button"
+                role="checkbox"
+                aria-checked={isSelected}
+                aria-label={`Toggle ${med}`}
                 onClick={() => onToggleMed(med)}
                 className={`flex items-center gap-3 p-2.5 rounded-xl transition-all w-full text-left active:scale-[0.99] ${
                   isSelected
@@ -306,10 +328,13 @@ function SafetyCheckTab({
           <p className="text-xs font-semibold text-slate-400">Supplements</p>
           <span className="text-[10px] text-slate-600">{selectedSupplements.length} selected</span>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2" role="group" aria-label="Supplement selection">
           {SUPPLEMENTS.map((supp) => (
             <button
               key={supp}
+              role="checkbox"
+              aria-checked={selectedSupplements.includes(supp)}
+              aria-label={`Toggle ${supp}`}
               onClick={() => onToggleSupplement(supp)}
               className={`toggle-chip ${selectedSupplements.includes(supp) ? 'toggle-chip-active' : ''}`}
             >
@@ -324,6 +349,7 @@ function SafetyCheckTab({
         <div className="flex justify-end animate-fadeUp" style={{ opacity: 0 }}>
           <button
             onClick={clearAll}
+            aria-label="Clear all selections"
             className="px-3 py-1.5 rounded-lg bg-white/5 text-xs text-slate-400 border border-white/8 hover:bg-white/10 active:scale-95 transition-all"
           >
             Clear All
@@ -339,7 +365,7 @@ function SafetyCheckTab({
             {triggeredRules.map((rule) => {
               const colors = getLevelColors(rule.level);
               return (
-                <div key={rule.id} className={`rounded-2xl border p-4 ${colors.border} ${colors.bg}`}>
+                <div key={rule.id} className={`rounded-2xl border p-4 backdrop-blur-md ${colors.border} ${colors.bg}`}>
                   <div className="flex items-center gap-2 mb-2">
                     {getLevelIcon(rule.level)}
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${colors.badge}`}>
@@ -396,37 +422,39 @@ function StackBuilderTab() {
     return results;
   }, [searchQuery, activeCategory, activeUseCase, filterMode]);
 
-  const toggleExpand = (id: string) => {
+  const toggleExpand = useCallback((id: string) => {
     setExpandedCards((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
       return next;
     });
-  };
+  }, []);
 
-  const addToStack = (supp: SupplementData, timing: 'AM' | 'PM') => {
-    if (stackItems.some((item) => item.supplementId === supp.id)) {
-      showToast(`${supp.shortName} is already in your stack`, 'warning');
-      return;
-    }
-    setStackItems((prev) => [...prev, { supplementId: supp.id, timing }]);
-    showToast(`${supp.shortName} added to stack (${timing})`, 'success');
-  };
+  const addToStack = useCallback((supp: SupplementData, timing: 'AM' | 'PM') => {
+    setStackItems((prev) => {
+      if (prev.some((item) => item.supplementId === supp.id)) {
+        showToast(`${supp.shortName} is already in your stack`, 'warning');
+        return prev;
+      }
+      showToast(`${supp.shortName} added to stack (${timing})`, 'success');
+      return [...prev, { supplementId: supp.id, timing }];
+    });
+  }, [showToast]);
 
-  const removeFromStack = (supplementId: string) => {
+  const removeFromStack = useCallback((supplementId: string) => {
     const supp = SUPPLEMENTS_DB.find((s) => s.id === supplementId);
     setStackItems((prev) => prev.filter((item) => item.supplementId !== supplementId));
     if (supp) showToast(`${supp.shortName} removed from stack`, 'info');
-  };
+  }, [showToast]);
 
-  const updateStackTiming = (supplementId: string, timing: 'AM' | 'PM') => {
+  const updateStackTiming = useCallback((supplementId: string, timing: 'AM' | 'PM') => {
     setStackItems((prev) =>
       prev.map((item) => (item.supplementId === supplementId ? { ...item, timing } : item))
     );
-  };
+  }, []);
 
-  const isSupplementInStack = (id: string) => stackItems.some((item) => item.supplementId === id);
+  const isSupplementInStack = useCallback((id: string) => stackItems.some((item) => item.supplementId === id), [stackItems]);
 
   const getCategoryColor = (cat: string) => {
     switch (cat) {
@@ -445,7 +473,7 @@ function StackBuilderTab() {
   const pmItems = stackItems.filter((i) => i.timing === 'PM');
 
   return (
-    <div className="space-y-4 pb-6">
+    <div className="space-y-4 pb-6" role="tabpanel" id="panel-stack-builder" aria-labelledby="tab-stack-builder">
       {/* My Stack Summary */}
       {stackItems.length > 0 && showStackSummary && (
         <div className="glass-card-hero p-4 animate-fadeUp stagger-1" style={{ opacity: 0 }}>
@@ -461,6 +489,7 @@ function StackBuilderTab() {
             </div>
             <button
               onClick={() => setShowStackSummary(false)}
+              aria-label="Close stack summary"
               className="p-1.5 rounded-lg hover:bg-white/5 text-slate-500 transition-all"
             >
               <XIcon className="w-4 h-4" />
@@ -479,7 +508,11 @@ function StackBuilderTab() {
                   return (
                     <div key={item.supplementId} className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/15">
                       <span className="text-[10px] text-amber-300 font-medium">{supp.shortName}</span>
-                      <button onClick={() => removeFromStack(item.supplementId)} className="text-amber-400/60 hover:text-amber-300">
+                      <button
+                        onClick={() => removeFromStack(item.supplementId)}
+                        aria-label={`Remove ${supp.shortName} from stack`}
+                        className="text-amber-400/60 hover:text-amber-300"
+                      >
                         <XIcon className="w-3 h-3" />
                       </button>
                     </div>
@@ -501,7 +534,11 @@ function StackBuilderTab() {
                   return (
                     <div key={item.supplementId} className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-500/10 border border-purple-500/15">
                       <span className="text-[10px] text-purple-300 font-medium">{supp.shortName}</span>
-                      <button onClick={() => removeFromStack(item.supplementId)} className="text-purple-400/60 hover:text-purple-300">
+                      <button
+                        onClick={() => removeFromStack(item.supplementId)}
+                        aria-label={`Remove ${supp.shortName} from stack`}
+                        className="text-purple-400/60 hover:text-purple-300"
+                      >
                         <XIcon className="w-3 h-3" />
                       </button>
                     </div>
@@ -513,6 +550,7 @@ function StackBuilderTab() {
 
           <button
             onClick={() => { setStackItems([]); showToast('Stack cleared', 'info'); }}
+            aria-label="Clear supplement stack"
             className="w-full mt-1 py-2 rounded-lg bg-white/5 text-[10px] text-slate-500 hover:bg-white/8 transition-all flex items-center justify-center gap-1.5"
           >
             <TrashIcon className="w-3 h-3" /> Clear Stack
@@ -522,9 +560,10 @@ function StackBuilderTab() {
 
       {/* Search Bar */}
       <div className="relative animate-fadeUp stagger-2" style={{ opacity: 0 }}>
-        <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+        <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
         <input
           type="text"
+          aria-label="Search supplements"
           placeholder="Search supplements..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -537,8 +576,10 @@ function StackBuilderTab() {
         {/* Mode Toggle */}
         <div className="flex items-center gap-2 mb-2.5">
           <span className="text-[10px] text-slate-500 uppercase tracking-wide font-semibold">Filter by</span>
-          <div className="flex gap-1 p-0.5 rounded-lg bg-white/[0.03] border border-white/[0.06]">
+          <div className="flex gap-1 p-0.5 rounded-lg bg-white/[0.03] border border-white/[0.06]" role="radiogroup" aria-label="Filter mode">
             <button
+              role="radio"
+              aria-checked={filterMode === 'category'}
               onClick={() => setFilterMode('category')}
               className={`px-2.5 py-1 rounded-md text-[10px] font-medium transition-all ${
                 filterMode === 'category'
@@ -549,6 +590,8 @@ function StackBuilderTab() {
               Category
             </button>
             <button
+              role="radio"
+              aria-checked={filterMode === 'usecase'}
               onClick={() => setFilterMode('usecase')}
               className={`px-2.5 py-1 rounded-md text-[10px] font-medium transition-all ${
                 filterMode === 'usecase'
@@ -562,11 +605,13 @@ function StackBuilderTab() {
         </div>
 
         {/* Filter Chips */}
-        <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 no-scrollbar">
+        <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 no-scrollbar" role="radiogroup" aria-label={filterMode === 'category' ? 'Category filter' : 'Use-case filter'}>
           {filterMode === 'category'
             ? SUPPLEMENT_CATEGORIES.map((cat) => (
                 <button
                   key={cat}
+                  role="radio"
+                  aria-checked={activeCategory === cat}
                   onClick={() => setActiveCategory(cat)}
                   className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all border ${
                     activeCategory === cat
@@ -580,6 +625,8 @@ function StackBuilderTab() {
             : SUPPLEMENT_USE_CASES.map((uc) => (
                 <button
                   key={uc}
+                  role="radio"
+                  aria-checked={activeUseCase === uc}
                   onClick={() => setActiveUseCase(uc)}
                   className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all border ${
                     activeUseCase === uc
@@ -598,7 +645,11 @@ function StackBuilderTab() {
       <div className="flex items-center justify-between animate-fadeUp stagger-4" style={{ opacity: 0 }}>
         <p className="text-[10px] text-slate-500">{filteredSupplements.length} supplement{filteredSupplements.length !== 1 ? 's' : ''} available</p>
         {stackItems.length > 0 && !showStackSummary && (
-          <button onClick={() => setShowStackSummary(true)} className="text-[10px] text-sky-400 hover:text-sky-300 transition-colors">
+          <button
+            onClick={() => setShowStackSummary(true)}
+            aria-label={`View stack with ${stackItems.length} supplements`}
+            className="text-[10px] text-sky-400 hover:text-sky-300 transition-colors"
+          >
             View Stack ({stackItems.length})
           </button>
         )}
@@ -611,6 +662,7 @@ function StackBuilderTab() {
           const inStack = isSupplementInStack(supp.id);
           const existingItem = stackItems.find((i) => i.supplementId === supp.id);
           const staggerClass = idx < 6 ? `stagger-${Math.min(idx + 1, 6)}` : '';
+          const detailsId = `stack-details-${supp.id}`;
 
           return (
             <div
@@ -657,6 +709,8 @@ function StackBuilderTab() {
                         addToStack(supp, 'AM');
                       }
                     }}
+                    aria-label={`${inStack ? 'Set' : 'Add'} ${supp.shortName} to morning stack`}
+                    aria-pressed={inStack && existingItem?.timing === 'AM'}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all border ${
                       inStack && existingItem?.timing === 'AM'
                         ? 'bg-amber-500/15 text-amber-400 border-amber-500/25'
@@ -675,6 +729,8 @@ function StackBuilderTab() {
                         addToStack(supp, 'PM');
                       }
                     }}
+                    aria-label={`${inStack ? 'Set' : 'Add'} ${supp.shortName} to evening stack`}
+                    aria-pressed={inStack && existingItem?.timing === 'PM'}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all border ${
                       inStack && existingItem?.timing === 'PM'
                         ? 'bg-purple-500/15 text-purple-400 border-purple-500/25'
@@ -690,6 +746,7 @@ function StackBuilderTab() {
                   {inStack && (
                     <button
                       onClick={() => removeFromStack(supp.id)}
+                      aria-label={`Remove ${supp.shortName} from stack`}
                       className="p-1.5 rounded-lg text-red-400/60 hover:text-red-400 hover:bg-red-500/10 transition-all"
                     >
                       <MinusIcon className="w-4 h-4" />
@@ -701,6 +758,8 @@ function StackBuilderTab() {
               {/* Expandable Details */}
               <button
                 onClick={() => toggleExpand(supp.id)}
+                aria-expanded={isExpanded}
+                aria-controls={detailsId}
                 className="w-full flex items-center justify-center gap-1.5 py-2.5 border-t border-white/[0.05] text-[10px] text-slate-500 hover:text-slate-300 hover:bg-white/[0.02] transition-all"
               >
                 {isExpanded ? 'Less' : 'More Details'}
@@ -708,7 +767,7 @@ function StackBuilderTab() {
               </button>
 
               {isExpanded && (
-                <div className="px-4 pb-4 space-y-3 border-t border-white/[0.05] pt-3">
+                <div id={detailsId} role="region" aria-label={`${supp.name} details`} className="px-4 pb-4 space-y-3 border-t border-white/[0.05] pt-3">
                   {/* Description */}
                   <div>
                     <p className="text-[10px] font-semibold text-slate-400 mb-1">Description</p>
@@ -784,7 +843,7 @@ function StackBuilderTab() {
 
 // ─── Timeline Tab ─────────────────────────────────────────────────────────────
 
-function NeuroLevelBar({ phase, isLast }: { phase: TimelinePhase; isLast: boolean }) {
+const NeuroLevelBar = React.memo(function NeuroLevelBar({ phase, isLast }: { phase: TimelinePhase; isLast: boolean }) {
   const getColor = (level: number) => {
     if (level >= 90) return 'from-emerald-500 to-emerald-400';
     if (level >= 65) return 'from-emerald-500 to-sky-400';
@@ -809,7 +868,14 @@ function NeuroLevelBar({ phase, isLast }: { phase: TimelinePhase; isLast: boolea
         </span>
       </div>
       <div className="flex-1 relative">
-        <div className="h-3 rounded-full bg-white/[0.04] overflow-hidden">
+        <div
+          className="h-3 rounded-full bg-white/[0.04] overflow-hidden"
+          role="progressbar"
+          aria-valuenow={phase.neuroLevel}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label={`Neurological recovery at ${phase.name}: ${phase.neuroLevel}%`}
+        >
           <div
             className={`h-full rounded-full bg-gradient-to-r ${getColor(phase.neuroLevel)} transition-all duration-700`}
             style={{ width: `${phase.neuroLevel}%` }}
@@ -821,9 +887,9 @@ function NeuroLevelBar({ phase, isLast }: { phase: TimelinePhase; isLast: boolea
       </div>
     </div>
   );
-}
+});
 
-function NeurotransmitterBar({ label, value, color }: { label: string; value: string; color: string }) {
+const NeurotransmitterBar = React.memo(function NeurotransmitterBar({ label, value }: { label: string; value: string; color?: string }) {
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between">
@@ -832,19 +898,19 @@ function NeurotransmitterBar({ label, value, color }: { label: string; value: st
       <p className="text-[11px] text-slate-500 leading-relaxed">{value}</p>
     </div>
   );
-}
+});
 
 function TimelineTab() {
   const [expandedPhases, setExpandedPhases] = useState<Set<string>>(new Set());
 
-  const togglePhaseExpand = (id: string) => {
+  const togglePhaseExpand = useCallback((id: string) => {
     setExpandedPhases((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
       return next;
     });
-  };
+  }, []);
 
   const getPhaseColor = (id: string) => {
     switch (id) {
@@ -860,7 +926,7 @@ function TimelineTab() {
   };
 
   return (
-    <div className="space-y-6 pb-6">
+    <div className="space-y-6 pb-6" role="tabpanel" id="panel-timeline" aria-labelledby="tab-timeline">
       {/* Header */}
       <div className="glass-card-hero p-5 animate-fadeUp" style={{ opacity: 0 }}>
         <div className="flex items-center gap-3 mb-2">
@@ -892,6 +958,7 @@ function TimelineTab() {
           const colors = getPhaseColor(phase.id);
           const isExpanded = expandedPhases.has(phase.id);
           const staggerClass = idx < 6 ? `stagger-${Math.min(idx + 1, 6)}` : '';
+          const detailsId = `timeline-details-${phase.id}`;
 
           return (
             <div
@@ -942,6 +1009,8 @@ function TimelineTab() {
               {/* Expand/Collapse */}
               <button
                 onClick={() => togglePhaseExpand(phase.id)}
+                aria-expanded={isExpanded}
+                aria-controls={detailsId}
                 className="w-full flex items-center justify-center gap-1.5 py-2.5 border-t border-white/[0.05] text-[10px] text-slate-500 hover:text-slate-300 hover:bg-white/[0.02] transition-all"
               >
                 {isExpanded ? 'Collapse' : 'View Details'}
@@ -950,7 +1019,7 @@ function TimelineTab() {
 
               {/* Expanded Content */}
               {isExpanded && (
-                <div className="px-4 pb-4 space-y-4 border-t border-white/[0.05] pt-4">
+                <div id={detailsId} role="region" aria-label={`${phase.name} details`} className="px-4 pb-4 space-y-4 border-t border-white/[0.05] pt-4">
                   {/* Symptoms */}
                   {phase.symptoms.length > 0 && (
                     <div>

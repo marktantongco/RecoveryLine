@@ -678,10 +678,7 @@ textarea:focus {
   touch-action: pan-y;
   padding-bottom: 80px;
   padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
-  /* Force GPU compositing layer for smooth iOS scroll */
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  will-change: scroll;
+  /* will-change: scroll removed — causes GPU layer promotion that blocks iOS parent scroll */
 }
 
 /* ═══════════════════════════════════════════════════════════════

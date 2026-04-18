@@ -165,6 +165,150 @@ const LEGAL_INFO = [
   },
 ];
 
+/* ────────────────────────────────────────────
+   Memoized sub-components
+   ──────────────────────────────────────────── */
+
+const SectionHeader = React.memo(function SectionHeader({
+  icon,
+  title,
+  badge,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  badge?: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-center gap-2 mb-3 px-1">
+      <div className="w-7 h-7 rounded-lg flex items-center justify-center" aria-hidden="true">
+        {icon}
+      </div>
+      <h3 className="text-sm font-bold text-slate-300">{title}</h3>
+      {badge && badge}
+    </div>
+  );
+});
+
+const TagBadge = React.memo(function TagBadge({
+  color,
+  icon,
+  text,
+}: {
+  color: 'sky' | 'emerald' | 'purple' | 'amber' | 'red';
+  icon?: React.ReactNode;
+  text: string;
+}) {
+  const colorMap = {
+    sky: 'bg-sky-500/10 text-sky-400 border-sky-500/15',
+    emerald: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/15',
+    purple: 'bg-purple-500/10 text-purple-400 border-purple-purple/15',
+    amber: 'bg-amber-500/10 text-amber-400 border-amber-500/15',
+    red: 'bg-red-500/10 text-red-400 border-red-500/15',
+  } as const;
+
+  const borderClass =
+    color === 'purple'
+      ? 'bg-purple-500/10 text-purple-400 border-purple-500/15'
+      : colorMap[color];
+
+  return (
+    <span className={`inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full border ${borderClass}`}>
+      {icon && <span aria-hidden="true">{icon}</span>}
+      {text}
+    </span>
+  );
+});
+
+const LegalItem = React.memo(function LegalItem({
+  item,
+  index,
+  isExpanded,
+  onToggle,
+}: {
+  item: { title: string; content: string };
+  index: number;
+  isExpanded: boolean;
+  onToggle: () => void;
+}) {
+  const panelId = `legal-panel-${index}`;
+  return (
+    <div
+      className="glass-card overflow-hidden animate-fadeUp transition-all"
+      style={{ opacity: 0, animationDelay: `${index * 0.05}s` }}
+    >
+      <button
+        onClick={onToggle}
+        aria-expanded={isExpanded}
+        aria-controls={panelId}
+        className="w-full p-4 flex items-start gap-3 text-left hover:bg-white/5 transition-colors"
+      >
+        <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors ${isExpanded ? 'bg-sky-500/15' : 'bg-white/5'}`}>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={isExpanded ? '#0ea5e9' : '#64748b'}
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" />
+          </svg>
+        </div>
+        <div className="flex-1 min-w-0">
+          <h4 className="text-sm font-semibold text-white leading-snug">{item.title}</h4>
+        </div>
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke={isExpanded ? '#0ea5e9' : '#475569'}
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={`flex-shrink-0 mt-0.5 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+          aria-hidden="true"
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+      {isExpanded && (
+        <div
+          id={panelId}
+          role="region"
+          className="px-4 pb-4 pl-15 animate-fadeUp"
+          style={{ paddingLeft: '60px', opacity: 0 }}
+        >
+          <p className="text-xs text-slate-400 leading-relaxed">{item.content}</p>
+        </div>
+      )}
+    </div>
+  );
+});
+
+const PhoneIcon = React.memo(function PhoneIcon({ size = 10, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72" />
+    </svg>
+  );
+});
+
+const LocationIcon = React.memo(function LocationIcon({ size = 10, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
+    </svg>
+  );
+});
+
+/* ────────────────────────────────────────────
+   Main export (NOT memo'd per spec)
+   ──────────────────────────────────────────── */
+
 export default function PHGuide() {
   const [activeTab, setActiveTab] = useState<SubTab>('programs');
   const [expandedLegal, setExpandedLegal] = useState<string | null>(null);
@@ -174,7 +318,7 @@ export default function PHGuide() {
       key: 'programs',
       label: 'Programs',
       icon: (
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" />
         </svg>
       ),
@@ -183,7 +327,7 @@ export default function PHGuide() {
       key: 'hotlines',
       label: 'Hotlines',
       icon: (
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72" />
         </svg>
       ),
@@ -192,7 +336,7 @@ export default function PHGuide() {
       key: 'support',
       label: 'Support',
       icon: (
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
         </svg>
       ),
@@ -201,7 +345,7 @@ export default function PHGuide() {
       key: 'legal',
       label: 'Legal',
       icon: (
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
         </svg>
       ),
@@ -210,7 +354,7 @@ export default function PHGuide() {
       key: 'why',
       label: 'Why This App',
       icon: (
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <circle cx="12" cy="12" r="10" />
           <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
           <path d="M12 17h.01" />
@@ -222,15 +366,15 @@ export default function PHGuide() {
   return (
     <div className="space-y-4 pb-6">
       {/* Header with PH flag colors */}
-      <div className="animate-fadeUp relative overflow-hidden rounded-2xl border border-white/8" style={{ background: 'linear-gradient(135deg, rgba(0,56,168,0.15) 0%, rgba(17,24,39,0.95) 20%, rgba(17,24,39,0.95) 80%, rgba(206,17,38,0.15) 100%)' }}>
-        <div className="absolute top-0 left-0 w-1 h-full bg-sky-700 rounded-l-2xl" />
-        <div className="absolute top-0 right-0 w-1 h-full bg-red-600 rounded-r-2xl" />
-        <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full bg-sky-500/5 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-12 -left-12 w-32 h-32 rounded-full bg-red-500/5 blur-3xl pointer-events-none" />
+      <div className="animate-fadeUp relative overflow-hidden rounded-2xl border border-white/8" style={{ background: 'linear-gradient(135deg, rgba(0,56,168,0.15) 0%, rgba(17,24,39,0.95) 20%, rgba(17,24,39,0.95) 80%, rgba(206,17,38,0.15) 100%)', opacity: 0 }}>
+        <div className="absolute top-0 left-0 w-1 h-full bg-sky-700 rounded-l-2xl" aria-hidden="true" />
+        <div className="absolute top-0 right-0 w-1 h-full bg-red-600 rounded-r-2xl" aria-hidden="true" />
+        <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full bg-sky-500/5 blur-3xl pointer-events-none" aria-hidden="true" />
+        <div className="absolute -bottom-12 -left-12 w-32 h-32 rounded-full bg-red-500/5 blur-3xl pointer-events-none" aria-hidden="true" />
         <div className="relative p-5">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg" style={{ background: 'linear-gradient(135deg, #0038A8, #CE1126)' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
               </svg>
             </div>
@@ -246,10 +390,13 @@ export default function PHGuide() {
       </div>
 
       {/* Sub-navigation Tabs */}
-      <div className="glass-card p-1.5 flex animate-fadeUp stagger-1" style={{ opacity: 0 }}>
+      <div className="glass-card p-1.5 flex animate-fadeUp stagger-1" role="tablist" aria-label="Recovery guide categories" style={{ opacity: 0 }}>
         {tabs.map((tab) => (
           <button
             key={tab.key}
+            role="tab"
+            aria-selected={activeTab === tab.key}
+            aria-controls={`panel-${tab.key}`}
             onClick={() => setActiveTab(tab.key)}
             className={`flex-1 py-2.5 rounded-xl text-xs font-medium transition-all flex items-center justify-center gap-1.5 ${
               activeTab === tab.key
@@ -263,24 +410,24 @@ export default function PHGuide() {
         ))}
       </div>
 
-      {/* Programs Tab */}
+      {/* ── Programs Tab ── */}
       {activeTab === 'programs' && (
-        <div className="space-y-5 animate-fadeUp">
+        <div className="space-y-5 animate-fadeUp" role="tabpanel" id="panel-programs" style={{ opacity: 0 }}>
           {/* Government Programs */}
           <div>
-            <div className="flex items-center gap-2 mb-3 px-1">
-              <div className="w-7 h-7 rounded-lg bg-sky-500/15 flex items-center justify-center">
+            <SectionHeader
+              icon={
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M3 21h18M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7H3l2-4h14l2 4M5 21V10.87M19 21V10.87" />
                 </svg>
-              </div>
-              <h3 className="text-sm font-bold text-slate-300">Government Programs</h3>
-            </div>
+              }
+              title="Government Programs"
+            />
             <div className="space-y-2">
               {GOV_PROGRAMS.map((program, i) => (
                 <div key={i} className="glass-card p-4 animate-fadeUp stagger-2" style={{ opacity: 0, animationDelay: `${i * 0.05}s` }}>
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-sky-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <div className="w-8 h-8 rounded-lg bg-sky-500/10 flex items-center justify-center flex-shrink-0 mt-0.5" aria-hidden="true">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                       </svg>
@@ -289,18 +436,8 @@ export default function PHGuide() {
                       <h4 className="text-sm font-semibold text-white mb-1">{program.name}</h4>
                       <p className="text-xs text-slate-400 leading-relaxed mb-2">{program.description}</p>
                       <div className="flex flex-wrap gap-2">
-                        <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/15">
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72" />
-                          </svg>
-                          {program.contact}
-                        </span>
-                        <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/15">
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
-                          </svg>
-                          {program.location}
-                        </span>
+                        <TagBadge color="sky" icon={<PhoneIcon />} text={program.contact} />
+                        <TagBadge color="emerald" icon={<LocationIcon />} text={program.location} />
                       </div>
                     </div>
                   </div>
@@ -311,19 +448,19 @@ export default function PHGuide() {
 
           {/* Private Rehab Centers */}
           <div>
-            <div className="flex items-center gap-2 mb-3 px-1">
-              <div className="w-7 h-7 rounded-lg bg-emerald-500/15 flex items-center justify-center">
+            <SectionHeader
+              icon={
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
                 </svg>
-              </div>
-              <h3 className="text-sm font-bold text-slate-300">Private Rehab Centers</h3>
-            </div>
+              }
+              title="Private Rehab Centers"
+            />
             <div className="space-y-2">
               {PRIVATE_REHAB.map((center, i) => (
                 <div key={i} className="glass-card p-4 animate-fadeUp" style={{ opacity: 0, animationDelay: `${(i + 4) * 0.05}s` }}>
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center flex-shrink-0 mt-0.5" aria-hidden="true">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
                       </svg>
@@ -334,22 +471,14 @@ export default function PHGuide() {
                       <div className="flex flex-wrap gap-2">
                         <a
                           href={`tel:${center.contact.replace(/\D/g, '')}`}
+                          aria-label={`Call ${center.name}`}
                           className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/15 hover:bg-emerald-500/20 transition-colors"
                         >
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72" />
-                          </svg>
+                          <PhoneIcon />
                           {center.contact}
                         </a>
-                        <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/15">
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
-                          </svg>
-                          {center.location}
-                        </span>
-                        <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/15">
-                          {center.priceRange}
-                        </span>
+                        <TagBadge color="purple" icon={<LocationIcon />} text={center.location} />
+                        <TagBadge color="amber" text={center.priceRange} />
                       </div>
                     </div>
                   </div>
@@ -360,19 +489,19 @@ export default function PHGuide() {
 
           {/* Community-Based Programs */}
           <div>
-            <div className="flex items-center gap-2 mb-3 px-1">
-              <div className="w-7 h-7 rounded-lg bg-amber-500/15 flex items-center justify-center">
+            <SectionHeader
+              icon={
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
                 </svg>
-              </div>
-              <h3 className="text-sm font-bold text-slate-300">Community-Based Programs</h3>
-            </div>
+              }
+              title="Community-Based Programs"
+            />
             <div className="space-y-2">
               {COMMUNITY_PROGRAMS.map((program, i) => (
                 <div key={i} className="glass-card p-4 animate-fadeUp" style={{ opacity: 0, animationDelay: `${(i + 8) * 0.05}s` }}>
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center flex-shrink-0 mt-0.5" aria-hidden="true">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <circle cx="12" cy="12" r="10" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><line x1="9" y1="9" x2="9.01" y2="9" /><line x1="15" y1="9" x2="15.01" y2="9" />
                       </svg>
@@ -381,15 +510,8 @@ export default function PHGuide() {
                       <h4 className="text-sm font-semibold text-white mb-1">{program.name}</h4>
                       <p className="text-xs text-slate-400 leading-relaxed mb-2">{program.description}</p>
                       <div className="flex flex-wrap gap-2">
-                        <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/15">
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="12" cy="12" r="10" /><path d="M2 12h20" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                          </svg>
-                          {program.contact}
-                        </span>
-                        <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/15">
-                          {program.access}
-                        </span>
+                        <TagBadge color="sky" text={program.contact} />
+                        <TagBadge color="emerald" text={program.access} />
                       </div>
                     </div>
                   </div>
@@ -400,31 +522,34 @@ export default function PHGuide() {
         </div>
       )}
 
-      {/* Hotlines Tab */}
+      {/* ── Hotlines Tab ── */}
       {activeTab === 'hotlines' && (
-        <div className="space-y-5 animate-fadeUp">
+        <div className="space-y-5 animate-fadeUp" role="tabpanel" id="panel-hotlines" style={{ opacity: 0 }}>
           {/* Emergency section */}
           <div>
-            <div className="flex items-center gap-2 mb-3 px-1">
-              <div className="w-7 h-7 rounded-lg bg-red-500/15 flex items-center justify-center">
+            <SectionHeader
+              icon={
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
                   <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
                 </svg>
-              </div>
-              <h3 className="text-sm font-bold text-red-400">Emergency Hotlines</h3>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 border border-red-500/20 font-medium">TAP TO CALL</span>
-            </div>
+              }
+              title="Emergency Hotlines"
+              badge={
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 border border-red-500/20 font-medium">TAP TO CALL</span>
+              }
+            />
             <div className="space-y-2">
               {EMERGENCY_HOTLINES.map((hotline, i) => (
                 <a
                   key={i}
                   href={`tel:${hotline.number.replace(/\D/g, '')}`}
+                  aria-label={`Call ${hotline.name}: ${hotline.number}`}
                   className="glass-card p-4 block hover:border-red-500/20 active:scale-[0.99] transition-all animate-fadeUp"
                   style={{ opacity: 0, animationDelay: `${i * 0.05}s` }}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center flex-shrink-0" aria-hidden="true">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72" />
                         <path d="M14.05 2a9 9 0 0 1 8 7.94" />
@@ -445,24 +570,25 @@ export default function PHGuide() {
 
           {/* Government hotlines */}
           <div>
-            <div className="flex items-center gap-2 mb-3 px-1">
-              <div className="w-7 h-7 rounded-lg bg-sky-500/15 flex items-center justify-center">
+            <SectionHeader
+              icon={
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72" />
                 </svg>
-              </div>
-              <h3 className="text-sm font-bold text-sky-400">Government Lines</h3>
-            </div>
+              }
+              title="Government Lines"
+            />
             <div className="space-y-2">
               {ADDITIONAL_HOTLINES.map((hotline, i) => (
                 <a
                   key={i}
                   href={`tel:${hotline.number.replace(/\D/g, '')}`}
+                  aria-label={`Call ${hotline.name}: ${hotline.number}`}
                   className="glass-card p-4 block hover:border-sky-500/20 active:scale-[0.99] transition-all animate-fadeUp"
                   style={{ opacity: 0, animationDelay: `${(i + 6) * 0.05}s` }}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center flex-shrink-0" aria-hidden="true">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72" />
                       </svg>
@@ -482,24 +608,24 @@ export default function PHGuide() {
         </div>
       )}
 
-      {/* Support Tab */}
+      {/* ── Support Tab ── */}
       {activeTab === 'support' && (
-        <div className="space-y-5 animate-fadeUp">
+        <div className="space-y-5 animate-fadeUp" role="tabpanel" id="panel-support" style={{ opacity: 0 }}>
           {/* Online Support Groups */}
           <div>
-            <div className="flex items-center gap-2 mb-3 px-1">
-              <div className="w-7 h-7 rounded-lg bg-purple-500/15 flex items-center justify-center">
+            <SectionHeader
+              icon={
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="10" /><path d="M2 12h20" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
                 </svg>
-              </div>
-              <h3 className="text-sm font-bold text-purple-400">Online Support Groups</h3>
-            </div>
+              }
+              title="Online Support Groups"
+            />
             <div className="space-y-2">
               {ONLINE_SUPPORT.map((group, i) => (
                 <div key={i} className="glass-card p-4 animate-fadeUp" style={{ opacity: 0, animationDelay: `${i * 0.05}s` }}>
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center flex-shrink-0 mt-0.5" aria-hidden="true">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                       </svg>
@@ -508,18 +634,8 @@ export default function PHGuide() {
                       <h4 className="text-sm font-semibold text-white mb-1">{group.name}</h4>
                       <p className="text-xs text-slate-400 leading-relaxed mb-2">{group.description}</p>
                       <div className="flex flex-wrap gap-2">
-                        <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/15">
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="12" cy="12" r="10" /><path d="M2 12h20" />
-                          </svg>
-                          {group.access}
-                        </span>
-                        <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/15">
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-                          </svg>
-                          {group.availability}
-                        </span>
+                        <TagBadge color="purple" text={group.access} />
+                        <TagBadge color="emerald" text={group.availability} />
                       </div>
                     </div>
                   </div>
@@ -530,19 +646,19 @@ export default function PHGuide() {
 
           {/* Faith-Based Programs */}
           <div>
-            <div className="flex items-center gap-2 mb-3 px-1">
-              <div className="w-7 h-7 rounded-lg bg-amber-500/15 flex items-center justify-center">
+            <SectionHeader
+              icon={
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" />
                 </svg>
-              </div>
-              <h3 className="text-sm font-bold text-amber-400">Faith-Based Programs</h3>
-            </div>
+              }
+              title="Faith-Based Programs"
+            />
             <div className="space-y-2">
               {FAITH_BASED.map((program, i) => (
                 <div key={i} className="glass-card p-4 animate-fadeUp" style={{ opacity: 0, animationDelay: `${(i + 3) * 0.05}s` }}>
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center flex-shrink-0 mt-0.5" aria-hidden="true">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                       </svg>
@@ -553,22 +669,14 @@ export default function PHGuide() {
                       <div className="flex flex-wrap gap-2">
                         <a
                           href={`tel:${program.contact.replace(/\D/g, '')}`}
+                          aria-label={`Call ${program.name}`}
                           className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/15 hover:bg-amber-500/20 transition-colors"
                         >
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72" />
-                          </svg>
+                          <PhoneIcon />
                           {program.contact}
                         </a>
-                        <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/15">
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
-                          </svg>
-                          {program.location}
-                        </span>
-                        <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/15">
-                          {program.access}
-                        </span>
+                        <TagBadge color="emerald" icon={<LocationIcon />} text={program.location} />
+                        <TagBadge color="sky" text={program.access} />
                       </div>
                     </div>
                   </div>
@@ -579,75 +687,33 @@ export default function PHGuide() {
         </div>
       )}
 
-      {/* Legal Tab */}
+      {/* ── Legal Tab ── */}
       {activeTab === 'legal' && (
-        <div className="space-y-3 animate-fadeUp">
-          <div className="flex items-center gap-2 mb-1 px-1">
-            <div className="w-7 h-7 rounded-lg bg-sky-500/15 flex items-center justify-center">
+        <div className="space-y-3 animate-fadeUp" role="tabpanel" id="panel-legal" style={{ opacity: 0 }}>
+          <SectionHeader
+            icon={
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
-            </div>
-            <h3 className="text-sm font-bold text-sky-400">Legal Protections & Rights</h3>
-          </div>
+            }
+            title="Legal Protections & Rights"
+          />
           <p className="text-xs text-slate-500 mb-2 px-1">Tap any section to expand details</p>
 
-          {LEGAL_INFO.map((item, i) => {
-            const isExpanded = expandedLegal === item.title;
-            return (
-              <div
-                key={i}
-                className="glass-card overflow-hidden animate-fadeUp transition-all"
-                style={{ opacity: 0, animationDelay: `${i * 0.05}s` }}
-              >
-                <button
-                  onClick={() => setExpandedLegal(isExpanded ? null : item.title)}
-                  className="w-full p-4 flex items-start gap-3 text-left hover:bg-white/5 transition-colors"
-                >
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors ${isExpanded ? 'bg-sky-500/15' : 'bg-white/5'}`}>
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke={isExpanded ? '#0ea5e9' : '#64748b'}
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" />
-                    </svg>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-semibold text-white leading-snug">{item.title}</h4>
-                  </div>
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke={isExpanded ? '#0ea5e9' : '#475569'}
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className={`flex-shrink-0 mt-0.5 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
-                  >
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
-                </button>
-                {isExpanded && (
-                  <div className="px-4 pb-4 pl-15 animate-fadeUp" style={{ paddingLeft: '60px' }}>
-                    <p className="text-xs text-slate-400 leading-relaxed">{item.content}</p>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+          {LEGAL_INFO.map((item, i) => (
+            <LegalItem
+              key={i}
+              item={item}
+              index={i}
+              isExpanded={expandedLegal === item.title}
+              onToggle={() => setExpandedLegal(expandedLegal === item.title ? null : item.title)}
+            />
+          ))}
 
           {/* Disclaimer */}
           <div className="glass-card-insight p-4 animate-fadeUp" style={{ opacity: 0, animationDelay: `${LEGAL_INFO.length * 0.05 + 0.1}s` }}>
             <div className="flex items-start gap-3">
-              <div className="w-7 h-7 rounded-lg bg-amber-500/15 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-7 h-7 rounded-lg bg-amber-500/15 flex items-center justify-center flex-shrink-0 mt-0.5" aria-hidden="true">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
                 </svg>
@@ -663,13 +729,13 @@ export default function PHGuide() {
         </div>
       )}
 
-      {/* Why This App Tab */}
+      {/* ── Why This App Tab ── */}
       {activeTab === 'why' && (
-        <div className="space-y-4 animate-fadeUp">
+        <div className="space-y-4 animate-fadeUp" role="tabpanel" id="panel-why" style={{ opacity: 0 }}>
           <div className="glass-card-hero p-5 animate-fadeUp" style={{ opacity: 0 }}>
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-sky-500/15">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2Z" />
                   <path d="M12 16v-4" />
                   <path d="M12 8h.01" />
@@ -690,7 +756,7 @@ export default function PHGuide() {
             {/* Dark Mode by Default */}
             <div className="glass-card p-4 animate-fadeUp" style={{ opacity: 0, animationDelay: '0.05s' }}>
               <div className="flex items-start gap-3">
-                <div className="w-9 h-9 rounded-lg bg-violet-500/15 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <div className="w-9 h-9 rounded-lg bg-violet-500/15 flex items-center justify-center flex-shrink-0 mt-0.5" aria-hidden="true">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
                     <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
@@ -708,7 +774,7 @@ export default function PHGuide() {
             {/* PWA Architecture */}
             <div className="glass-card p-4 animate-fadeUp" style={{ opacity: 0, animationDelay: '0.1s' }}>
               <div className="flex items-start gap-3">
-                <div className="w-9 h-9 rounded-lg bg-sky-500/15 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <div className="w-9 h-9 rounded-lg bg-sky-500/15 flex items-center justify-center flex-shrink-0 mt-0.5" aria-hidden="true">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
                     <path d="M12 18h.01" />
@@ -726,7 +792,7 @@ export default function PHGuide() {
             {/* Taglish & Local Context */}
             <div className="glass-card p-4 animate-fadeUp" style={{ opacity: 0, animationDelay: '0.15s' }}>
               <div className="flex items-start gap-3">
-                <div className="w-9 h-9 rounded-lg bg-emerald-500/15 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <div className="w-9 h-9 rounded-lg bg-emerald-500/15 flex items-center justify-center flex-shrink-0 mt-0.5" aria-hidden="true">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="12" cy="12" r="10" />
                     <line x1="2" y1="12" x2="22" y2="12" />
@@ -745,7 +811,7 @@ export default function PHGuide() {
             {/* Privacy-First Design */}
             <div className="glass-card p-4 animate-fadeUp" style={{ opacity: 0, animationDelay: '0.2s' }}>
               <div className="flex items-start gap-3">
-                <div className="w-9 h-9 rounded-lg bg-red-500/15 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <div className="w-9 h-9 rounded-lg bg-red-500/15 flex items-center justify-center flex-shrink-0 mt-0.5" aria-hidden="true">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                     <path d="M7 11V7a5 5 0 0 1 10 0v4" />
@@ -764,7 +830,7 @@ export default function PHGuide() {
           {/* Additional context */}
           <div className="glass-card-insight p-4 animate-fadeUp" style={{ opacity: 0, animationDelay: '0.25s' }}>
             <div className="flex items-start gap-3">
-              <div className="w-7 h-7 rounded-lg bg-emerald-500/15 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-7 h-7 rounded-lg bg-emerald-500/15 flex items-center justify-center flex-shrink-0 mt-0.5" aria-hidden="true">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                   <path d="m9 12 2 2 4-4" />

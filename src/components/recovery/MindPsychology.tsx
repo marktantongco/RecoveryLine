@@ -31,9 +31,9 @@ function getDayOfYear(): number {
 
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
 
-function BrainIcon({ className = 'w-5 h-5' }: { className?: string }) {
+const BrainIcon = React.memo(function BrainIcon({ className = 'w-5 h-5' }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z" />
       <path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z" />
       <path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4" />
@@ -45,20 +45,20 @@ function BrainIcon({ className = 'w-5 h-5' }: { className?: string }) {
       <path d="M19.967 17.484A4 4 0 0 1 18 18" />
     </svg>
   );
-}
+});
 
-function HeartPulseIcon({ className = 'w-5 h-5' }: { className?: string }) {
+const HeartPulseIcon = React.memo(function HeartPulseIcon({ className = 'w-5 h-5' }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M19.5 12.572l-7.5 7.428-7.5-7.428A5 5 0 1 1 12 6.006a5 5 0 1 1 7.5 6.572" />
       <path d="M12 6l-1.5 4h3l-1.5 4" />
     </svg>
   );
-}
+});
 
-function SparklesIcon({ className = 'w-5 h-5' }: { className?: string }) {
+const SparklesIcon = React.memo(function SparklesIcon({ className = 'w-5 h-5' }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
       <path d="M5 3v4" />
       <path d="M19 17v4" />
@@ -66,77 +66,77 @@ function SparklesIcon({ className = 'w-5 h-5' }: { className?: string }) {
       <path d="M17 19h4" />
     </svg>
   );
-}
+});
 
-function ChevronDownIcon({ className = 'w-4 h-4' }: { className?: string }) {
+const ChevronDownIcon = React.memo(function ChevronDownIcon({ className = 'w-4 h-4' }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="m6 9 6 6 6-6" />
     </svg>
   );
-}
+});
 
-function ClockIcon({ className = 'w-3.5 h-3.5' }: { className?: string }) {
+const ClockIcon = React.memo(function ClockIcon({ className = 'w-3.5 h-3.5' }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <circle cx="12" cy="12" r="10" />
       <polyline points="12 6 12 12 16 14" />
     </svg>
   );
-}
+});
 
-function ZapIcon({ className = 'w-3.5 h-3.5' }: { className?: string }) {
+const ZapIcon = React.memo(function ZapIcon({ className = 'w-3.5 h-3.5' }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
     </svg>
   );
-}
+});
 
-function ArrowRightIcon({ className = 'w-3 h-3' }: { className?: string }) {
+const ArrowRightIcon = React.memo(function ArrowRightIcon({ className = 'w-3 h-3' }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M5 12h14" />
       <path d="m12 5 7 7-7 7" />
     </svg>
   );
-}
+});
 
-function BookOpenIcon({ className = 'w-3.5 h-3.5' }: { className?: string }) {
+const BookOpenIcon = React.memo(function BookOpenIcon({ className = 'w-3.5 h-3.5' }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
       <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
     </svg>
   );
-}
+});
 
-function GitBranchIcon({ className = 'w-3.5 h-3.5' }: { className?: string }) {
+const GitBranchIcon = React.memo(function GitBranchIcon({ className = 'w-3.5 h-3.5' }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <line x1="6" y1="3" x2="6" y2="15" />
       <circle cx="18" cy="6" r="3" />
       <circle cx="6" cy="18" r="3" />
       <path d="M18 9a9 9 0 0 1-9 9" />
     </svg>
   );
-}
+});
 
-function FlameIcon({ className = 'w-3.5 h-3.5' }: { className?: string }) {
+const FlameIcon = React.memo(function FlameIcon({ className = 'w-3.5 h-3.5' }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
     </svg>
   );
-}
+});
 
-function FilterIcon({ className = 'w-3.5 h-3.5' }: { className?: string }) {
+const FilterIcon = React.memo(function FilterIcon({ className = 'w-3.5 h-3.5' }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
     </svg>
   );
-}
+});
 
 // ─── Breathing Exercise ───────────────────────────────────────────────────────
 
@@ -148,7 +148,7 @@ const BREATHING_PHASES: { phase: BreathingPhase; label: string; duration: number
   { phase: 'out', label: 'Breathe Out', duration: 4000 },
 ];
 
-function BreathingExercise() {
+const BreathingExercise = React.memo(function BreathingExercise() {
   const [isActive, setIsActive] = useState(false);
   const [currentPhase, setCurrentPhase] = useState<BreathingPhase>('idle');
   const [cycles, setCycles] = useState(0);
@@ -279,7 +279,7 @@ function BreathingExercise() {
     <div className="glass-card p-5 animate-fadeUp stagger-2" style={{ opacity: 0 }}>
       <div className="flex items-center gap-2.5 mb-4">
         <div className="w-7 h-7 rounded-lg bg-sky-500/10 flex items-center justify-center flex-shrink-0">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
             <path d="M12 6v6l4 2" />
           </svg>
@@ -295,7 +295,7 @@ function BreathingExercise() {
       <div className="flex flex-col items-center gap-4">
         <div className="relative w-40 h-40 flex items-center justify-center">
           {/* Background ring */}
-          <svg className="absolute inset-0" viewBox="0 0 120 120" width="160" height="160">
+          <svg className="absolute inset-0" viewBox="0 0 120 120" width="160" height="160" aria-hidden="true">
             <circle cx="60" cy="60" r="54" fill="none" strokeWidth="2" className={getRingColor()} opacity="0.15" />
             <circle
               cx="60" cy="60" r="54" fill="none" strokeWidth="2"
@@ -331,8 +331,10 @@ function BreathingExercise() {
                       : 'rgba(56,189,248,0.3)'
               }`,
             }}
+            role="img"
+            aria-label={currentPhase === 'idle' ? 'Breathing exercise ready' : `Breathing phase: ${currentPhase}`}
           >
-            <span className={`text-sm font-bold ${getPhaseColor()} transition-colors`}>
+            <span className={`text-sm font-bold ${getPhaseColor()} transition-colors`} aria-hidden="true">
               {currentPhase === 'idle' ? (
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
@@ -350,7 +352,7 @@ function BreathingExercise() {
 
         {/* Phase Label */}
         <div className="text-center">
-          <p className={`text-sm font-semibold ${getPhaseColor()} transition-colors`}>
+          <p className={`text-sm font-semibold ${getPhaseColor()} transition-colors`} aria-live="polite">
             {currentPhase === 'idle' ? 'Ready' : currentPhase === 'in' ? 'Breathe In' : currentPhase === 'hold' ? 'Hold' : 'Breathe Out'}
           </p>
           <p className="text-[10px] text-slate-500 mt-1">
@@ -361,6 +363,7 @@ function BreathingExercise() {
         {/* Start / Stop Button */}
         <button
           onClick={isActive ? stop : start}
+          aria-label={isActive ? 'Stop breathing exercise' : 'Start breathing exercise'}
           className={`mt-2 px-6 py-2.5 rounded-xl text-xs font-semibold transition-all active:scale-[0.98] ${
             isActive
               ? 'bg-red-500/15 text-red-400 border border-red-500/20 hover:bg-red-500/20'
@@ -372,7 +375,7 @@ function BreathingExercise() {
       </div>
     </div>
   );
-}
+});
 
 // ─── Daily Affirmation ────────────────────────────────────────────────────────
 
@@ -396,7 +399,7 @@ const AFFIRMATIONS: string[] = [
   "New possibilities open for me as I continue to heal and grow.",
 ];
 
-function DailyAffirmation() {
+const DailyAffirmation = React.memo(function DailyAffirmation() {
   const affirmation = useMemo(() => {
     const dayIndex = getDayOfYear() % AFFIRMATIONS.length;
     return AFFIRMATIONS[dayIndex];
@@ -406,7 +409,7 @@ function DailyAffirmation() {
     <div className="glass-card p-5 animate-fadeUp stagger-3" style={{ opacity: 0 }}>
       <div className="flex items-center gap-2.5 mb-4">
         <div className="w-7 h-7 rounded-lg bg-violet-500/10 flex items-center justify-center flex-shrink-0">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" />
             <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z" />
           </svg>
@@ -421,7 +424,7 @@ function DailyAffirmation() {
 
       <div className="rounded-xl bg-violet-500/[0.05] border border-violet-500/10 p-4">
         <div className="flex items-start gap-3">
-          <svg className="w-6 h-6 text-violet-500/30 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="currentColor">
+          <svg className="w-6 h-6 text-violet-500/30 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" />
           </svg>
           <p className="text-sm text-slate-200 italic leading-relaxed font-light">
@@ -431,7 +434,7 @@ function DailyAffirmation() {
       </div>
     </div>
   );
-}
+});
 
 // ─── Journaling Prompt ────────────────────────────────────────────────────────
 
@@ -459,7 +462,7 @@ const JOURNAL_PROMPTS: string[] = [
   "Reflect on a craving you experienced. What helped you get through it?",
 ];
 
-function JournalPrompt() {
+const JournalPrompt = React.memo(function JournalPrompt() {
   const [promptOffset, setPromptOffset] = useState(0);
 
   const todaysPrompt = useMemo(() => {
@@ -476,7 +479,7 @@ function JournalPrompt() {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M12 20h9" />
               <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
             </svg>
@@ -485,6 +488,7 @@ function JournalPrompt() {
         </div>
         <button
           onClick={nextPrompt}
+          aria-label="Show new journal prompt"
           className="px-3 py-1.5 rounded-lg text-[10px] text-emerald-400 font-medium bg-emerald-500/10 border border-emerald-500/15 hover:bg-emerald-500/15 transition-all active:scale-[0.98]"
         >
           New Prompt
@@ -493,7 +497,7 @@ function JournalPrompt() {
 
       <div className="rounded-xl bg-emerald-500/[0.05] border border-emerald-500/10 p-4">
         <div className="flex items-start gap-3">
-          <span className="text-lg flex-shrink-0 mt-0.5">
+          <span className="text-lg flex-shrink-0 mt-0.5" aria-hidden="true">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10" />
               <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
@@ -511,11 +515,11 @@ function JournalPrompt() {
       </p>
     </div>
   );
-}
+});
 
 // ─── SubTab Navigation ────────────────────────────────────────────────────────
 
-function SubTabNav({ active, onChange }: { active: SubTab; onChange: (tab: SubTab) => void }) {
+const SubTabNav = React.memo(function SubTabNav({ active, onChange }: { active: SubTab; onChange: (tab: SubTab) => void }) {
   const tabs: { id: SubTab; label: string; icon: React.ReactNode }[] = [
     { id: 'comparative', label: 'Comparative Minds', icon: <GitBranchIcon className="w-3.5 h-3.5" /> },
     { id: 'wellness', label: 'Wellness Tools', icon: <HeartPulseIcon className="w-3.5 h-3.5" /> },
@@ -523,10 +527,13 @@ function SubTabNav({ active, onChange }: { active: SubTab; onChange: (tab: SubTa
   ];
 
   return (
-    <div className="glass-card p-1.5 flex animate-fadeUp stagger-1" style={{ opacity: 0 }}>
+    <div className="glass-card p-1.5 flex animate-fadeUp stagger-1" style={{ opacity: 0 }} role="tablist" aria-label="Mind & Psychology sections">
       {tabs.map((tab) => (
         <button
           key={tab.id}
+          role="tab"
+          aria-selected={active === tab.id}
+          aria-label={tab.label}
           onClick={() => onChange(tab.id)}
           className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs font-medium transition-all active:scale-[0.99] ${
             active === tab.id
@@ -541,11 +548,11 @@ function SubTabNav({ active, onChange }: { active: SubTab; onChange: (tab: SubTa
       ))}
     </div>
   );
-}
+});
 
 // ─── Expandable Section ───────────────────────────────────────────────────────
 
-function ExpandButton({
+const ExpandButton = React.memo(function ExpandButton({
   isExpanded,
   onClick,
   label,
@@ -559,17 +566,19 @@ function ExpandButton({
   return (
     <button
       onClick={onClick}
+      aria-expanded={isExpanded}
+      aria-label={isExpanded ? label : (labelCollapsed || label)}
       className="w-full flex items-center justify-center gap-1.5 py-2.5 border-t border-white/[0.05] text-[10px] text-slate-500 hover:text-purple-400 hover:bg-white/[0.02] transition-all active:scale-[0.99]"
     >
       {isExpanded ? label : (labelCollapsed || label)}
       <ChevronDownIcon className={`w-3 h-3 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
     </button>
   );
-}
+});
 
 // ─── Comparative Minds Tab ────────────────────────────────────────────────────
 
-function ComparativeMindsTab() {
+const ComparativeMindsTab = React.memo(function ComparativeMindsTab() {
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
   const [expandedPractices, setExpandedPractices] = useState<Set<string>>(new Set());
   const [expandedScience, setExpandedScience] = useState<Set<string>>(new Set());
@@ -681,10 +690,13 @@ function ComparativeMindsTab() {
               />
 
               {isExpanded && (
-                <div className="px-4 pb-4 space-y-3 border-t border-white/[0.05] pt-3 animate-fadeUp">
+                <div id={`mindset-detail-${mindset.id}`} className="px-4 pb-4 space-y-3 border-t border-white/[0.05] pt-3 animate-fadeUp" style={{ opacity: 0 }}>
                   {/* Expandable Practices */}
                   <button
                     onClick={() => togglePractices(mindset.id)}
+                    aria-expanded={hasPracticesOpen}
+                    aria-controls={`mindset-practices-${mindset.id}`}
+                    aria-label={`${hasPracticesOpen ? 'Hide' : 'Show'} practices for ${mindset.name}`}
                     className="w-full flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.05] transition-all active:scale-[0.99]"
                   >
                     <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
@@ -695,7 +707,7 @@ function ComparativeMindsTab() {
                   </button>
 
                   {hasPracticesOpen && (
-                    <div className="space-y-2 pl-1 animate-fadeUp">
+                    <div id={`mindset-practices-${mindset.id}`} className="space-y-2 pl-1 animate-fadeUp" style={{ opacity: 0 }}>
                       {mindset.practices.map((practice, i) => (
                         <div key={i} className="flex items-start gap-2">
                           <span className="w-5 h-5 rounded-md bg-purple-500/15 flex items-center justify-center flex-shrink-0 mt-0.5 text-[10px] font-bold text-purple-400">
@@ -710,6 +722,9 @@ function ComparativeMindsTab() {
                   {/* Expandable Science */}
                   <button
                     onClick={() => toggleScience(mindset.id)}
+                    aria-expanded={hasScienceOpen}
+                    aria-controls={`mindset-science-${mindset.id}`}
+                    aria-label={`${hasScienceOpen ? 'Hide' : 'Show'} science for ${mindset.name}`}
                     className="w-full flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.05] transition-all active:scale-[0.99]"
                   >
                     <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
@@ -720,7 +735,7 @@ function ComparativeMindsTab() {
                   </button>
 
                   {hasScienceOpen && (
-                    <div className="rounded-xl bg-sky-500/[0.04] border border-sky-500/10 p-3 animate-fadeUp">
+                    <div id={`mindset-science-${mindset.id}`} className="rounded-xl bg-sky-500/[0.04] border border-sky-500/10 p-3 animate-fadeUp" style={{ opacity: 0 }}>
                       <p className="text-[11px] text-slate-400 leading-relaxed">{mindset.science}</p>
                     </div>
                   )}
@@ -732,11 +747,11 @@ function ComparativeMindsTab() {
       </div>
     </div>
   );
-}
+});
 
 // ─── Wellness Tools Tab ───────────────────────────────────────────────────────
 
-function WellnessToolsTab() {
+const WellnessToolsTab = React.memo(function WellnessToolsTab() {
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
   const [expandedSteps, setExpandedSteps] = useState<Set<string>>(new Set());
   const [expandedBenefits, setExpandedBenefits] = useState<Set<string>>(new Set());
@@ -789,26 +804,26 @@ function WellnessToolsTab() {
     switch (category) {
       case 'cognitive':
         return (
-          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M12 2a8 8 0 0 0-8 8c0 6 8 12 8 12s8-6 8-12a8 8 0 0 0-8-8Z" />
             <circle cx="12" cy="10" r="3" />
           </svg>
         );
       case 'somatic':
         return (
-          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M18 20V10" /><path d="M12 20V4" /><path d="M6 20v-6" />
           </svg>
         );
       case 'behavioral':
         return (
-          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
           </svg>
         );
       case 'social':
         return (
-          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
             <circle cx="9" cy="7" r="4" />
             <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
@@ -817,7 +832,7 @@ function WellnessToolsTab() {
         );
       case 'spiritual':
         return (
-          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2Z" />
             <path d="M12 6v6l4 2" />
           </svg>
@@ -910,10 +925,13 @@ function WellnessToolsTab() {
               />
 
               {isExpanded && (
-                <div className="px-4 pb-4 space-y-3 border-t border-white/[0.05] pt-3 animate-fadeUp">
+                <div id={`tool-detail-${tool.id}`} className="px-4 pb-4 space-y-3 border-t border-white/[0.05] pt-3 animate-fadeUp" style={{ opacity: 0 }}>
                   {/* Expandable Steps */}
                   <button
                     onClick={() => toggleSteps(tool.id)}
+                    aria-expanded={hasStepsOpen}
+                    aria-controls={`tool-steps-${tool.id}`}
+                    aria-label={`${hasStepsOpen ? 'Hide' : 'Show'} steps for ${tool.name}`}
                     className="w-full flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.05] transition-all active:scale-[0.99]"
                   >
                     <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
@@ -924,7 +942,7 @@ function WellnessToolsTab() {
                   </button>
 
                   {hasStepsOpen && (
-                    <div className="space-y-2 pl-1 animate-fadeUp">
+                    <div id={`tool-steps-${tool.id}`} className="space-y-2 pl-1 animate-fadeUp" style={{ opacity: 0 }}>
                       {tool.steps.map((step, i) => (
                         <div key={i} className="flex items-start gap-2.5">
                           <span className="w-5 h-5 rounded-full bg-purple-500/15 flex items-center justify-center flex-shrink-0 mt-0.5 text-[10px] font-bold text-purple-400">
@@ -939,6 +957,9 @@ function WellnessToolsTab() {
                   {/* Expandable Benefits */}
                   <button
                     onClick={() => toggleBenefits(tool.id)}
+                    aria-expanded={hasBenefitsOpen}
+                    aria-controls={`tool-benefits-${tool.id}`}
+                    aria-label={`${hasBenefitsOpen ? 'Hide' : 'Show'} benefits for ${tool.name}`}
                     className="w-full flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.05] transition-all active:scale-[0.99]"
                   >
                     <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
@@ -949,7 +970,7 @@ function WellnessToolsTab() {
                   </button>
 
                   {hasBenefitsOpen && (
-                    <div className="space-y-1.5 pl-1 animate-fadeUp">
+                    <div id={`tool-benefits-${tool.id}`} className="space-y-1.5 pl-1 animate-fadeUp" style={{ opacity: 0 }}>
                       {tool.benefits.map((benefit, i) => (
                         <div key={i} className="flex items-start gap-1.5">
                           <span className="text-emerald-500 mt-1.5 flex-shrink-0 text-[11px] leading-none">+</span>
@@ -972,11 +993,11 @@ function WellnessToolsTab() {
       </div>
     </div>
   );
-}
+});
 
 // ─── Contemplative Tab ────────────────────────────────────────────────────────
 
-function ContemplativeTab() {
+const ContemplativeTab = React.memo(function ContemplativeTab() {
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
   const [activeTheme, setActiveTheme] = useState<string>('all');
 
@@ -1049,9 +1070,11 @@ function ContemplativeTab() {
           <FilterIcon className="w-3.5 h-3.5 text-slate-500" />
           <p className="text-[10px] font-semibold text-slate-500">Filter by Theme</p>
         </div>
-        <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 no-scrollbar">
+        <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 no-scrollbar" role="group" aria-label="Filter contemplative practices by theme">
           <button
             onClick={() => setActiveTheme('all')}
+            aria-pressed={activeTheme === 'all'}
+            aria-label="Show all contemplative practices"
             className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all border active:scale-[0.99] ${
               activeTheme === 'all'
                 ? 'bg-purple-500/15 text-purple-400 border-purple-500/25'
@@ -1064,6 +1087,8 @@ function ContemplativeTab() {
             <button
               key={theme}
               onClick={() => setActiveTheme(theme)}
+              aria-pressed={activeTheme === theme}
+              aria-label={`Filter by ${theme}`}
               className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all border active:scale-[0.99] capitalize ${
                 activeTheme === theme
                   ? 'bg-purple-500/15 text-purple-400 border-purple-500/25'
@@ -1122,7 +1147,7 @@ function ContemplativeTab() {
               />
 
               {isExpanded && (
-                <div className="px-4 pb-4 space-y-4 border-t border-white/[0.05] pt-4 animate-fadeUp">
+                <div id={`practice-detail-${practice.id}`} className="px-4 pb-4 space-y-4 border-t border-white/[0.05] pt-4 animate-fadeUp" style={{ opacity: 0 }}>
                   {/* Meditation Script - Special Styled Box */}
                   <div className="rounded-xl border border-purple-500/15 p-4" style={{ background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.06) 0%, rgba(17, 24, 39, 0.8) 100%)' }}>
                     <p className="text-[10px] font-semibold text-purple-400 mb-2 flex items-center gap-1.5">
@@ -1166,7 +1191,7 @@ function ContemplativeTab() {
       </div>
     </div>
   );
-}
+});
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
@@ -1176,7 +1201,7 @@ const MindPsychology = React.memo(function MindPsychology() {
   return (
     <div className="space-y-4 pb-6">
       {/* Header */}
-      <div className="animate-fadeUp">
+      <div className="animate-fadeUp" style={{ opacity: 0 }}>
         <h2 className="text-lg font-bold text-white flex items-center gap-2">
           <BrainIcon className="w-5 h-5 text-purple-400" />
           Mind & Psychology

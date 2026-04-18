@@ -69,6 +69,7 @@ interface SectionErrorBoundaryState { hasError: boolean; }
 class SectionErrorBoundary extends Component<SectionErrorBoundaryProps, SectionErrorBoundaryState> {
   constructor(props: SectionErrorBoundaryProps) { super(props); this.state = { hasError: false }; }
   static getDerivedStateFromError(): SectionErrorBoundaryState { return { hasError: true }; }
+  componentDidCatch(error: Error, info: React.ErrorInfo) { console.error('[RecoveryLine] SectionErrorBoundary caught:', error, info.componentStack); }
   render() {
     if (this.state.hasError) {
       return this.props.fallback ?? (
@@ -182,7 +183,7 @@ const CollapsibleSection = React.memo(function CollapsibleSection({
             {bookmarkKey !== undefined && onToggleBookmark && (
               <BookmarkIcon isBookmarked={!!isBookmarked} onClick={onToggleBookmark} />
             )}
-            <div className={`text-slate-500 ${isOpen ? 'rotate-180' : ''} transition-transform duration-300`}>
+            <div className="text-slate-500">
               <AnimatedChevron isOpen={isOpen} size={14} />
             </div>
           </div>
@@ -299,7 +300,7 @@ const DROPDOWN_AUTO_CLOSE_MS = 4000;
 
 // --- Haptic Feedback Helper ---
 function haptic(ms = 10) {
-  try { navigator.vibrate?.(ms); } catch {}
+  try { navigator.vibrate?.(ms); } catch (e) { console.warn('[RecoveryLine] Haptic vibration failed:', e); }
 }
 
 // --- Skeleton Loader ---
@@ -355,7 +356,6 @@ function SkeletonHeader() {
 const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { substance: SubstanceData }) {
   const [expandedDropdown, setExpandedDropdown] = useState<HeaderTabId | null>(null);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
-  const [protocolExpanded, setProtocolExpanded] = useState<string | null>(null);
   const [supplementsExpanded, setSupplementsExpanded] = useState(false);
 
   // New state: Two Big Buttons
@@ -368,7 +368,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
     try {
       const stored = localStorage.getItem(`bookmarks-${substance.id}`);
       return stored ? new Set(JSON.parse(stored)) : new Set();
-    } catch { return new Set(); }
+    } catch (e) { console.warn('[RecoveryLine] localStorage read failed:', e); return new Set(); }
   });
 
   // New state: Viewed Phases (progress indicator)
@@ -377,7 +377,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
     try {
       const stored = localStorage.getItem(`viewed-phases-${substance.id}`);
       return stored ? new Set(JSON.parse(stored)) : new Set();
-    } catch { return new Set(); }
+    } catch (e) { console.warn('[RecoveryLine] localStorage read failed:', e); return new Set(); }
   });
 
   // New state: Skeleton loading
@@ -457,7 +457,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
       const next = new Set(prev);
       if (next.has(key)) next.delete(key);
       else next.add(key);
-      try { localStorage.setItem(`bookmarks-${substance.id}`, JSON.stringify([...next])); } catch {}
+      try { localStorage.setItem(`bookmarks-${substance.id}`, JSON.stringify([...next])); } catch (e) { console.warn('[RecoveryLine] Bookmark save failed:', e); }
       return next;
     });
   }, [substance.id]);
@@ -475,7 +475,7 @@ const SubstanceDetail = React.memo(function SubstanceDetail({ substance }: { sub
     setViewedPhases(prev => {
       const next = new Set(prev);
       next.add(rowId);
-      try { localStorage.setItem(`viewed-phases-${substance.id}`, JSON.stringify([...next])); } catch {}
+      try { localStorage.setItem(`viewed-phases-${substance.id}`, JSON.stringify([...next])); } catch (e) { console.warn('[RecoveryLine] Phase view save failed:', e); }
       return next;
     });
   }, [substance.id]);
